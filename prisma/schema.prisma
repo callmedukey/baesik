@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MealType {
+  LUNCH
+  DINNER
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id       String @id @default(uuid())
+  name     String
+  username String @unique
+  phone    String @unique
+  email    String @unique
+
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
+  schoolId String
+
+  meals    Meals[]
+  payments Payments[]
+}
+
+model School {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  address String?
+  phone   String?
+  email   String?
+
+  students   Student[]
+  schoolUser SchoolUser[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SchoolUser {
+  id String @id @default(uuid())
+
+  name     String
+  username String @unique
+  email    String
+  password String
+
+  phone String
+
+  verified Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school   School? @relation(fields: [schoolId], references: [id], onDelete: NoAction)
+  schoolId String?
+}
+
+model Payments {
+  id String @id @default(uuid())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: NoAction)
+  meals   Meals[]
+
+  studentName String
+  schoolName  String
+
+  amount       Int
+  creditAmount Int?
+
+  studentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Meals {
+  id String @id @default(uuid())
+
+  date     DateTime
+  mealType MealType
+
+  isCancelled Boolean @default(false)
+
+  payments   Payments? @relation(fields: [paymentsId], references: [id], onDelete: Cascade)
+  paymentsId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String?
+}

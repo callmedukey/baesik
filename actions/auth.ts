@@ -1,0 +1,335 @@
+"use server";
+import {
+  LoginSchema,
+  SchoolSignUpSchema,
+  StudentSignUpSchema,
+} from "@/lib/definitions";
+import bcrypt from "bcrypt";
+import prisma from "@/lib/prisma";
+
+import { createSession } from "./session";
+import { z } from "zod";
+import { redirect } from "next/navigation";
+
+export async function studentSignup({
+  data,
+}: {
+  data: z.infer<typeof StudentSignUpSchema>;
+}): Promise<any> {
+  // 1. Validate form fields
+  const validatedFields = StudentSignUpSchema.safeParse(data);
+
+  // If any form fields are invalid, return early
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  // 2. Prepare data for insertion into database
+  const { name, email, password, phone, schoolName, username } =
+    validatedFields.data;
+
+  const removedDashPhone = phone.replace(/-/g, "");
+
+  // 3. Check if the user's email already exists
+  const existingUser = await prisma.student.findUnique({
+    where: {
+      email,
+      username,
+      phone: removedDashPhone,
+    },
+  });
+
+  if (existingUser) {
+    return {
+      error: "이미 존재하는 이메일/아이디/전화번호 입니다.",
+    };
+  }
+
+  // Hash the user's password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // 3. Find school with name and register student
+  const school = await prisma.school.findUnique({
+    where: {
+      name: schoolName,
+    },
+  });
+
+  if (!school) {
+    return {
+      error: "학교 이름이 올바르지 않습니다.",
+    };
+  }
+
+  const registeredStudent = await prisma.student.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      phone: removedDashPhone,
+      username,
+      school: {
+        connect: {
+          id: school.id,
+        },
+      },
+    },
+  });
+
+  if (!registeredStudent) {
+    return {
+      error: "학생 등록에 실패했습니다.",
+    };
+  }
+
+  // 4. Create a session for the user
+  const userId = registeredStudent.id.toString();
+
+  await createSession({
+    userId,
+    schoolId: school.id.toString(),
+    isStudent: true,
+  });
+
+  return {
+    success: "회원가입이 완료되었습니다.",
+    redirectTo: "/login",
+  };
+}
+export async function schoolUserSignup({
+  data,
+}: {
+  data: z.infer<typeof SchoolSignUpSchema>;
+}): Promise<any> {
+  // 1. Validate form fields
+  const validatedFields = SchoolSignUpSchema.safeParse(data);
+
+  // If any form fields are invalid, return early
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  // 2. Prepare data for insertion into database
+  const { name, email, password, phone, schoolName, username } =
+    validatedFields.data;
+
+  const removedDashPhone = phone.replace(/-/g, "");
+
+  // 3. Register School user, they will be disabled by default till admin grants access
+
+  // Hash the user's password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // 3. Find school with name and register school user
+  const school = await prisma.school.findUnique({
+    where: {
+      name: schoolName,
+    },
+  });
+
+  if (!school) {
+    return {
+      error: "학교 이름이 올바르지 않습니다.",
+    };
+  }
+
+  const registeredSchoolUser = await prisma.schoolUser.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      phone: removedDashPhone,
+      username,
+      school: {
+        connect: {
+          id: school.id,
+        },
+      },
+    },
+  });
+
+  if (!registeredSchoolUser) {
+    return {
+      error: "학생 등록에 실패했습니다.",
+    };
+  }
+
+  // 4. Create a session for the user
+  const userId = registeredSchoolUser.id.toString();
+
+  await createSession({
+    userId,
+    schoolId: school.id.toString(),
+    isStudent: false,
+  });
+
+  return {
+    success: "회원가입이 완료되었습니다.",
+    redirectTo: "/login",
+  };
+}
+
+export async function studentLogin(
+  userLogin: z.infer<typeof LoginSchema>
+): Promise<any> {
+  // 1. Validate form fields
+  const validatedFields = LoginSchema.safeParse(userLogin);
+
+  const errorMessage = { message: "아이디 또는 비밀번호가 올바르지 않습니다." };
+
+  // If any form fields are invalid, return early
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  // 2. Query the database for the user with the given email
+  const user = await prisma.student.findUnique({
+    where: {
+      username: validatedFields.data.username,
+    },
+  });
+
+  // If user is not found, return early
+  if (!user) {
+    return errorMessage;
+  }
+
+  // 3. Compare the user's password with the hashed password in the database
+  const passwordMatch = await bcrypt.compare(
+    validatedFields.data.password,
+    user.password
+  );
+
+  // If the password does not match, return early
+  if (!passwordMatch) {
+    return errorMessage;
+  }
+
+  // 4. If login successful, create a session for the user and redirect
+  const userId = user.id.toString();
+  await createSession({
+    userId,
+    schoolId: user.schoolId,
+    isStudent: true,
+  });
+
+  redirect("/student");
+}
+export async function schoolLogin(
+  userLogin: z.infer<typeof LoginSchema>
+): Promise<any> {
+  // 1. Validate form fields
+  const validatedFields = LoginSchema.safeParse(userLogin);
+
+  const errorMessage = { message: "아이디 또는 비밀번호가 올바르지 않습니다." };
+
+  // If any form fields are invalid, return early
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  // 2. Query the database for the user with the given email
+  const user = await prisma.student.findUnique({
+    where: {
+      username: validatedFields.data.username,
+    },
+  });
+
+  // If user is not found, return early
+  if (!user) {
+    return errorMessage;
+  }
+
+  // 3. Compare the user's password with the hashed password in the database
+  const passwordMatch = await bcrypt.compare(
+    validatedFields.data.password,
+    user.password
+  );
+
+  // If the password does not match, return early
+  if (!passwordMatch) {
+    return errorMessage;
+  }
+
+  // 4. If login successful, create a session for the user and redirect
+  const userId = user.id.toString();
+
+  await createSession({
+    userId,
+    schoolId: user.schoolId,
+    isStudent: false,
+  });
+
+  redirect("/school");
+}
+
+// export async function logout() {
+// //   deleteSession();
+// }
+
+export const createAdmin = async () => {
+  const admin = await prisma.admin.create({
+    data: {
+      username: "admin",
+      password: await bcrypt.hash("gen2kbgroup@", 10),
+    },
+  });
+
+  if (admin) {
+    await createSession({
+      userId: admin.id.toString(),
+      isAdmin: true,
+    });
+    return {
+      success: "관리자 생성 완료",
+    };
+  }
+
+  return {
+    error: "관리자 생성 실패",
+  };
+};
+
+export const adminLogin = async (adminLogin: z.infer<typeof LoginSchema>) => {
+  const validatedFields = LoginSchema.safeParse(adminLogin);
+  const errorMessage = {
+    message: "아이디 또는 비밀번호가 올바르지 않습니다.",
+  };
+  if (!validatedFields.success) {
+    return errorMessage;
+  }
+
+  const admin = await prisma.admin.findUnique({
+    where: {
+      username: validatedFields.data.username,
+    },
+  });
+
+  if (!admin) {
+    return errorMessage;
+  }
+
+  const passwordMatch = await bcrypt.compare(
+    validatedFields.data.password,
+    admin.password
+  );
+
+  if (!passwordMatch) {
+    return errorMessage;
+  }
+
+  await createSession({
+    userId: admin.id.toString(),
+    isAdmin: true,
+  });
+
+  redirect("/admin/dashboard");
+};

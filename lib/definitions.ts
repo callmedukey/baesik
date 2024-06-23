@@ -1,0 +1,67 @@
+import { z } from "zod";
+import testValidPhoneNumber from "./regex/testPhoneNumber";
+import testAlphabetsAndNumbers from "./regex/testAlphabetsAndNumbers";
+
+export const StudentSignUpSchema = z.object({
+  name: z
+    .string({ required_error: "이름을 입력해주세요." })
+    .min(2, { message: "이름을 입력해주세요." })
+    .trim(),
+  username: z
+    .string()
+    .min(4, { message: "아이디는 최소 4자 최대 14자 입니다." })
+    .max(14, { message: "아이디는 최소 4자 최대 14자 입니다." })
+    .refine((val) => testAlphabetsAndNumbers(val), {
+      message: "아이디는 영문자와 숫자만 포함되어야 합니다.",
+    }),
+  email: z
+    .string({ required_error: "이메일을 입력해주세요." })
+    .email({ message: "올바른 이메일을 입력해주세요." })
+    .trim(),
+  password: z
+    .string({ required_error: "비밀번호를 입력해주세요." })
+    .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
+    .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
+    .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
+    .regex(/[^a-zA-Z0-9]/, {
+      message: "비밀번호에 특문자가 포함되어야 합니다.",
+    })
+    .trim(),
+  confirmPassword: z
+    .string({ required_error: "비밀번호를 입력해주세요." })
+    .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
+    .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
+    .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
+    .regex(/[^a-zA-Z0-9]/, {
+      message: "비밀번호에 특문자가 포함되어야 합니다.",
+    })
+    .trim(),
+  phone: z
+    .string({ required_error: "핸드폰 번호를 입력해주세요." })
+    .min(11, { message: "핸드폰 번호를 입력해주세요." })
+    .refine((val) => testValidPhoneNumber(val), {
+      message: "올바른 핸드폰 번호를 입력해주세요.",
+    }),
+  schoolName: z.string({ required_error: "학교를 선택해주세요." }),
+});
+
+export const SchoolSignUpSchema = StudentSignUpSchema.extend({
+  phone: z
+    .string({ required_error: "담당자 핸드폰 번호를 입력해주세요." })
+    .min(11, { message: "담당자 핸드폰 번호를 입력해주세요." })
+    .refine((val) => testValidPhoneNumber(val), {
+      message: "올바른 담당자 핸드폰 번호를 입력해주세요.",
+    }),
+  email: z
+    .string({ required_error: "담당자 이메일을 입력해주세요." })
+    .email({ message: "올바른 담당자 이메일을 입력해주세요." }),
+});
+
+export const LoginSchema = StudentSignUpSchema.pick({
+  username: true,
+  password: true,
+});
+
+export const AddSchoolSchema = SchoolSignUpSchema.pick({
+  name: true,
+});
