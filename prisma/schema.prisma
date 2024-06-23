@@ -24,7 +24,7 @@ model Admin {
 model Menu {
   id       String   @id @default(uuid())
   fileName String?
-  date     DateTime @unique
+  date     DateTime 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
