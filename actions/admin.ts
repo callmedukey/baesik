@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { AddSchoolSchema } from "@/lib/definitions";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { addDays } from "date-fns";
 
 export const getSchools = async () => {
   try {
@@ -30,6 +31,21 @@ export const getSchools = async () => {
     console.error(error);
     return null;
   }
+};
+
+export const getSchoolWithStudents = async (schoolId: string) => {
+  const school = await prisma.school.findUnique({
+    where: {
+      id: schoolId,
+    },
+    include: {
+      students: true,
+    },
+  });
+  if (!school) {
+    return redirect("/admin/dashboard/schools");
+  }
+  return school;
 };
 
 export const AddSchoolToList = async (
@@ -133,3 +149,36 @@ export const updateSchool = async (
     };
   }
 };
+
+export const getStudentsWithMeals = async ({
+  schoolId,
+  fromDate,
+  toDate,
+}: {
+  schoolId: string;
+  fromDate: Date;
+  toDate: Date;
+}) => {
+  const students = await prisma.student.findMany({
+    where: {
+      schoolId,
+      meals: {
+        some: {
+          date: {
+            gte: fromDate,
+            lte: toDate === fromDate ? addDays(fromDate, 1) : toDate,
+          },
+        },
+      },
+    },
+    include: {
+      meals: true,
+    },
+  });
+
+  if (!students) {
+    return null;
+  }
+  return students;
+};
+

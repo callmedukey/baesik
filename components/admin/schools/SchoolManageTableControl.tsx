@@ -61,7 +61,9 @@ const SchoolManageTableControl = ({
           이름 수정
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/admin/dashboard/schools/students">학생 명단</Link>
+          <Link href={`/admin/dashboard/schools/${schoolId}/students`}>
+            학생 명단
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={deleteSchoolFn} className="cursor-pointer">
           삭제
