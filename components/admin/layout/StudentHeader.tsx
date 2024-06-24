@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const StudentHeader = () => {
   return (
@@ -38,6 +39,13 @@ const StudentHeader = () => {
             <Link href="/student/payments" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                 결제 내역
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/student/payments" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                <ShoppingCartIcon className="size-5" />
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>

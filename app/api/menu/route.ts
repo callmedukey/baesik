@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "파일이 없습니다" });
     }
 
-    const diff = differenceInDays(new Date(toDate), new Date(fromDate));
+    const diff = differenceInDays(new Date(fromDate), new Date(toDate)) + 1;
 
     const array = Array.from({ length: diff }, (v, i) => i + 1);
 

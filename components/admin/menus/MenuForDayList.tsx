@@ -15,7 +15,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { type DateRange } from "react-day-picker";
+import type {  DateRange } from "react-day-picker";
 import { useToast } from "@/components/ui/use-toast";
 
 const MenuForDayList = () => {

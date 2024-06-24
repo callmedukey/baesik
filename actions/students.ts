@@ -40,9 +40,23 @@ export const getMenu = async ({
         }
       }
     }
-    return { validFiles };
+    return { validFiles, ready: true };
   } catch (error) {
     console.error(error);
     return { error: "파일을 찾을수 없습니다" };
   }
+};
+
+export const getMenuAvailableDays = async ({ days }: { days: string[] }) => {
+  const found = await prisma.menu.findMany({
+    where: {
+      date: {
+        in: days,
+      },
+    },
+    select: {
+      date: true,
+    },
+  });
+  return found.map((day) => day.date.toISOString());
 };
