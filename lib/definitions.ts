@@ -65,3 +65,12 @@ export const LoginSchema = StudentSignUpSchema.pick({
 export const AddSchoolSchema = SchoolSignUpSchema.pick({
   name: true,
 });
+
+export const MealSchema = z.object({
+  mealType: z.enum(["LUNCH", "DINNER"], {
+    required_error: "식사 유형을 선택해주세요.",
+  }),
+  date: z.date({ required_error: "날짜를 선택해주세요." }),
+});
+
+export const MealSchemaArraySchema = z.array(MealSchema);

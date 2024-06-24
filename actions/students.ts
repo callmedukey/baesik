@@ -3,6 +3,10 @@
 import prisma from "@/lib/prisma";
 import path from "path";
 import { existsSync } from "fs";
+import { MealSchemaArraySchema } from "@/lib/definitions";
+import { verifySession } from "./session";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 export const getMenu = async ({
   fromDate,
@@ -58,5 +62,63 @@ export const getMenuAvailableDays = async ({ days }: { days: string[] }) => {
       date: true,
     },
   });
-  return found.map((day) => day.date.toISOString());
+  return found.map((day) => day.date.toString());
+};
+
+export const saveShoppingCart = async (
+  meals: z.infer<typeof MealSchemaArraySchema>
+) => {
+  const validatedMeals = MealSchemaArraySchema.safeParse(meals);
+  if (!validatedMeals.success) {
+    console.error(validatedMeals.error);
+    return { error: "잘못된 요청입니다" };
+  }
+  const session = await verifySession();
+
+  if (!session) {
+    return { error: "로그인이 필요합니다" };
+  }
+  const created = await prisma.savedMeals.createMany({
+    data: validatedMeals.data.map((meal) => ({
+      date: meal.date,
+      mealType: meal.mealType,
+      studentId: session.userId,
+    })),
+  });
+  revalidatePath("/student/cart");
+  if (created && created.count === meals.length) {
+    return {
+      message: "장바구니에 추가되었습니다",
+      redirectTo: "/student/cart",
+    };
+  }
+  return { error: "장바구니에 추가되지 않았습니다" };
+};
+
+export const getShoppingCart = async () => {
+  const session = await verifySession();
+  if (!session) {
+    return { error: "로그인이 필요합니다" };
+  }
+  const meals = await prisma.savedMeals.findMany({
+    where: {
+      studentId: session.userId,
+    },
+  });
+
+  return meals;
+};
+
+export const deleteSavedMeal = async (id: string) => {
+  const deleted = await prisma.savedMeals.delete({
+    where: {
+      id,
+    },
+  });
+
+  if (deleted) {
+    revalidatePath("/student/cart");
+    return { message: "장바구니에서 삭제되었습니다" };
+  }
+  return { error: "장바구니에서 삭제되지 않았습니다" };
 };

@@ -1,5 +1,3 @@
-import type { MealType } from "@prisma/client";
-
 import {
   Table,
   TableBody,
@@ -13,19 +11,32 @@ import type { AvailableDay } from "./ReadyContainer";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { saveShoppingCart } from "@/actions/students";
+import { useRouter } from "next/navigation";
+import { MealSchema } from "@/lib/definitions";
+import { z } from "zod";
+import { parseMealSelectionOption } from "@/lib/parseMealSelectionOption";
+import { cn } from "@/lib/utils";
 
-const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
+const StudentMealSelectionTable = ({
+  meals,
+  holidayData,
+}: {
+  meals: AvailableDay[];
+  holidayData: { [key: string]: string };
+}) => {
+  const router = useRouter();
   const [selectedMeals, setSelectedMeals] = useState<
-    { date: string; mealType: MealType }[]
+    z.infer<typeof MealSchema>[]
   >([]);
   const selectAll = () => {
-    const parseInput: { date: string; mealType: MealType }[] = [];
+    const parseInput: z.infer<typeof MealSchema>[] = [];
     meals.forEach((meal) => {
       if (meal.isLunch) {
-        parseInput.push({ date: meal.date, mealType: "LUNCH" });
+        parseInput.push({ date: new Date(meal.date), mealType: "LUNCH" });
       }
       if (meal.isDinner) {
-        parseInput.push({ date: meal.date, mealType: "DINNER" });
+        parseInput.push({ date: new Date(meal.date), mealType: "DINNER" });
       }
     });
     setSelectedMeals(parseInput);
@@ -34,12 +45,22 @@ const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
   const resetAll = () => {
     setSelectedMeals([]);
   };
+
+  const storeToStorage = async () => {
+    const result = await saveShoppingCart(selectedMeals);
+    if (result.error) {
+      alert(result.error);
+    }
+    if (result.redirectTo) {
+      router.push(result.redirectTo);
+    }
+  };
   return (
     <>
-      <div className="flex items-center justify-center w-full gap-2">
+      <div className="grid grid-cols-2 w-full gap-2">
         <Button
           type="button"
-          className="mx-auto w-full bg-primary/60 text-white hover:bg-primary"
+          className="mx-auto w-full bg-primary/70 text-white hover:bg-primary"
           onClick={selectAll}
         >
           전체 선택하기
@@ -51,6 +72,14 @@ const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
           onClick={resetAll}
         >
           전체 삭제하기
+        </Button>
+        <Button
+          className="w-full col-span-2"
+          onClick={storeToStorage}
+          type="button"
+          disabled={selectedMeals.length === 0}
+        >
+          장바구니 담기
         </Button>
       </div>
       <Table>
@@ -67,17 +96,55 @@ const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
             <TableRow key={meal.date + meal.isDinner + meal.isLunch}>
               <TableCell> {format(meal.date, "yyyy-MM-dd")}</TableCell>
               <TableCell
-                className="text-center w-[100px]"
+                className={cn(
+                  "text-center w-[100px]",
+                  parseMealSelectionOption({
+                    condition: selectedMeals.some(
+                      (m) =>
+                        m.date.toISOString() === meal.date &&
+                        m.mealType === "LUNCH"
+                    ),
+                    whenYes: "선택",
+                    whenNo: "미선택",
+                    holidayData,
+                    date: meal.date,
+                    mealType: "LUNCH",
+                  }) === "선택불가"
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "cursor-pointer"
+                )}
                 onClick={() => {
                   if (
+                    parseMealSelectionOption({
+                      condition: selectedMeals.some(
+                        (m) =>
+                          m.date.toISOString() === meal.date &&
+                          m.mealType === "LUNCH"
+                      ),
+                      whenYes: "선택",
+                      whenNo: "미선택",
+                      holidayData,
+                      date: meal.date,
+                      mealType: "LUNCH",
+                    }) === "선택불가"
+                  ) {
+                    return;
+                  }
+
+                  if (
                     selectedMeals.some(
-                      (m) => m.date === meal.date && m.mealType === "LUNCH"
+                      (m) =>
+                        m.date.toISOString() === meal.date &&
+                        m.mealType === "LUNCH"
                     )
                   ) {
                     setSelectedMeals(
                       selectedMeals.filter((m) => {
                         console.log(m.date, meal.date);
-                        if (m.date === meal.date && m.mealType === "LUNCH") {
+                        if (
+                          m.date.toISOString() === meal.date &&
+                          m.mealType === "LUNCH"
+                        ) {
                           return false;
                         }
                         return true;
@@ -86,29 +153,74 @@ const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
                   } else {
                     setSelectedMeals([
                       ...selectedMeals,
-                      { date: meal.date, mealType: "LUNCH" },
+                      { date: new Date(meal.date), mealType: "LUNCH" },
                     ]);
                   }
                 }}
               >
-                {selectedMeals.some(
-                  (m) => m.date === meal.date && m.mealType === "LUNCH"
-                )
-                  ? "선택"
-                  : "미선택"}
+                {parseMealSelectionOption({
+                  condition: selectedMeals.some(
+                    (m) =>
+                      m.date.toISOString() === meal.date &&
+                      m.mealType === "LUNCH"
+                  ),
+                  whenYes: "선택",
+                  whenNo: "미선택",
+                  holidayData,
+                  date: meal.date,
+                  mealType: "LUNCH",
+                })}
               </TableCell>
               <TableCell
-                className="text-center w-[100px]"
+                className={cn(
+                  "text-center w-[100px]",
+                  parseMealSelectionOption({
+                    condition: selectedMeals.some(
+                      (m) =>
+                        m.date.toISOString() === meal.date &&
+                        m.mealType === "DINNER"
+                    ),
+                    whenYes: "선택",
+                    whenNo: "미선택",
+                    holidayData,
+                    date: meal.date,
+                    mealType: "DINNER",
+                  }) === "선택불가"
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "cursor-pointer"
+                )}
                 onClick={() => {
                   if (
+                    parseMealSelectionOption({
+                      condition: selectedMeals.some(
+                        (m) =>
+                          m.date.toISOString() === meal.date &&
+                          m.mealType === "DINNER"
+                      ),
+                      whenYes: "선택",
+                      whenNo: "미선택",
+                      holidayData,
+                      date: meal.date,
+                      mealType: "DINNER",
+                    }) === "선택불가"
+                  ) {
+                    return;
+                  }
+
+                  if (
                     selectedMeals.some(
-                      (m) => m.date === meal.date && m.mealType === "DINNER"
+                      (m) =>
+                        m.date.toISOString() === meal.date &&
+                        m.mealType === "DINNER"
                     )
                   ) {
                     setSelectedMeals(
                       selectedMeals.filter((m) => {
                         console.log(m.date, meal.date);
-                        if (m.date === meal.date && m.mealType === "DINNER") {
+                        if (
+                          m.date.toISOString() === meal.date &&
+                          m.mealType === "DINNER"
+                        ) {
                           return false;
                         }
                         return true;
@@ -117,16 +229,23 @@ const StudentMealSelectionTable = ({ meals }: { meals: AvailableDay[] }) => {
                   } else {
                     setSelectedMeals([
                       ...selectedMeals,
-                      { date: meal.date, mealType: "DINNER" },
+                      { date: new Date(meal.date), mealType: "DINNER" },
                     ]);
                   }
                 }}
               >
-                {selectedMeals.some(
-                  (m) => m.date === meal.date && m.mealType === "DINNER"
-                )
-                  ? "선택"
-                  : "미선택"}
+                {parseMealSelectionOption({
+                  condition: selectedMeals.some(
+                    (m) =>
+                      m.date.toISOString() === meal.date &&
+                      m.mealType === "DINNER"
+                  ),
+                  whenYes: "선택",
+                  whenNo: "미선택",
+                  holidayData,
+                  date: meal.date,
+                  mealType: "DINNER",
+                })}
               </TableCell>
             </TableRow>
           ))}

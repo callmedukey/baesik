@@ -66,21 +66,21 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return Response.json({ error: "파일이 없습니다" });
     }
-
-    const diff = differenceInDays(new Date(fromDate), new Date(toDate)) + 1;
-
+    console.log(fromDate, toDate);
+    const diff = differenceInDays(new Date(toDate), new Date(fromDate)) + 1;
+    console.log(diff);
     const array = Array.from({ length: diff }, (v, i) => i + 1);
 
     const promiseArray = array.map((_, i) =>
       prisma.menu.upsert({
         where: {
-          date: addDays(new Date(fromDate), i).toISOString(),
+          date: addDays(new Date(fromDate), i),
         },
         update: {
-          date: addDays(new Date(fromDate), i).toISOString(),
+          date: addDays(new Date(fromDate), i),
         },
         create: {
-          date: addDays(new Date(fromDate), i).toISOString(),
+          date: addDays(new Date(fromDate), i),
         },
       })
     );
@@ -88,7 +88,6 @@ export async function POST(req: NextRequest) {
     const result = await prisma.$transaction(promiseArray);
 
     if (result && Array.isArray(result) && result.length === array.length) {
-      const fileId = result[0].id;
       const newFileName = renameFileWithExtension(
         file.name,
         result[0].id.toString()
@@ -101,9 +100,7 @@ export async function POST(req: NextRequest) {
         prisma.menu.updateMany({
           where: {
             date: {
-              in: array.map((_, i) =>
-                addDays(new Date(fromDate), i).toISOString()
-              ),
+              in: array.map((_, i) => addDays(new Date(fromDate), i)),
             },
           },
           data: {

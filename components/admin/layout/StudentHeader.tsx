@@ -43,7 +43,7 @@ const StudentHeader = () => {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/student/payments" legacyBehavior passHref>
+            <Link href="/student/cart" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                 <ShoppingCartIcon className="size-5" />
               </NavigationMenuLink>

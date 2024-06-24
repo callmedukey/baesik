@@ -27,9 +27,8 @@ model Menu {
 
   date DateTime @unique
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ShoppingCart {
@@ -55,8 +54,9 @@ model Student {
   school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String
 
-  meals    Meals[]
-  payments Payments[]
+  meals      Meals[]
+  payments   Payments[]
+  savedMeals SavedMeals[]
 }
 
 model School {
@@ -125,6 +125,19 @@ model Meals {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String?
+}
+
+model SavedMeals {
+  id String @id @default(uuid())
+
+  date     DateTime
+  mealType MealType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String?
 }

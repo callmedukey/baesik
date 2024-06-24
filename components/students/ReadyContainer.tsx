@@ -152,7 +152,10 @@ const ReadyContainer = ({
           </Button>
         </aside>
         {applyDates.length > 0 && (
-          <StudentMealSelectionTable meals={applyDates} />
+          <StudentMealSelectionTable
+            meals={applyDates}
+            holidayData={holidayData}
+          />
         )}
       </div>
     </div>
