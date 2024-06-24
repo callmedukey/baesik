@@ -22,8 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { type School } from "@prisma/client";
+import { studentSignup } from "@/actions/auth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-const StudentSignupForm = () => {
+const StudentSignupForm = ({ schools }: { schools: School[] }) => {
   const form = useForm({
     resolver: zodResolver(StudentSignUpSchema),
     defaultValues: {
@@ -36,9 +40,21 @@ const StudentSignupForm = () => {
       schoolName: "",
     },
   });
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async (data: z.infer<typeof StudentSignUpSchema>) => {
+    setLoading(true);
+    const response = await studentSignup(data);
+    if (response.error) {
+      setLoading(false);
+      return alert(response.error);
+    }
 
-  const onSubmit = (data: z.infer<typeof StudentSignUpSchema>) => {
-    console.log(data);
+    if (response.redirectTo) {
+      setLoading(false);
+      alert("회원가입이 완료되었습니다.");
+      router.push(response.redirectTo);
+    }
   };
   return (
     <Form {...form}>
@@ -102,7 +118,7 @@ const StudentSignupForm = () => {
             <FormItem>
               <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,7 +131,7 @@ const StudentSignupForm = () => {
             <FormItem>
               <FormLabel>비밀번호 확인</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -134,9 +150,11 @@ const StudentSignupForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="서울대학교">서울대학교</SelectItem>
-                  <SelectItem value="경상대학교">경상대학교</SelectItem>
-                  <SelectItem value="경대학교">경대학교</SelectItem>
+                  {schools.map((school) => (
+                    <SelectItem value={school.name} key={school.id}>
+                      {school.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -144,7 +162,9 @@ const StudentSignupForm = () => {
           )}
         />
 
-        <Button className="mt-6 w-full font-semibold">회원가입</Button>
+        <Button className="mt-6 w-full font-semibold" disabled={loading}>
+          회원가입
+        </Button>
       </form>
     </Form>
   );

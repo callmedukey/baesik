@@ -13,8 +13,11 @@ import StudentSignupForm from "./StudentSignupForm";
 import SchoolSignupForm from "./SchoolSignupForm";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import prisma from "@/lib/prisma";
 
-const SignupForm = () => {
+const SignupForm = async () => {
+  const schools = await prisma.school.findMany();
+
   return (
     <Card className="max-w-md mx-auto w-full shadow-md">
       <CardHeader>
@@ -31,10 +34,10 @@ const SignupForm = () => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="student">
-            <StudentSignupForm />
+            <StudentSignupForm schools={schools} />
           </TabsContent>
           <TabsContent value="school">
-            <SchoolSignupForm />
+            <SchoolSignupForm schools={schools} />
           </TabsContent>
         </Tabs>
       </CardContent>

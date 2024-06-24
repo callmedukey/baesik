@@ -1,5 +1,4 @@
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -9,29 +8,36 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-const AdminHeader = () => {
+const StudentHeader = () => {
   return (
     <header className="h-16 flex items-center border-b shadow-sm px-2">
       <NavigationMenu className="ml-auto mr-0">
         <NavigationMenuList className="">
           <NavigationMenuItem>
-            <Link href="/admin/dashboard" legacyBehavior passHref>
+            <Link href="/student" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                홈
+                학식 조회
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/admin/dashboard/schools" legacyBehavior passHref>
+            <Link href="/student/cancelation" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                명단 관리
+                취소 신청
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/admin/dashboard/menus" legacyBehavior passHref>
+            <Link href="/student/cancelation" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                메뉴 관리
+                재신청
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/student/payments" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                결제 내역
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
@@ -41,4 +47,4 @@ const AdminHeader = () => {
   );
 };
 
-export default AdminHeader;
+export default StudentHeader;

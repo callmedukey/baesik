@@ -14,6 +14,7 @@ import { z } from "zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { adminLogin } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 
 const AdminLoginForm = () => {
   const form = useForm({
@@ -23,9 +24,17 @@ const AdminLoginForm = () => {
       password: "",
     },
   });
-
+  const router = useRouter();
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    await adminLogin(data);
+    const response = await adminLogin(data);
+    console.log(response);
+    if (response && response.error) {
+      console.log(response.error);
+      alert(response.error);
+    }
+    if (response && response.redirectTo) {
+      router.push(response.redirectTo);
+    }
   };
 
   return (
@@ -51,7 +60,7 @@ const AdminLoginForm = () => {
             <FormItem>
               <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

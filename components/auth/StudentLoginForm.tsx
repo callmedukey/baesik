@@ -13,6 +13,7 @@ import {
 import { z } from "zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { studentLogin } from "@/actions/auth";
 
 const StudentLoginForm = () => {
   const form = useForm({
@@ -23,8 +24,11 @@ const StudentLoginForm = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof LoginSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
+    const response = await studentLogin(data);
+    if (response.error) {
+      return alert(response.error);
+    }
   };
 
   return (
@@ -50,7 +54,7 @@ const StudentLoginForm = () => {
             <FormItem>
               <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -10,6 +10,7 @@ const publicRoutes = ["/admin", "/login", "/signup"];
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname;
+
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
@@ -44,6 +45,10 @@ export default async function middleware(req: NextRequest) {
     }
     if (session.isStudent === false) {
       return NextResponse.redirect(new URL("/school/dashboard", req.nextUrl));
+    }
+
+    if (!session && path !== "/admin") {
+      return NextResponse.redirect(new URL("/", req.nextUrl));
     }
   }
 

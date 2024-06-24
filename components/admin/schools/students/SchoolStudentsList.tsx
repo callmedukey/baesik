@@ -3,7 +3,6 @@ import { ko } from "date-fns/locale/ko";
 import * as React from "react";
 import { format, addDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,7 +24,9 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     from: new Date(),
     to: addDays(new Date(), 14),
   });
+
   const [loading, setLoading] = React.useState(false);
+
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
 
   const handleSearch = async () => {
@@ -65,10 +66,10 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
                     {format(date.to, "yyyy-MM-dd")}
                   </>
                 ) : (
-                  format(date.from, "LLL dd, y")
+                  format(date.from, "yyyy-MM-dd")
                 )
               ) : (
-                <span>Pick a date</span>
+                <span>날짜 선택</span>
               )}
             </Button>
           </PopoverTrigger>

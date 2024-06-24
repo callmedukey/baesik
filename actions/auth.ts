@@ -11,11 +11,9 @@ import { createSession } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 
-export async function studentSignup({
-  data,
-}: {
-  data: z.infer<typeof StudentSignUpSchema>;
-}): Promise<any> {
+export async function studentSignup(
+  data: z.infer<typeof StudentSignUpSchema>
+): Promise<any> {
   // 1. Validate form fields
   const validatedFields = StudentSignUpSchema.safeParse(data);
 
@@ -98,11 +96,9 @@ export async function studentSignup({
     redirectTo: "/login",
   };
 }
-export async function schoolUserSignup({
-  data,
-}: {
-  data: z.infer<typeof SchoolSignUpSchema>;
-}): Promise<any> {
+export async function schoolUserSignup(
+  data: z.infer<typeof SchoolSignUpSchema>
+): Promise<any> {
   // 1. Validate form fields
   const validatedFields = SchoolSignUpSchema.safeParse(data);
 
@@ -154,7 +150,7 @@ export async function schoolUserSignup({
 
   if (!registeredSchoolUser) {
     return {
-      error: "학생 등록에 실패했습니다.",
+      error: "학교 관리자 등록에 실패했습니다.",
     };
   }
 
@@ -178,14 +174,12 @@ export async function studentLogin(
 ): Promise<any> {
   // 1. Validate form fields
   const validatedFields = LoginSchema.safeParse(userLogin);
-
-  const errorMessage = { message: "아이디 또는 비밀번호가 올바르지 않습니다." };
+  
+  const errorMessage = { error: "아이디 또는 비밀번호가 올바르지 않습니다." };
 
   // If any form fields are invalid, return early
   if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
+    return errorMessage;
   }
 
   // 2. Query the database for the user with the given email
@@ -227,13 +221,11 @@ export async function schoolLogin(
   // 1. Validate form fields
   const validatedFields = LoginSchema.safeParse(userLogin);
 
-  const errorMessage = { message: "아이디 또는 비밀번호가 올바르지 않습니다." };
+  const errorMessage = { error: "아이디 또는 비밀번호가 올바르지 않습니다." };
 
   // If any form fields are invalid, return early
   if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
+    return errorMessage;
   }
 
   // 2. Query the database for the user with the given email
@@ -275,11 +267,31 @@ export async function schoolLogin(
 // //   deleteSession();
 // }
 
-export const createAdmin = async () => {
+export const createAdmin = async ({
+  username,
+  password,
+}: {
+  username: string;
+  password: string;
+}) => {
+  if (!username || !password) {
+    return {
+      error: "아이디 또는 비밀번호가 올바르지 않습니다.",
+    };
+  }
+
+  const parsed = LoginSchema.safeParse({ username, password });
+
+  if (!parsed.success) {
+    return {
+      error: "아이디 또는 비밀번호가 올바르지 않습니다.",
+    };
+  }
+
   const admin = await prisma.admin.create({
     data: {
-      username: "admin",
-      password: await bcrypt.hash("gen2kbgroup@", 10),
+      username: parsed.data.username,
+      password: await bcrypt.hash(parsed.data.password, 10),
     },
   });
 
@@ -298,13 +310,39 @@ export const createAdmin = async () => {
   };
 };
 
-export const adminLogin = async (adminLogin: z.infer<typeof LoginSchema>) => {
+export const adminLogin = async (
+  adminLogin: z.infer<typeof LoginSchema>
+): Promise<{ error?: string; message?: string; redirectTo?: string }> => {
   const validatedFields = LoginSchema.safeParse(adminLogin);
   const errorMessage = {
-    message: "아이디 또는 비밀번호가 올바르지 않습니다.",
+    error: "아이디 또는 비밀번호가 올바르지 않습니다.",
   };
   if (!validatedFields.success) {
     return errorMessage;
+  }
+
+  //if admin doesn't exist, first login is created automatically
+
+  const found = await prisma.admin.findMany({
+    take: 1,
+  });
+
+  if (!found?.length) {
+    const response = await createAdmin({
+      username: validatedFields.data.username,
+      password: validatedFields.data.password,
+    });
+
+    if (response.error) {
+      return {
+        error: response.error,
+      };
+    } else {
+      return {
+        message: "관리자 생성 완료",
+        redirectTo: "/admin/dashboard",
+      };
+    }
   }
 
   const admin = await prisma.admin.findUnique({
@@ -331,5 +369,5 @@ export const adminLogin = async (adminLogin: z.infer<typeof LoginSchema>) => {
     isAdmin: true,
   });
 
-  redirect("/admin/dashboard");
+  return { message: "로그인 성공", redirectTo: "/admin/dashboard" };
 };
