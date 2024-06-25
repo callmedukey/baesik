@@ -174,7 +174,7 @@ export async function studentLogin(
 ): Promise<any> {
   // 1. Validate form fields
   const validatedFields = LoginSchema.safeParse(userLogin);
-  
+
   const errorMessage = { error: "아이디 또는 비밀번호가 올바르지 않습니다." };
 
   // If any form fields are invalid, return early

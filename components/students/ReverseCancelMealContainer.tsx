@@ -10,6 +10,7 @@ import { reverseMeal } from "@/actions/students";
 
 const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
   const [selectedMeal, setSelectedMeal] = useState<Meals[]>([]);
+  const [loading, setLoading] = useState(false);
   const handleSelectMeal = (meal: Meals) => {
     setSelectedMeal((prev) => [...prev, meal]);
   };
@@ -19,14 +20,16 @@ const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
 
   const confirmReverse = async () => {
     if (!confirm("재신청하시겠습니까?")) return;
-
+    setLoading(true);
     const response = await reverseMeal({ meals: selectedMeal });
 
     if (response?.message) {
+      setLoading(false);
       return alert(response.message);
     }
 
     if (response?.error) {
+      setLoading(false);
       alert(response.error);
     }
   };
@@ -65,6 +68,7 @@ const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
       <Button
         className="mt-2 w-full"
         variant={"secondary"}
+        disabled={loading}
         onClick={async () => {
           await confirmReverse();
         }}

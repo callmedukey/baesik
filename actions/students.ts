@@ -344,6 +344,7 @@ export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
       updatedArray.length === refundsObjectArray.length
     ) {
       revalidatePath("/student/reverse-cancelation");
+      revalidatePath("/student/cancelation");
       return { message: "재신청되었습니다" };
     }
     return { error: "재신청되지 않았습니다" };

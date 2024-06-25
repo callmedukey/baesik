@@ -14,8 +14,10 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof PaymentInitSchema>>({
     resolver: zodResolver(PaymentInitSchema),
@@ -27,14 +29,21 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
     },
   });
   const onSubmit = async (data: z.infer<typeof PaymentInitSchema>) => {
-    const res = await fetch("/api/payaction", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    const json = await res.json();
-    if (json.success) {
-      router.push(`/student/cart/payment/final?id=${json.id}`);
-    } else alert("결제 중 오류가 발생했습니다.");
+    try {
+      setLoading(true);
+      const res = await fetch("/api/payaction", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success) {
+        router.push(`/student/cart/payment/final?id=${json.id}`);
+      } else alert("결제 중 오류가 발생했습니다.");
+    } catch (error) {
+      alert("결제 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <Form {...form}>
@@ -79,7 +88,9 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
           )}
         />
 
-        <Button className="mt-6 w-full font-semibold">입금 진행하기</Button>
+        <Button className="mt-6 w-full font-semibold" disabled={loading}>
+          {loading ? "입금 진행중..." : "입금 진행하기"}
+        </Button>
       </form>
     </Form>
   );

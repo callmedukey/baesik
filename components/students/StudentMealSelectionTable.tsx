@@ -27,6 +27,7 @@ const StudentMealSelectionTable = ({
   holidayData: { [key: string]: string };
 }) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [selectedMeals, setSelectedMeals] = useState<
     z.infer<typeof MealSchema>[]
   >([]);
@@ -48,6 +49,7 @@ const StudentMealSelectionTable = ({
   };
 
   const storeToStorage = async () => {
+    setLoading(true);
     const result = await saveShoppingCart(selectedMeals);
     if (result.error) {
       alert(result.error);
@@ -55,6 +57,7 @@ const StudentMealSelectionTable = ({
     if (result.redirectTo) {
       router.push(result.redirectTo);
     }
+    setLoading(false);
   };
   return (
     <>
@@ -78,9 +81,9 @@ const StudentMealSelectionTable = ({
           className="w-full col-span-2"
           onClick={storeToStorage}
           type="button"
-          disabled={selectedMeals.length === 0}
+          disabled={selectedMeals.length === 0 || loading}
         >
-          장바구니 담기
+          {loading ? "담는중..." : "장바구니 담기"}
         </Button>
       </div>
       <Table>
