@@ -12,6 +12,7 @@ export const POST = async (req: NextRequest) => {
     }
 
     const { amount, billingName, ordererName, phone } = await req.json();
+
     const student = await prisma.student.findUnique({
       where: {
         id: session.userId,
@@ -42,26 +43,21 @@ export const POST = async (req: NextRequest) => {
           },
           studentName: student.name,
           schoolName: student.school.name,
+          payer: billingName,
+          payerPhone: formatPhoneNumber(phone),
         },
       });
-      const createdMeals = await prisma.meals.createMany({
+
+      const createdMeals = await tx.meals.createMany({
         data: shoppingCart.map((meal) => ({
-          payment: {
-            connect: {
-              id: payment.id,
-            },
-          },
-          student: {
-            connect: {
-              id: session.userId,
-            },
-          },
+          paymentsId: payment.id,
+          studentId: session.userId,
           date: meal.date,
           mealType: meal.mealType,
         })),
       });
       if (createdMeals && createdMeals.count === shoppingCart.length) {
-        await prisma.savedMeals.deleteMany({
+        await tx.savedMeals.deleteMany({
           where: {
             student: {
               id: session.userId,

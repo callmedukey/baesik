@@ -87,3 +87,7 @@ export const PaymentSchema = z.object({
       message: "올바른 핸드폰 번호를 입력해주세요.",
     }),
 });
+
+export const PaymentInitSchema = PaymentSchema.omit({
+  orderDate: true,
+});

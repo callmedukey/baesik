@@ -8,10 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 const page = async ({ searchParams }: { searchParams: { id: string } }) => {
   const { id } = searchParams;
-
+  if (!id) {
+    return redirect("/student");
+  }
   const payment = await getPaymentAmount(id);
   return (
     <MainContainer hasHeader className="justify-start">

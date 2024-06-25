@@ -94,6 +94,9 @@ model Payments {
   studentName String
   schoolName  String
 
+  payer String 
+  payerPhone String
+
   amount       Int
   paid         Boolean @default(false)
   creditAmount Int?
@@ -133,4 +136,6 @@ model SavedMeals {
 
   student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String?
+
+  
 }

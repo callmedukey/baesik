@@ -1,5 +1,5 @@
 "use client";
-import { PaymentSchema } from "@/lib/definitions";
+import { PaymentInitSchema, PaymentSchema } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,11 +14,11 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-// required fields amount, billingName, ordererName, phone
+
 const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof PaymentSchema>>({
-    resolver: zodResolver(PaymentSchema),
+  const form = useForm<z.infer<typeof PaymentInitSchema>>({
+    resolver: zodResolver(PaymentInitSchema),
     defaultValues: {
       amount: totalAmount,
       billingName: "",
@@ -26,8 +26,8 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
       phone: "",
     },
   });
-  const onSubmit = async (data: z.infer<typeof PaymentSchema>) => {
-    const res = await fetch("/api/payment", {
+  const onSubmit = async (data: z.infer<typeof PaymentInitSchema>) => {
+    const res = await fetch("/api/payaction", {
       method: "POST",
       body: JSON.stringify(data),
     });

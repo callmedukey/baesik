@@ -7,6 +7,7 @@ import { MealSchemaArraySchema } from "@/lib/definitions";
 import { verifySession } from "./session";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const getMenu = async ({
   fromDate,
@@ -81,6 +82,7 @@ export const saveShoppingCart = async (
   if (!session) {
     return { error: "로그인이 필요합니다" };
   }
+
   const created = await prisma.savedMeals.createMany({
     data: validatedMeals.data.map((meal) => ({
       date: meal.date,
@@ -146,6 +148,32 @@ export const getPayments = async () => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          meals: true,
+        },
+      },
+    },
   });
+
   return payments;
+};
+
+export const cancelPayment = async (id: string) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+  const deleted = await prisma.payments.delete({
+    where: {
+      id,
+      studentId: session.userId,
+    },
+  });
+
+  if (deleted) {
+    revalidatePath("/student/payments");
+    return true;
+  } else false;
 };

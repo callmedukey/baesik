@@ -26,7 +26,7 @@ const StudentLoginForm = () => {
 
   const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
     const response = await studentLogin(data);
-    if (response.error) {
+    if (response?.error) {
       return alert(response.error);
     }
   };
