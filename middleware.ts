@@ -4,10 +4,13 @@ import { cookies } from "next/headers";
 import { decrypt } from "./actions/session";
 
 // 1. Specify protected and public routes
-const protectedRoutes = ["/admin/dashboard", "/student", "/school"];
-const publicRoutes = ["/admin", "/login", "/signup"];
-
+const protectedRoutes = ["/admin", "/student", "/school"];
+const publicRoutes = ["/", "/login", "/signup"];
+const disabled = true;
 export default async function middleware(req: NextRequest) {
+  if (disabled) {
+    return NextResponse.next();
+  }
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname;
 
@@ -26,29 +29,50 @@ export default async function middleware(req: NextRequest) {
   if (
     isProtectedRoute &&
     session?.userId &&
-    req.nextUrl.pathname.startsWith("/admin/") &&
+    req.nextUrl.pathname.startsWith("/admin") &&
     !session.isAdmin
   ) {
+    if (session.isStudent) {
+      return NextResponse.redirect(new URL("/student", req.nextUrl));
+    }
+
+    if (!session.isStudent) {
+      return NextResponse.redirect(new URL("/school", req.nextUrl));
+    }
+
     return NextResponse.redirect(new URL("/admin", req.nextUrl));
+  }
+
+  if (
+    isProtectedRoute &&
+    session?.userId &&
+    req.nextUrl.pathname.startsWith("/student") &&
+    !session.isStudent
+  ) {
+    return NextResponse.redirect(new URL("/school", req.nextUrl));
+  }
+  if (
+    isProtectedRoute &&
+    session?.userId &&
+    req.nextUrl.pathname.startsWith("/school") &&
+    session.isStudent
+  ) {
+    return NextResponse.redirect(new URL("/student", req.nextUrl));
   }
 
   if (
     isPublicRoute &&
     session?.userId &&
-    !req.nextUrl.pathname.startsWith("/")
+    req.nextUrl.pathname.startsWith("/")
   ) {
     if (session.isAdmin) {
       return NextResponse.redirect(new URL("/admin/dashboard", req.nextUrl));
     }
     if (session.isStudent) {
-      return NextResponse.redirect(new URL("/student/dashboard", req.nextUrl));
+      return NextResponse.redirect(new URL("/student/", req.nextUrl));
     }
     if (session.isStudent === false) {
-      return NextResponse.redirect(new URL("/school/dashboard", req.nextUrl));
-    }
-
-    if (!session && path !== "/admin") {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
+      return NextResponse.redirect(new URL("/school/", req.nextUrl));
     }
   }
 

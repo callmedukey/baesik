@@ -3,11 +3,13 @@
 import prisma from "@/lib/prisma";
 import path from "path";
 import { existsSync } from "fs";
-import { MealSchemaArraySchema } from "@/lib/definitions";
+import { CancelMealSchema, MealSchemaArraySchema } from "@/lib/definitions";
 import { verifySession } from "./session";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { addDays } from "date-fns";
+import type { Meals } from "@prisma/client";
 
 export const getMenu = async ({
   fromDate,
@@ -176,4 +178,174 @@ export const cancelPayment = async (id: string) => {
     revalidatePath("/student/payments");
     return true;
   } else false;
+};
+
+export const getCancelableMeals = async () => {
+  const session = await verifySession();
+
+  if (!session) {
+    redirect("/login");
+  }
+  const meals = await prisma.meals.findMany({
+    where: {
+      isCancelled: false,
+      isComplete: false,
+      studentId: session?.userId,
+      payments: {
+        paid: true,
+      },
+      date: {
+        gte: addDays(new Date(new Date().setHours(0, 0, 0, 0)), 2),
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+
+  return meals;
+};
+
+export const cancelMeals = async ({
+  meals,
+  accountHolder,
+  bankDetails,
+}: {
+  meals: Meals[];
+  accountHolder: string;
+  bankDetails: string;
+}) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  return await prisma.$transaction(async (tx) => {
+    const createdRequest = await tx.refundRequest.create({
+      data: {
+        accountHolder,
+        bankDetails,
+        studentId: session.userId,
+        amount: Math.floor(meals.reduce((acc, meal) => acc + 7000, 0)),
+      },
+    });
+    const updated = await tx.meals.updateMany({
+      where: {
+        isComplete: false,
+        isCancelled: false,
+        studentId: session.userId,
+        id: {
+          in: meals.map((meal) => meal.id),
+        },
+      },
+      data: {
+        isCancelled: true,
+        refundRequestId: createdRequest.id,
+      },
+    });
+    revalidatePath("/student/cancelation");
+    revalidatePath("/student/reverse-cancelation");
+    if (updated && updated.count === meals.length) {
+      return { message: "환불 신청되었습니다" };
+    }
+    return { error: "환불 신청되지 않았습니다" };
+  });
+};
+
+export const getReversibleMeals = async () => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  return await prisma.meals.findMany({
+    where: {
+      isCancelled: true,
+      isComplete: false,
+      studentId: session.userId,
+      payments: {
+        paid: true,
+      },
+      refundRequest: {
+        complete: false,
+      },
+      date: {
+        gte: addDays(new Date(new Date().setHours(0, 0, 0, 0)), 1),
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+};
+
+export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const refundsObject: { [key: string]: number } = {};
+
+  meals.forEach((meal) => {
+    if (meal.refundRequestId) {
+      if (refundsObject[meal.refundRequestId]) {
+        refundsObject[meal.refundRequestId] += 7000;
+      } else {
+        refundsObject[meal.refundRequestId] = 7000;
+      }
+    }
+  });
+
+  const refundsObjectArray = Object.entries(refundsObject).map(
+    ([key, value]) => ({
+      id: key,
+      amount: value,
+    })
+  );
+
+  return await prisma.$transaction(async (tx) => {
+    const updatedArray = [];
+    //find the refundRequests and update refund amount
+    refundsObjectArray.forEach(async (refund) => {
+      const updated = await tx.refundRequest.update({
+        where: {
+          id: refund.id,
+          complete: false,
+        },
+        data: {
+          amount: {
+            decrement: refund.amount,
+          },
+        },
+      });
+      updatedArray.push(updated.id);
+    });
+
+    //update the meals
+    const updated = await tx.meals.updateMany({
+      where: {
+        isCancelled: true,
+        isComplete: false,
+        studentId: session.userId,
+        id: {
+          in: meals.map((meal) => meal.id),
+        },
+      },
+      data: {
+        isCancelled: false,
+        refundRequestId: null,
+      },
+    });
+
+    if (
+      updated &&
+      updated.count === meals.length &&
+      updatedArray.length === refundsObjectArray.length
+    ) {
+      revalidatePath("/student/reverse-cancelation");
+      return { message: "재신청되었습니다" };
+    }
+    return { error: "재신청되지 않았습니다" };
+  });
 };

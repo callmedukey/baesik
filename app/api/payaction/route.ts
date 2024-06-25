@@ -2,6 +2,7 @@ import { verifySession } from "@/actions/session";
 import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
 import type { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 //requires phone dashes 010-5555-5555
 export const POST = async (req: NextRequest) => {
   try {
@@ -85,6 +86,7 @@ export const POST = async (req: NextRequest) => {
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),
     };
+    revalidatePath("/student/payments");
 
     const response = await fetch(payActionUrl, {
       method: "POST",

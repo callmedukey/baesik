@@ -45,9 +45,10 @@ model Student {
   school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String
 
-  meals      Meals[]
-  payments   Payments[]
-  savedMeals SavedMeals[]
+  meals          Meals[]
+  payments       Payments[]
+  savedMeals     SavedMeals[]
+  refundRequests RefundRequest[]
 }
 
 model School {
@@ -94,7 +95,7 @@ model Payments {
   studentName String
   schoolName  String
 
-  payer String 
+  payer      String
   payerPhone String
 
   amount       Int
@@ -102,6 +103,24 @@ model Payments {
   creditAmount Int?
 
   studentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RefundRequest {
+  id String @id @default(uuid())
+
+  student   Student @relation(fields: [studentId], references: [id], onDelete: NoAction)
+  studentId String
+
+  amount   Int
+  complete Boolean @default(false)
+
+  accountHolder String
+  bankDetails   String
+
+  cancelledMeals Meals[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -123,6 +142,9 @@ model Meals {
 
   student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String?
+
+  refundRequest   RefundRequest? @relation(fields: [refundRequestId], references: [id], onDelete: Cascade)
+  refundRequestId String?
 }
 
 model SavedMeals {
@@ -136,6 +158,4 @@ model SavedMeals {
 
   student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String?
-
-  
 }

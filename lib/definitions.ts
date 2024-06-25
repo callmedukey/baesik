@@ -1,6 +1,7 @@
 import { z } from "zod";
 import testValidPhoneNumber from "./regex/testPhoneNumber";
 import testAlphabetsAndNumbers from "./regex/testAlphabetsAndNumbers";
+import { testBankDetails } from "./testBankDetails";
 
 export const StudentSignUpSchema = z.object({
   name: z
@@ -90,4 +91,11 @@ export const PaymentSchema = z.object({
 
 export const PaymentInitSchema = PaymentSchema.omit({
   orderDate: true,
+});
+
+export const CancelMealSchema = z.object({
+  bankDetails: z.string().refine((val) => testBankDetails(val), {
+    message: "올바른 은행 정보를 입력해주세요.",
+  }),
+  accountHolder: z.string().min(2, { message: "예금주명을 입력해주세요." }),
 });

@@ -1,7 +1,6 @@
 import { getPayments } from "@/actions/students";
 import MainContainer from "@/components/layout/main-container";
 import CancelPaymentButton from "@/components/students/CancelPaymentButton";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,

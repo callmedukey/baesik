@@ -17,6 +17,7 @@ import { MealSchema } from "@/lib/definitions";
 import { z } from "zod";
 import { parseMealSelectionOption } from "@/lib/parseMealSelectionOption";
 import { cn } from "@/lib/utils";
+import { parseWeekDay } from "@/lib/parseWeekDay";
 
 const StudentMealSelectionTable = ({
   meals,
@@ -94,7 +95,12 @@ const StudentMealSelectionTable = ({
         <TableBody>
           {meals.map((meal) => (
             <TableRow key={meal.date + meal.isDinner + meal.isLunch}>
-              <TableCell> {format(meal.date, "yyyy-MM-dd")}</TableCell>
+              <TableCell className="flex flex-col">
+                <div>{format(meal.date, "yyyy-MM-dd")}</div>
+                <div className="text-sm text-gray-500">
+                  {parseWeekDay(new Date(meal.date))}
+                </div>
+              </TableCell>
               <TableCell
                 className={cn(
                   "text-center w-[100px]",

@@ -29,7 +29,7 @@ const StudentHeader = () => {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/student/cancelation" legacyBehavior passHref>
+            <Link href="/student/reverse-cancelation" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                 재신청
               </NavigationMenuLink>
