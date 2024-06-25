@@ -14,6 +14,7 @@ import {
 import type { DateRange } from "react-day-picker";
 import type { Meals, Student } from "@prisma/client";
 import { getStudentsWithMeals } from "@/actions/admin";
+import SchoolListItem from "@/components/school/SchoolListItem";
 
 interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -28,6 +29,25 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
   const [loading, setLoading] = React.useState(false);
 
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
+  const studentsWithLunch = React.useMemo(
+    () =>
+      students.filter((student) => {
+        if (student.meals.some((meal) => meal.mealType === "LUNCH")) {
+          return true;
+        }
+      }),
+    [students]
+  );
+
+  const studentsWithDinner = React.useMemo(
+    () =>
+      students.filter((student) => {
+        if (student.meals.some((meal) => meal.mealType === "DINNER")) {
+          return true;
+        }
+      }),
+    [students]
+  );
 
   const handleSearch = async () => {
     setLoading(true);
@@ -95,8 +115,27 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
       </aside>
 
       {students && Array.isArray(students) && students.length > 0 ? (
-        <div>
-          <h2>학생 목록</h2>
+        <div className="grid grid-cols-2 gap-2 items-start justify-center text-center max-w-md w-full mx-auto">
+          <div className="space-y-2">
+            <div className="border shadow-sm py-2 rounded-md">
+              점심 x{studentsWithLunch.length}
+            </div>
+            {studentsWithLunch.map((student) => {
+              return (
+                <SchoolListItem key={student.id} studentWithMeal={student} />
+              );
+            })}
+          </div>
+          <div className="space-y-2">
+            <div className="border shadow-sm py-2 rounded-md">
+              저녁 x{studentsWithDinner.length}
+            </div>
+            {studentsWithDinner.map((student) => {
+              return (
+                <SchoolListItem key={student.id} studentWithMeal={student} />
+              );
+            })}
+          </div>
         </div>
       ) : (
         <div className="text-center">학생이 없습니다.</div>

@@ -31,18 +31,20 @@ const SchoolGetListContainer = ({}: {}) => {
     }
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [applyDates, setApplyDates] = useState<AvailableDay[]>([]);
   const [studentsWithMeals, setStudentsWithMeals] = useState<
     StudentsWithMeals[]
   >([]);
 
   const handleApply = async () => {
     if (!applicationDate) return;
+    setIsLoading(true);
     const students = await findStudentsWithMeals(applicationDate);
 
     if (students && students.length > 0) {
       setStudentsWithMeals(students);
     } else alert("학식을 신청한 학생이 없습니다");
+
+    setIsLoading(false);
   };
 
   return (

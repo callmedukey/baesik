@@ -17,7 +17,6 @@ const SchoolsStudentListPage = async ({
         <h1 className="text-2xl font-bold text-primary text-center">
           {school.name}
         </h1>
-
         <SchoolStudentsList schoolId={school.id} />
       </div>
     </MainContainer>

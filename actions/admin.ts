@@ -165,8 +165,8 @@ export const getStudentsWithMeals = async ({
       meals: {
         some: {
           date: {
-            gte: fromDate,
-            lte: toDate === fromDate ? addDays(fromDate, 1) : toDate,
+            gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
           },
         },
       },
@@ -181,4 +181,3 @@ export const getStudentsWithMeals = async ({
   }
   return students;
 };
-

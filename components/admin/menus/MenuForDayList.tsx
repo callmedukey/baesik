@@ -253,6 +253,21 @@ const MenuForDayList = () => {
               onChange={(e) => setToUploadImg(e.currentTarget.files?.[0])}
               ref={fileInputRef}
             />
+            {toUploadImg && (
+              <Button
+                type="button"
+                variant={"outline"}
+                onClick={() => {
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
+                  setToUploadImg(undefined);
+                }}
+                className="w-full"
+              >
+                취소
+              </Button>
+            )}
             <Button
               type="button"
               onClick={handleUpload}

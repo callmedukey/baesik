@@ -8,7 +8,6 @@ export const dynamic = "force-dynamic";
 
 const page = async () => {
   const schools = await getSchools();
-
   return (
     <MainContainer hasHeader className="block">
       <div className="max-w-xl mx-auto">

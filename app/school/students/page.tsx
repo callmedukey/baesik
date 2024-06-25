@@ -8,7 +8,7 @@ const ManageSchoolPage = async () => {
   const students = await findStudents();
   return (
     <MainContainer className="block py-12" hasHeader>
-      <aside className="mx-auto max-w-sm w-full text-center">
+      <aside className="mx-auto max-w-sm w-full text-center text-xl font-bold">
         가입 학생 수: {students?.length.toLocaleString()}
       </aside>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 mx-auto max-w-6xl text-center px-2 my-6">
