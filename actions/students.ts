@@ -12,8 +12,8 @@ export const getMenu = async ({
   fromDate,
   toDate,
 }: {
-  fromDate: string;
-  toDate: string;
+  fromDate: Date;
+  toDate: Date;
 }) => {
   try {
     if (!fromDate || !toDate) {
@@ -51,7 +51,7 @@ export const getMenu = async ({
   }
 };
 
-export const getMenuAvailableDays = async ({ days }: { days: string[] }) => {
+export const getMenuAvailableDays = async ({ days }: { days: Date[] }) => {
   const found = await prisma.menu.findMany({
     where: {
       date: {

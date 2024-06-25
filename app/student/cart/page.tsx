@@ -8,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 import DeleteMealFromCartButton from "@/components/students/DeleteMealFromCartButton";
 import { parseKoreanMealType } from "@/lib/parseKoreanMealType";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
 const StudentShoppingCart = async () => {
   const meals = await getShoppingCart();
 
@@ -39,6 +42,9 @@ const StudentShoppingCart = async () => {
                 <DeleteMealFromCartButton id={meal.id} />
               </div>
             ))}
+          <Button className="w-full" asChild>
+            <Link href="/student/cart/payment">결제</Link>
+          </Button>
         </section>
       )}
     </MainContainer>

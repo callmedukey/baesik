@@ -15,7 +15,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import type {  DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { useToast } from "@/components/ui/use-toast";
 
 const MenuForDayList = () => {
@@ -41,7 +41,7 @@ const MenuForDayList = () => {
     setImgSrc([]);
     setToUploadImg(undefined);
     const response = await fetch(
-      `/api/menu?fromDate=${findDate.from?.toISOString()}&toDate=${findDate.to?.toISOString()}`,
+      `/api/menu?fromDate=${findDate.from?.toString()}&toDate=${findDate.to?.toString()}`,
       {
         cache: "no-store",
       }
@@ -71,8 +71,8 @@ const MenuForDayList = () => {
     try {
       const form = new FormData();
       form.append("file", toUploadImg);
-      form.append("fromDate", validDate?.from?.toISOString());
-      form.append("toDate", validDate?.to?.toISOString());
+      form.append("fromDate", validDate?.from?.toString());
+      form.append("toDate", validDate?.to?.toString());
       const response = await fetch("/api/menu", {
         method: "POST",
         body: form,

@@ -11,8 +11,8 @@ const StudentPage = async () => {
 
   const [data, holidayData] = await Promise.all([
     getMenu({
-      fromDate: beginningDay.toISOString(),
-      toDate: endingDay.toISOString(),
+      fromDate: beginningDay,
+      toDate: endingDay,
     }),
     getHolidayDataFromApi(),
   ]);

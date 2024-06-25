@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { ko } from "date-fns/locale/ko";
@@ -23,6 +22,7 @@ import {
 
 import StudentMealSelectionTable from "./StudentMealSelectionTable";
 import { getMenuAvailableDays } from "@/actions/students";
+import MonthlyMenuContainer from "./MonthlyMenuContainer";
 
 export type AvailableDay = {
   date: string;
@@ -56,9 +56,10 @@ const ReadyContainer = ({
       return;
     }
 
-    const days = differenceInDays(applicationDate.to, applicationDate.from);
+    const days = differenceInDays(applicationDate.to, applicationDate.from) + 1;
+
     const dates = Array.from({ length: days }, (_, i) =>
-      addDays(applicationDate.from as Date, i).toISOString()
+      addDays(applicationDate.from as Date, i).toString()
     );
 
     if (applicationDate.from < new Date()) {
@@ -84,7 +85,7 @@ const ReadyContainer = ({
     });
 
     const daysThatAreAvailable = await getMenuAvailableDays({
-      days: availableDays.map((day) => day.date),
+      days: availableDays.map((day) => new Date(day.date)),
     });
 
     for (const day of availableDays) {
@@ -98,13 +99,7 @@ const ReadyContainer = ({
 
   return (
     <div className="w-full space-y-4">
-      <Link href={`/api/images?fileName=${validFiles[0]}`} target="_blank">
-        <img
-          src={`/api/images?fileName=${validFiles[0]}`}
-          alt="준비된 이미지"
-          className="max-w-[90vw] w-full mx-auto object-contain max-h-[80vh] h-full"
-        />
-      </Link>
+      <MonthlyMenuContainer validFiles={validFiles} />
       <div className="max-w-md w-full mx-auto space-y-4">
         <aside className="w-full flex gap-4">
           <Popover>

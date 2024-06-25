@@ -104,6 +104,7 @@ model Payments {
   schoolName  String
 
   amount       Int
+  paid         Boolean
   creditAmount Int?
 
   studentId String

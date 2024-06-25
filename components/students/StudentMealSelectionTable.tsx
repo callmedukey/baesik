@@ -101,7 +101,7 @@ const StudentMealSelectionTable = ({
                   parseMealSelectionOption({
                     condition: selectedMeals.some(
                       (m) =>
-                        m.date.toISOString() === meal.date &&
+                        m.date.toString() === meal.date &&
                         m.mealType === "LUNCH"
                     ),
                     whenYes: "선택",
@@ -118,7 +118,7 @@ const StudentMealSelectionTable = ({
                     parseMealSelectionOption({
                       condition: selectedMeals.some(
                         (m) =>
-                          m.date.toISOString() === meal.date &&
+                          m.date.toString() === meal.date &&
                           m.mealType === "LUNCH"
                       ),
                       whenYes: "선택",
@@ -134,7 +134,7 @@ const StudentMealSelectionTable = ({
                   if (
                     selectedMeals.some(
                       (m) =>
-                        m.date.toISOString() === meal.date &&
+                        m.date.toString() === meal.date &&
                         m.mealType === "LUNCH"
                     )
                   ) {
@@ -142,7 +142,7 @@ const StudentMealSelectionTable = ({
                       selectedMeals.filter((m) => {
                         console.log(m.date, meal.date);
                         if (
-                          m.date.toISOString() === meal.date &&
+                          m.date.toString() === meal.date &&
                           m.mealType === "LUNCH"
                         ) {
                           return false;
@@ -161,8 +161,7 @@ const StudentMealSelectionTable = ({
                 {parseMealSelectionOption({
                   condition: selectedMeals.some(
                     (m) =>
-                      m.date.toISOString() === meal.date &&
-                      m.mealType === "LUNCH"
+                      m.date.toString() === meal.date && m.mealType === "LUNCH"
                   ),
                   whenYes: "선택",
                   whenNo: "미선택",
@@ -177,7 +176,7 @@ const StudentMealSelectionTable = ({
                   parseMealSelectionOption({
                     condition: selectedMeals.some(
                       (m) =>
-                        m.date.toISOString() === meal.date &&
+                        m.date.toString() === meal.date &&
                         m.mealType === "DINNER"
                     ),
                     whenYes: "선택",
@@ -194,7 +193,7 @@ const StudentMealSelectionTable = ({
                     parseMealSelectionOption({
                       condition: selectedMeals.some(
                         (m) =>
-                          m.date.toISOString() === meal.date &&
+                          m.date.toString() === meal.date &&
                           m.mealType === "DINNER"
                       ),
                       whenYes: "선택",
@@ -210,7 +209,7 @@ const StudentMealSelectionTable = ({
                   if (
                     selectedMeals.some(
                       (m) =>
-                        m.date.toISOString() === meal.date &&
+                        m.date.toString() === meal.date &&
                         m.mealType === "DINNER"
                     )
                   ) {
@@ -218,7 +217,7 @@ const StudentMealSelectionTable = ({
                       selectedMeals.filter((m) => {
                         console.log(m.date, meal.date);
                         if (
-                          m.date.toISOString() === meal.date &&
+                          m.date.toString() === meal.date &&
                           m.mealType === "DINNER"
                         ) {
                           return false;
@@ -237,8 +236,7 @@ const StudentMealSelectionTable = ({
                 {parseMealSelectionOption({
                   condition: selectedMeals.some(
                     (m) =>
-                      m.date.toISOString() === meal.date &&
-                      m.mealType === "DINNER"
+                      m.date.toString() === meal.date && m.mealType === "DINNER"
                   ),
                   whenYes: "선택",
                   whenNo: "미선택",
