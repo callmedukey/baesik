@@ -27,6 +27,9 @@ export const getMenu = async ({
           lte: new Date(toDate),
         },
       },
+      orderBy: {
+        date: "desc",
+      },
     });
 
     if (found.length === 0) {
@@ -104,6 +107,9 @@ export const getShoppingCart = async () => {
     where: {
       studentId: session.userId,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return meals;
@@ -121,4 +127,25 @@ export const deleteSavedMeal = async (id: string) => {
     return { message: "장바구니에서 삭제되었습니다" };
   }
   return { error: "장바구니에서 삭제되지 않았습니다" };
+};
+
+export const getPaymentAmount = async (id: string) => {
+  const payment = await prisma?.payments.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      amount: true,
+    },
+  });
+  return payment;
+};
+
+export const getPayments = async () => {
+  const payments = await prisma.payments.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return payments;
 };

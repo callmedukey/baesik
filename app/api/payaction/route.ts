@@ -11,8 +11,7 @@ export const POST = async (req: NextRequest) => {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { amount, orderDate, billingName, ordererName, phone } =
-      await req.json();
+    const { amount, billingName, ordererName, phone } = await req.json();
     const student = await prisma.student.findUnique({
       where: {
         id: session.userId,
@@ -32,7 +31,7 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
-    const paymentId = await prisma.$transaction(async (tx) => {
+    const payment = await prisma.$transaction(async (tx) => {
       const payment = await tx.payments.create({
         data: {
           amount,
@@ -70,11 +69,11 @@ export const POST = async (req: NextRequest) => {
           },
         });
 
-        return payment.id;
+        return { id: payment.id, createdAt: payment.createdAt };
       } else return null;
     });
 
-    if (!paymentId) {
+    if (!payment) {
       return Response.json({ error: "Payment failed" }, { status: 400 });
     }
 
@@ -83,9 +82,9 @@ export const POST = async (req: NextRequest) => {
       apikey: process.env.PAYACTION_KEY,
       secretkey: process.env.PAYACTION_SECRET,
       mall_id: process.env.PAYACTION_MALLID,
-      order_number: paymentId,
+      order_number: payment.createdAt.toISOString(),
       order_amount: amount,
-      order_date: orderDate.toISOString(),
+      order_date: payment.createdAt.toISOString(),
       billing_name: billingName,
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),
@@ -96,8 +95,7 @@ export const POST = async (req: NextRequest) => {
       body: JSON.stringify(body),
     });
 
-    console.log(response);
-    return Response.json({ success: true });
+    return Response.json({ success: true, id: payment.id });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Invalid request" }, { status: 500 });

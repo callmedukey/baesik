@@ -74,3 +74,16 @@ export const MealSchema = z.object({
 });
 
 export const MealSchemaArraySchema = z.array(MealSchema);
+
+export const PaymentSchema = z.object({
+  amount: z.number(),
+  orderDate: z.string(),
+  billingName: z.string().min(2, { message: "결제자 이름을 입력해주세요." }),
+  ordererName: z.string().min(2, { message: "주문자 이름을 입력해주세요." }),
+  phone: z
+    .string()
+    .min(11, { message: "핸드폰 번호를 입력해주세요." })
+    .refine((val) => testValidPhoneNumber(val), {
+      message: "올바른 핸드폰 번호를 입력해주세요.",
+    }),
+});

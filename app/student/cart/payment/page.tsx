@@ -5,10 +5,10 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import PaymentForm from "@/components/students/PaymentForm";
 
 const page = async () => {
   const meals = await getShoppingCart();
@@ -34,11 +34,8 @@ const page = async () => {
             <div>학식 x {Array.isArray(meals) && meals.length}</div>
             <div>{total.toLocaleString()}원</div>
           </div>
-          <div>Card Content</div>
+          <PaymentForm totalAmount={total} />
         </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
       </Card>
     </MainContainer>
   );
