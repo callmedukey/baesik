@@ -181,3 +181,73 @@ export const getStudentsWithMeals = async ({
   }
   return students;
 };
+
+export const getSchoolsWithStudentsForMeals = async () => {
+  const [todayRequests, tomorrowRequests] = await prisma.$transaction([
+    prisma.school.findMany({
+      where: {
+        students: {
+          some: {
+            meals: {
+              some: {
+                date: {
+                  gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                  lte: new Date(new Date().setHours(23, 59, 59, 999)),
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        students: {
+          include: {
+            meals: {
+              where: {
+                date: {
+                  gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                  lte: new Date(new Date().setHours(23, 59, 59, 999)),
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.school.findMany({
+      where: {
+        students: {
+          some: {
+            meals: {
+              some: {
+                date: {
+                  gte: new Date(addDays(new Date(), 1).setHours(0, 0, 0, 0)),
+                  lte: new Date(
+                    addDays(new Date(), 1).setHours(23, 59, 59, 999)
+                  ),
+                },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        students: {
+          include: {
+            meals: {
+              where: {
+                date: {
+                  gte: new Date(addDays(new Date(), 1).setHours(0, 0, 0, 0)),
+                  lte: new Date(
+                    addDays(new Date(), 1).setHours(23, 59, 59, 999)
+                  ),
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+  return { todayRequests, tomorrowRequests };
+};

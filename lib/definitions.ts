@@ -2,10 +2,14 @@ import { z } from "zod";
 import testValidPhoneNumber from "./regex/testPhoneNumber";
 import testAlphabetsAndNumbers from "./regex/testAlphabetsAndNumbers";
 import { testBankDetails } from "./testBankDetails";
-import type { Meals, Student } from "@prisma/client";
+import type { Meals, School, Student } from "@prisma/client";
 
 export interface StudentsWithMeals extends Student {
   meals: Meals[];
+}
+
+export interface SchoolsWithStudentsWithMeals extends School {
+  students: StudentsWithMeals[];
 }
 
 export const StudentSignUpSchema = z.object({

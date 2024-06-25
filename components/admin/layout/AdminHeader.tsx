@@ -35,6 +35,20 @@ const AdminHeader = () => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/admin/dashboard/payments" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                입금 관리
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/admin/dashboard/refunds" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                환불 관리
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </header>
