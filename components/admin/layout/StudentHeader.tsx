@@ -8,11 +8,12 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import StudentMobileMenu from "./StudentMobileMenu";
 
 const StudentHeader = () => {
   return (
-    <header className="h-16 flex items-center border-b shadow-sm px-2">
-      <NavigationMenu className="ml-auto mr-0">
+    <header className="h-16 flex items-center border-b shadow-sm px-2 sticky top-0 bg-white z-10">
+      <NavigationMenu className="ml-auto mr-0 hidden md:flex">
         <NavigationMenuList className="">
           <NavigationMenuItem>
             <Link href="/student" legacyBehavior passHref>
@@ -51,6 +52,7 @@ const StudentHeader = () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
+      <StudentMobileMenu />
     </header>
   );
 };
