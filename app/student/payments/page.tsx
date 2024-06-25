@@ -1,3 +1,4 @@
+import { getPayments } from "@/actions/students";
 import MainContainer from "@/components/layout/main-container";
 import {
   Card,
@@ -9,10 +10,17 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const StudentPaymentsPage = () => {
+const StudentPaymentsPage = async () => {
+  const payments = await getPayments();
   return (
     <MainContainer hasHeader className="block">
-      <h1 className="text-center">결제내역</h1>
+      <Card className="max-w-md w-full mx-auto">
+        <CardHeader>
+          <CardTitle>결제내역</CardTitle>
+          <CardDescription>결제 정보를 확인해주세요.</CardDescription>
+        </CardHeader>
+        <CardContent></CardContent>
+      </Card>
     </MainContainer>
   );
 };
