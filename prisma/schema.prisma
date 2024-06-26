@@ -13,8 +13,8 @@ enum MealType {
 }
 
 model Admin {
-  id       String @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   username String @unique
   password String
 

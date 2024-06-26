@@ -1,6 +1,8 @@
 import { getSchoolsWithStudentsForMeals } from "@/actions/admin";
+import AdminConfirmMealButton from "@/components/admin/AdminConfirmMealButton";
 import AdminDashboardSchoolList from "@/components/admin/AdminDashboardSchoolList";
 import MainContainer from "@/components/layout/main-container";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,17 @@ const AdminPage = async () => {
   return (
     <MainContainer hasHeader className="block space-y-4">
       <div className="border shadow-md p-2 rounded-md w-full text-center">
-        <h2 className="text-xl font-bold text-center">당일 학식</h2>
+        <div className="text-xl font-bold text-center flex items-center justify-center gap-4">
+          <span>당일 학식</span>
+          {todayRequests && todayRequests.length > 0 && (
+            <AdminConfirmMealButton
+              meals={todayRequests
+                ?.flatMap((school) => school.students)
+                .flatMap((student) => student.meals)
+                .map((meal) => ({ id: meal.id }))}
+            />
+          )}
+        </div>
         {todayRequests && todayRequests.length === 0 && (
           <div className="p-4">
             <h3 className="text-sm text-gray-500">당일 학식 없음</h3>
@@ -27,7 +39,17 @@ const AdminPage = async () => {
         </div>
       </div>
       <div className="border shadow-md p-2 rounded-md w-full text-center">
-        <h2 className="text-xl font-bold mb-6">내일 학식</h2>
+        <div className="text-xl font-bold text-center flex items-center justify-center gap-4">
+          <span>내일 학식</span>
+          {tomorrowRequests && tomorrowRequests.length > 0 && (
+            <AdminConfirmMealButton
+              meals={tomorrowRequests
+                ?.flatMap((school) => school.students)
+                .flatMap((student) => student.meals)
+                .map((meal) => ({ id: meal.id }))}
+            />
+          )}
+        </div>
         {tomorrowRequests && tomorrowRequests.length === 0 && (
           <div className="p-4">
             <h3 className="text-sm text-gray-500">내일 학식 없음</h3>

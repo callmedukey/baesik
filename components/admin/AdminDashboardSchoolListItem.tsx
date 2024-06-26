@@ -7,12 +7,18 @@ const AdminDashboardSchoolListItem = ({
 }: {
   school: SchoolsWithStudentsWithMeals;
 }) => {
-  const studentsWithLunch = school.students.filter((student) =>
-    student.meals.some((meal) => meal.mealType === "LUNCH")
-  );
-  const studentsWithDinner = school.students.filter((student) =>
-    student.meals.some((meal) => meal.mealType === "DINNER")
-  );
+  const studentsWithLunch = school.students
+    .filter((student) =>
+      student.meals.some((meal) => meal.mealType === "LUNCH")
+    )
+    .flatMap((student) => student.meals)
+    .filter((meal) => meal.mealType === "LUNCH");
+  const studentsWithDinner = school.students
+    .filter((student) =>
+      student.meals.some((meal) => meal.mealType === "DINNER")
+    )
+    .flatMap((student) => student.meals)
+    .filter((meal) => meal.mealType === "DINNER");
 
   return (
     <div className="p-2 border rounded-sm">

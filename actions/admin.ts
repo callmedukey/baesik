@@ -501,3 +501,23 @@ export const manualConfirmPayment = async (
 
   return payment;
 };
+
+export const confirmMeals = async (meals: { id: string }[]) => {
+  const updated = await prisma.meals.updateMany({
+    where: {
+      id: {
+        in: meals.map((meal) => meal.id),
+      },
+    },
+    data: {
+      isComplete: true,
+    },
+  });
+
+  if (updated.count === meals.length) {
+    revalidatePath("/admin/dashboard");
+    return {
+      message: "학식 확정을 성공적으로 완료했습니다",
+    };
+  } else return { error: "학식 확정을 실패했습니다" };
+};
