@@ -8,7 +8,7 @@ import {
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 import { SolapiMessageService } from "solapi";
-import { createSession } from "./session";
+import { createSession, deleteSession } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import censorUsername from "@/lib/censorUsername";
@@ -267,9 +267,9 @@ export async function schoolLogin(
   redirect("/school");
 }
 
-// export async function logout() {
-// //   deleteSession();
-// }
+export async function logout(link?: string) {
+  deleteSession(link);
+}
 
 export const createAdmin = async ({
   username,

@@ -98,7 +98,7 @@ export async function updateSession() {
   });
 }
 
-export function deleteSession() {
+export function deleteSession(link?: string) {
   cookies().delete("session");
-  redirect("/login");
+  redirect(link || "/");
 }
