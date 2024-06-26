@@ -69,6 +69,7 @@ const AdminLoginForm = () => {
 
         <Button className="mt-6 w-full font-semibold">로그인</Button>
         <Button
+          type="button"
           className="mt-6 w-full font-semibold"
           onClick={async () => {
             await createAdmin({
