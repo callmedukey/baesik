@@ -1,8 +1,36 @@
+"use client";
+import { manualConfirmPayment } from "@/actions/admin";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Payments } from "@prisma/client";
 import { format } from "date-fns";
+import { cloneDeep } from "lodash";
+import { Dispatch, SetStateAction } from "react";
 
-const AdminPaymentContainer = ({ payment }: { payment: Payments }) => {
+const AdminPaymentContainer = ({
+  payment,
+  payments,
+  setPayments,
+}: {
+  payment: Payments;
+  payments: Payments[];
+  setPayments: Dispatch<SetStateAction<Payments[]>>;
+}) => {
+  const handleConfirmPayment = async () => {
+    const updatedPayment = await manualConfirmPayment(
+      payment.id,
+      !payment.paid
+    );
+    if (updatedPayment) {
+      const clone = cloneDeep(payments);
+      const clonePayment = cloneDeep(payment);
+      clonePayment.paid = updatedPayment.paid;
+      const index = clone.findIndex((p) => p.id === payment.id);
+      clone[index] = clonePayment;
+      setPayments(clone);
+    }
+  };
+
   return (
     <div className="border p-2 rounded-sm relative">
       <div
@@ -26,6 +54,13 @@ const AdminPaymentContainer = ({ payment }: { payment: Payments }) => {
           {payment.amount.toLocaleString()}원
         </div>
       </div>
+      <Button
+        className="w-full mt-2"
+        variant={"outline"}
+        onClick={handleConfirmPayment}
+      >
+        입금 상태 변경
+      </Button>
     </div>
   );
 };

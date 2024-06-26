@@ -13,7 +13,7 @@ import {
 import { ko } from "date-fns/locale/ko";
 import { format } from "date-fns";
 
-const MonthlyMenuContainer = ({ validFiles }: { validFiles: string[] }) => {
+const MonthlyMenuContainer = ({ validFiles }: { validFiles?: string[] }) => {
   const [findDate, setFindDate] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -99,6 +99,8 @@ const MonthlyMenuContainer = ({ validFiles }: { validFiles: string[] }) => {
         </Button>
       </aside>
       {!imgSrc.length &&
+        validFiles &&
+        validFiles.length > 0 &&
         validFiles.map((fileName) => (
           <Link
             href={`/api/images?fileName=${fileName}`}

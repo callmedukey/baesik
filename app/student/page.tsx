@@ -21,16 +21,10 @@ const StudentPage = async () => {
 
   return (
     <MainContainer className="block py-12" hasHeader>
-      {data && data?.notReady && (
-        <NotReadyContainer beginningMonth={beginningDay.getMonth() + 1} />
-      )}
-
-      {data && data?.ready && (
-        <ReadyContainer
-          validFiles={data.validFiles as string[]}
-          holidayData={holidayData}
-        />
-      )}
+      <ReadyContainer
+        validFiles={data.validFiles as string[]}
+        holidayData={holidayData}
+      />
     </MainContainer>
   );
 };

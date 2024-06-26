@@ -24,7 +24,7 @@ const StudentMealSelectionTable = ({
   holidayData,
 }: {
   meals: AvailableDay[];
-  holidayData: { [key: string]: string };
+  holidayData?: { [key: string]: string };
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,7 @@ const StudentMealSelectionTable = ({
                     ),
                     whenYes: "선택",
                     whenNo: "미선택",
-                    holidayData,
+                    holidayData: holidayData || {},
                     date: meal.date,
                     mealType: "LUNCH",
                   }) === "선택불가"
@@ -132,7 +132,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
-                      holidayData,
+                      holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "LUNCH",
                     }) === "선택불가"
@@ -174,7 +174,7 @@ const StudentMealSelectionTable = ({
                   ),
                   whenYes: "선택",
                   whenNo: "미선택",
-                  holidayData,
+                  holidayData: holidayData || {},
                   date: meal.date,
                   mealType: "LUNCH",
                 })}
@@ -190,7 +190,7 @@ const StudentMealSelectionTable = ({
                     ),
                     whenYes: "선택",
                     whenNo: "미선택",
-                    holidayData,
+                    holidayData: holidayData || {},
                     date: meal.date,
                     mealType: "DINNER",
                   }) === "선택불가"
@@ -207,7 +207,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
-                      holidayData,
+                      holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "DINNER",
                     }) === "선택불가"
@@ -249,7 +249,7 @@ const StudentMealSelectionTable = ({
                   ),
                   whenYes: "선택",
                   whenNo: "미선택",
-                  holidayData,
+                  holidayData: holidayData || {},
                   date: meal.date,
                   mealType: "DINNER",
                 })}

@@ -26,8 +26,8 @@ export const getMenu = async ({
     const found = await prisma.menu.findMany({
       where: {
         date: {
-          gte: new Date(fromDate),
-          lte: new Date(toDate),
+          gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
+          lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
         },
       },
       orderBy: {

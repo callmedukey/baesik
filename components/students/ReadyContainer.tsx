@@ -34,8 +34,8 @@ const ReadyContainer = ({
   validFiles,
   holidayData,
 }: {
-  validFiles: string[];
-  holidayData: { [key: string]: string };
+  validFiles?: string[];
+  holidayData?: { [key: string]: string };
 }) => {
   const [applicationDate, setApplicationDate] = useState<DateRange | undefined>(
     {
@@ -48,6 +48,11 @@ const ReadyContainer = ({
 
   const handleApply = async () => {
     setIsLoading(true);
+    if (!validFiles || !holidayData) {
+      alert("신청일을 선택해주세요.");
+      setIsLoading(false);
+      return;
+    }
     const availableDays: AvailableDay[] = [];
     const finalDays: AvailableDay[] = [];
     if (!applicationDate || !applicationDate.from || !applicationDate.to) {

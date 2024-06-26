@@ -483,3 +483,21 @@ export const confirmSingleRefund = async (refundRequestId: string) => {
     };
   } else return { error: "확불처리를 실패했습니다" };
 };
+
+export const manualConfirmPayment = async (
+  paymentId: string,
+  bool: boolean
+) => {
+  const payment = await prisma.payments.update({
+    where: {
+      id: paymentId,
+    },
+    data: {
+      paid: bool,
+    },
+  });
+
+  revalidatePath("/students/payments");
+
+  return payment;
+};

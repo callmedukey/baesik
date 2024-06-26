@@ -3,7 +3,8 @@ import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
 import type { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { formatDateToISO8601WithOffset } from "@/lib/customDateFormatter";
+import { convertToCustomISO } from "@/lib/formatOrderDate";
+
 //requires phone dashes 010-5555-5555
 export const POST = async (req: NextRequest) => {
   try {
@@ -81,20 +82,25 @@ export const POST = async (req: NextRequest) => {
       apikey: process.env.PAYACTION_KEY,
       secretkey: process.env.PAYACTION_SECRET,
       mall_id: process.env.PAYACTION_MALLID,
-      order_number: payment.createdAt.toISOString(),
+      order_number: payment.id,
       order_amount: amount,
-      order_date: formatDateToISO8601WithOffset(payment.createdAt),
+      order_date: convertToCustomISO(new Date().toISOString()),
       billing_name: billingName,
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),
+      orderer_email: student.email,
+      trade_usage: "소득공제용",
+      identity_number: "010-3974-8429",
     };
+
+    console.log(body);
     revalidatePath("/student/payments");
 
     const response = await fetch(payActionUrl, {
       method: "POST",
       body: JSON.stringify(body),
     });
-
+    console.log(await response.json());
     return Response.json({ success: true, id: payment.id });
   } catch (error) {
     console.error(error);

@@ -66,7 +66,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
           name="billingName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>결제자</FormLabel>
+              <FormLabel>입금자</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

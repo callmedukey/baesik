@@ -172,7 +172,6 @@ const AdminPaymentsSearchContainer = () => {
             <Button
               className="w-full"
               disabled={!searchDate || loading}
-              //   onClick={handleSearch}
               type="submit"
             >
               조회
@@ -188,7 +187,7 @@ const AdminPaymentsSearchContainer = () => {
       {payments && payments.length > 0 && (
         <section className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 items-center justify-center gap-2 max-w-4xl w-full mx-auto border p-2 rounded-md shadow-sm">
           {payments.map((payment) => (
-            <AdminPaymentContainer key={payment.id} payment={payment} />
+            <AdminPaymentContainer key={payment.id} payment={payment} payments={payments} setPayments={setPayments} />
           ))}
         </section>
       )}

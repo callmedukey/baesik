@@ -13,7 +13,7 @@ import {
 import { z } from "zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { adminLogin, createAdmin } from "@/actions/auth";
+import { adminLogin } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 
 const AdminLoginForm = () => {
