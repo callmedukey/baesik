@@ -6,6 +6,7 @@ import { unlink, writeFile } from "fs/promises";
 import { verifySession } from "@/actions/session";
 import { renameFileWithExtension } from "@/lib/renameFile";
 import { addDays, differenceInDays } from "date-fns";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -109,8 +110,10 @@ export async function POST(req: NextRequest) {
         }),
         writeFile(newFilePath, buffer),
       ]);
-      console.log(updated);
+
       if (updated && updated.count === array.length) {
+        revalidatePath("/student");
+        revalidatePath("/admin/dashboard/menus");
         return Response.json({ message: "성공적으로 업로드 되었습니다" });
       }
     } else {
