@@ -68,7 +68,7 @@ const AdminLoginForm = () => {
         />
 
         <Button className="mt-6 w-full font-semibold">로그인</Button>
-        {/* <Button
+        <Button
           type="button"
           className="mt-6 w-full font-semibold"
           onClick={async () => {
@@ -79,7 +79,7 @@ const AdminLoginForm = () => {
           }}
         >
           관리자 생성
-        </Button> */}
+        </Button>
       </form>
     </Form>
   );
