@@ -112,7 +112,7 @@ export const getShoppingCart = async () => {
       studentId: session.userId,
     },
     orderBy: {
-      date: "desc",
+      date: "asc",
     },
   });
 

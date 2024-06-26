@@ -3,6 +3,7 @@ import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
 import type { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { formatDateToISO8601WithOffset } from "@/lib/customDateFormatter";
 //requires phone dashes 010-5555-5555
 export const POST = async (req: NextRequest) => {
   try {
@@ -82,7 +83,7 @@ export const POST = async (req: NextRequest) => {
       mall_id: process.env.PAYACTION_MALLID,
       order_number: payment.createdAt.toISOString(),
       order_amount: amount,
-      order_date: new Date(payment.createdAt),
+      order_date: formatDateToISO8601WithOffset(payment.createdAt),
       billing_name: billingName,
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),
