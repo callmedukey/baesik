@@ -6,6 +6,8 @@ import NotReadyContainer from "@/components/students/NotReadyContainer";
 import ReadyContainer from "@/components/students/ReadyContainer";
 import { getHolidayDataFromApi } from "@/actions/common";
 
+export const dynamic = "force-dynamic";
+
 const StudentPage = async () => {
   const { beginningDay, endingDay } = getBeginningAndEndingDays();
 
