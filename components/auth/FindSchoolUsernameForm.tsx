@@ -17,7 +17,7 @@ import { useState } from "react";
 
 import Link from "next/link";
 import { FindUsernameSchema } from "@/lib/definitions";
-import { findStudentUsername } from "@/actions/auth";
+import { findSchoolUsername } from "@/actions/auth";
 
 const FindSchoolUsernameForm = () => {
   const [username, setUsername] = useState<string>("");
@@ -32,7 +32,7 @@ const FindSchoolUsernameForm = () => {
 
   const onSubmit = async (values: z.infer<typeof FindUsernameSchema>) => {
     const { name, phone } = values;
-    const { username, error } = await findStudentUsername({ name, phone });
+    const { username, error } = await findSchoolUsername({ name, phone });
     if (username) {
       setUsername(username);
     }

@@ -9,5 +9,6 @@ const withSerwist = withSerwistInit({
 });
 
 export default withSerwist({
+  experimental: { esmExternals: "loose" },
   // Next.js config options
 });

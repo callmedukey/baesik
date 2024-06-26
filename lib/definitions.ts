@@ -129,3 +129,15 @@ export const FindUsernameSchema = z.object({
       message: "올바른 핸드폰 번호를 입력해주세요.",
     }),
 });
+
+export const ResetPasswordSchema = StudentSignUpSchema.pick({
+  username: true,
+  phone: true,
+});
+
+export const ResetPasswordVerificationSchema = z.object({
+  code: z
+    .string()
+    .min(6, "인증번호는 최소 6자 이상입니다.")
+    .regex(/^\d{6}$/, "인증번호를 확인해주세요"),
+});

@@ -49,8 +49,8 @@ model Student {
   payments          Payments[]
   savedMeals        SavedMeals[]
   refundRequests    RefundRequest[]
-  passwordResetCode PasswordResetCode?
-  oneTimeUniqueCode OneTimeUniqueCode?
+  passwordResetCode StudentPasswordResetCode?
+  oneTimeUniqueCode StudentOneTimeUniqueCode?
 }
 
 model School {
@@ -86,6 +86,9 @@ model SchoolUser {
 
   school   School? @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String?
+
+  passwordResetCode SchoolPasswordResetCode?
+  oneTimeUniqueCode SchoolOneTimeUniqueCode?
 }
 
 model Payments {
@@ -162,17 +165,32 @@ model SavedMeals {
   studentId String?
 }
 
-model PasswordResetCode {
-  id        String   @id @default(uuid())
-  code      String
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  studentId String   @unique
-  createdAt DateTime @default(now())
+model StudentPasswordResetCode {
+  id              String   @id @default(uuid())
+  code            String
+  student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade)
+  studentUsername String   @unique
+  createdAt       DateTime @default(now())
 }
 
-model OneTimeUniqueCode {
+model SchoolPasswordResetCode {
+  id                 String     @id @default(uuid())
+  code               String
+  schoolUser         SchoolUser @relation(fields: [schoolUserUsername], references: [username], onDelete: Cascade)
+  schoolUserUsername String     @unique
+  createdAt          DateTime   @default(now())
+}
+
+model StudentOneTimeUniqueCode {
   id              String   @id @default(uuid())
   student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade)
   studentUsername String   @unique
   createdAt       DateTime @default(now())
+}
+
+model SchoolOneTimeUniqueCode {
+  id                 String     @id @default(uuid())
+  schoolUser         SchoolUser @relation(fields: [schoolUserUsername], references: [username], onDelete: Cascade)
+  schoolUserUsername String     @unique
+  createdAt          DateTime   @default(now())
 }

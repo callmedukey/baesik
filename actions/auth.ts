@@ -7,11 +7,13 @@ import {
 } from "@/lib/definitions";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
-
+import { SolapiMessageService } from "solapi";
 import { createSession } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import censorUsername from "@/lib/censorUsername";
+import { cookies } from "next/headers";
+import generateCode from "@/lib/generateCode";
 
 export async function studentSignup(
   data: z.infer<typeof StudentSignUpSchema>
@@ -395,7 +397,7 @@ export const findSchoolUsername = async ({
   name,
   phone,
 }: z.infer<typeof FindUsernameSchema>) => {
-  const user = await prisma.schoolUser.findFirst({
+  const user = await prisma.schoolUser.findUnique({
     where: {
       name,
       phone: phone.replace(/-/g, ""),
@@ -407,4 +409,258 @@ export const findSchoolUsername = async ({
   }
 
   return { username: censorUsername(user.username) };
+};
+
+export const resetStudentPasswordFirstStep = async ({
+  username,
+  phone,
+}: {
+  username: string;
+  phone: string;
+}) => {
+  try {
+    const cookieStore = cookies();
+
+    const passwordResetSent = cookieStore.get("passwordResetSent");
+    if (passwordResetSent) {
+      return {
+        error:
+          "인증번호 발송하신지 3분이 안되었습니다. 잠시 후 다시 시도해주세요.",
+      };
+    }
+
+    const updated = await prisma.student.update({
+      where: {
+        username,
+        phone: phone.replace(/-/g, ""),
+      },
+      data: {
+        passwordResetCode: {
+          upsert: {
+            update: {
+              code: generateCode(),
+            },
+            create: {
+              code: generateCode(),
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        passwordResetCode: {
+          select: {
+            code: true,
+          },
+        },
+      },
+    });
+
+    if (updated && updated.passwordResetCode) {
+      const solapi = new SolapiMessageService(
+        process.env.SOLAPI_API_KEY as string,
+        process.env.SOLAPI_API_SECRET as string
+      );
+
+      const res = await solapi.sendOne({
+        to: phone,
+        from: process.env.SOLAPI_SENDER_PHONE_NUMBER as string,
+        text: `준푸드 비밀번호 초기화 인증번호: [ ${updated.passwordResetCode.code} ]`,
+      });
+
+      if (res.statusCode === "2000") {
+        cookieStore.set("passwordResetSent", "true", {
+          path: "/",
+          httpOnly: true,
+          secure: true,
+          maxAge: 60 * 3,
+        });
+
+        return {
+          message: "인증번호 발송 완료",
+        };
+      } else {
+        return {
+          error: "인증번호 발송 오류",
+        };
+      }
+    } else {
+      return {
+        error: "인증번호 발송 오류",
+      };
+    }
+  } catch (error) {
+    return {
+      error: "아이디와 휴대폰 번호를 확인해주세요.",
+    };
+  }
+};
+export const resetSchoolPasswordFirstStep = async ({
+  username,
+  phone,
+}: {
+  username: string;
+  phone: string;
+}) => {
+  try {
+    const cookieStore = cookies();
+
+    const passwordResetSent = cookieStore.get("passwordResetSent");
+    if (passwordResetSent) {
+      return {
+        error:
+          "인증번호 발송하신지 3분이 안되었습니다. 잠시 후 다시 시도해주세요.",
+      };
+    }
+
+    const updated = await prisma.schoolUser.update({
+      where: {
+        username,
+        phone: phone.replace(/-/g, ""),
+      },
+      data: {
+        passwordResetCode: {
+          upsert: {
+            update: {
+              code: generateCode(),
+            },
+            create: {
+              code: generateCode(),
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        passwordResetCode: {
+          select: {
+            code: true,
+          },
+        },
+      },
+    });
+
+    if (updated && updated.passwordResetCode) {
+      const solapi = new SolapiMessageService(
+        process.env.SOLAPI_API_KEY as string,
+        process.env.SOLAPI_API_SECRET as string
+      );
+
+      const res = await solapi.sendOne({
+        to: phone,
+        from: process.env.SOLAPI_SENDER_PHONE_NUMBER as string,
+        text: `준푸드 비밀번호 초기화 인증번호: [ ${updated.passwordResetCode.code} ]`,
+      });
+
+      if (res.statusCode === "2000") {
+        cookieStore.set("passwordResetSent", "true", {
+          path: "/",
+          httpOnly: true,
+          secure: true,
+          maxAge: 60 * 3,
+        });
+
+        return {
+          message: "인증번호 발송 완료",
+        };
+      } else {
+        return {
+          error: "인증번호 발송 오류",
+        };
+      }
+    } else {
+      return {
+        error: "인증번호 발송 오류",
+      };
+    }
+  } catch (error) {
+    return {
+      error: "아이디와 휴대폰 번호를 확인해주세요.",
+    };
+  }
+};
+
+export const resetStudentPasswordSecondStep = async ({
+  code,
+  username,
+}: {
+  code: string;
+  username: string;
+}) => {
+  try {
+    const deleteCode = await prisma.studentPasswordResetCode.delete({
+      where: {
+        code,
+        studentUsername: username,
+      },
+    });
+
+    if (!deleteCode) {
+      return {
+        error: "인증번호를 확인해주세요.",
+      };
+    }
+
+    const uniqueCode = await prisma.studentOneTimeUniqueCode.create({
+      data: {
+        studentUsername: username,
+      },
+    });
+
+    if (uniqueCode) {
+      return {
+        message: "인증번호 확인 완료",
+        redirectTo: `/reset-password/reset?code=${uniqueCode.id}`,
+      };
+    } else
+      return {
+        error: "인증번호 확인 오류",
+      };
+  } catch (error) {
+    return {
+      error: "인증번호를 확인해주세요.",
+    };
+  }
+};
+export const resetSchoolPasswordSecondStep = async ({
+  code,
+  username,
+}: {
+  code: string;
+  username: string;
+}) => {
+  try {
+    const deleteCode = await prisma.schoolPasswordResetCode.delete({
+      where: {
+        code,
+        schoolUserUsername: username,
+      },
+    });
+
+    if (!deleteCode) {
+      return {
+        error: "인증번호를 확인해주세요.",
+      };
+    }
+
+    const uniqueCode = await prisma.schoolOneTimeUniqueCode.create({
+      data: {
+        schoolUserUsername: username,
+      },
+    });
+
+    if (uniqueCode) {
+      return {
+        message: "인증번호 확인 완료",
+        redirectTo: `/reset-password/reset?code=${uniqueCode.id}`,
+      };
+    } else
+      return {
+        error: "인증번호 확인 오류",
+      };
+  } catch (error) {
+    return {
+      error: "인증번호를 확인해주세요.",
+    };
+  }
 };

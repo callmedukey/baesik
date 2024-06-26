@@ -5,7 +5,7 @@ import { decrypt } from "./actions/session";
 
 // 1. Specify protected and public routes
 const protectedRoutes = ["/admin", "/student", "/school"];
-const publicRoutes = ["/", "/login", "/signup"];
+const publicRoutes = ["/", "/login", "/signup", "/find-id", "/reset-password"];
 const disabled = true;
 export default async function middleware(req: NextRequest) {
   if (disabled) {
