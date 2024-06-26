@@ -45,10 +45,12 @@ model Student {
   school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String
 
-  meals          Meals[]
-  payments       Payments[]
-  savedMeals     SavedMeals[]
-  refundRequests RefundRequest[]
+  meals             Meals[]
+  payments          Payments[]
+  savedMeals        SavedMeals[]
+  refundRequests    RefundRequest[]
+  passwordResetCode PasswordResetCode?
+  oneTimeUniqueCode OneTimeUniqueCode?
 }
 
 model School {
@@ -70,12 +72,12 @@ model School {
 model SchoolUser {
   id String @id @default(uuid())
 
-  name     String
+  name     String @unique
   username String @unique
   email    String
   password String
 
-  phone String
+  phone String @unique
 
   verified Boolean @default(false)
 
@@ -158,4 +160,19 @@ model SavedMeals {
 
   student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String?
+}
+
+model PasswordResetCode {
+  id        String   @id @default(uuid())
+  code      String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String   @unique
+  createdAt DateTime @default(now())
+}
+
+model OneTimeUniqueCode {
+  id              String   @id @default(uuid())
+  student         Student  @relation(fields: [studentUsername], references: [username], onDelete: Cascade)
+  studentUsername String   @unique
+  createdAt       DateTime @default(now())
 }

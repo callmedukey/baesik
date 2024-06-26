@@ -119,3 +119,13 @@ export const RefundSearchSchema = z.object({
   searchTerm: z.string(),
   type: z.enum(["school", "student", "accountHolder", "bank"]),
 });
+
+export const FindUsernameSchema = z.object({
+  name: z.string().min(2, { message: "이름을 입력해주세요." }),
+  phone: z
+    .string()
+    .min(11, { message: "핸드폰 번호를 입력해주세요." })
+    .refine((val) => testValidPhoneNumber(val), {
+      message: "올바른 핸드폰 번호를 입력해주세요.",
+    }),
+});

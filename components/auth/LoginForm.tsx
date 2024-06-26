@@ -10,6 +10,8 @@ import {
 import React from "react";
 import StudentLoginForm from "./StudentLoginForm";
 import SchoolLoginForm from "./SchoolLoginForm";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 const LoginForm = () => {
   return (
@@ -35,7 +37,15 @@ const LoginForm = () => {
           </TabsContent>
         </Tabs>
       </CardContent>
-      <CardFooter>{/* buttons go here */}</CardFooter>
+      <CardFooter className="block">
+        <Button className="w-full" variant={"outline"} asChild>
+          <Link href="/signup">회원가입</Link>
+        </Button>
+        <div className="grid grid-cols-2 gap-2 mt-4 text-center text-sm text-gray-500">
+          <Link href="/find-id">아이디 찾기</Link>
+          <Link href="/reset-password">비밀번호 초기화</Link>
+        </div>
+      </CardFooter>
     </Card>
   );
 };

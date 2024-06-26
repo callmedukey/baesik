@@ -1,5 +1,6 @@
 "use server";
 import {
+  FindUsernameSchema,
   LoginSchema,
   SchoolSignUpSchema,
   StudentSignUpSchema,
@@ -10,6 +11,7 @@ import prisma from "@/lib/prisma";
 import { createSession } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import censorUsername from "@/lib/censorUsername";
 
 export async function studentSignup(
   data: z.infer<typeof StudentSignUpSchema>
@@ -370,4 +372,39 @@ export const adminLogin = async (
   });
 
   return { message: "로그인 성공", redirectTo: "/admin/dashboard" };
+};
+
+export const findStudentUsername = async ({
+  name,
+  phone,
+}: z.infer<typeof FindUsernameSchema>) => {
+  const user = await prisma.student.findUnique({
+    where: {
+      name,
+      phone: phone.replace(/-/g, ""),
+    },
+  });
+
+  if (!user) {
+    return { error: "해당하는 학생이 없습니다." };
+  }
+
+  return { username: censorUsername(user.username) };
+};
+export const findSchoolUsername = async ({
+  name,
+  phone,
+}: z.infer<typeof FindUsernameSchema>) => {
+  const user = await prisma.schoolUser.findFirst({
+    where: {
+      name,
+      phone: phone.replace(/-/g, ""),
+    },
+  });
+
+  if (!user) {
+    return { error: "해당하는 학교 관리자가 없습니다." };
+  }
+
+  return { username: censorUsername(user.username) };
 };
