@@ -82,6 +82,8 @@ export const AddSchoolToList = async (
 
     if (school) {
       revalidatePath("/admin/dashboard/schools");
+      revalidatePath("/login");
+      revalidatePath("/signup");
       return {
         message: "학교를 성공적으로 추가했습니다",
       };
