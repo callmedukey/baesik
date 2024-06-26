@@ -179,7 +179,7 @@ const MenuForDayList = () => {
       {imgSrc && imgSrc.length > 0 && (
         <div className="w-full flex justify-center items-center flex-col gap-4">
           {imgSrc.map((img) => (
-            <div className="space-y-4">
+            <div className="space-y-4" key={img}>
               <Link
                 href={`/api/images?fileName=${img}`}
                 target="_blank"
