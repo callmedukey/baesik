@@ -29,16 +29,20 @@ const StudentMealSelectionTable = ({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [selectedMeals, setSelectedMeals] = useState<
-    z.infer<typeof MealSchema>[]
+    {
+      date: string;
+      mealType: "LUNCH" | "DINNER";
+    }[]
   >([]);
+
   const selectAll = () => {
-    const parseInput: z.infer<typeof MealSchema>[] = [];
+    const parseInput: { date: string; mealType: "LUNCH" | "DINNER" }[] = [];
     meals.forEach((meal) => {
       if (meal.isLunch) {
-        parseInput.push({ date: new Date(meal.date), mealType: "LUNCH" });
+        parseInput.push({ date: meal.date, mealType: "LUNCH" });
       }
       if (meal.isDinner) {
-        parseInput.push({ date: new Date(meal.date), mealType: "DINNER" });
+        parseInput.push({ date: meal.date, mealType: "DINNER" });
       }
     });
     setSelectedMeals(parseInput);
@@ -162,7 +166,7 @@ const StudentMealSelectionTable = ({
                   } else {
                     setSelectedMeals([
                       ...selectedMeals,
-                      { date: new Date(meal.date), mealType: "LUNCH" },
+                      { date: meal.date, mealType: "LUNCH" },
                     ]);
                   }
                 }}
@@ -237,7 +241,7 @@ const StudentMealSelectionTable = ({
                   } else {
                     setSelectedMeals([
                       ...selectedMeals,
-                      { date: new Date(meal.date), mealType: "DINNER" },
+                      { date: meal.date, mealType: "DINNER" },
                     ]);
                   }
                 }}

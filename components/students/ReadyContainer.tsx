@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { ko } from "date-fns/locale/ko";
@@ -50,21 +49,12 @@ const ReadyContainer = ({
       alert("공휴일 조회에 실패 했습니다");
       setIsLoading(false);
     }
-    const availableDays: AvailableDay[] = [];
-    const finalDays: AvailableDay[] = [];
 
     if (!applicationDate || !applicationDate.from || !applicationDate.to) {
       alert("신청일을 선택해주세요.");
       setIsLoading(false);
       return;
     }
-
-    const days = differenceInDays(applicationDate.to, applicationDate.from) + 1;
-
-    const dates = Array.from({ length: days }, (_, i) =>
-      addDays(applicationDate.from as Date, i).toString()
-    );
-
     if (applicationDate.from < new Date()) {
       alert("이미 지난 날짜입니다.");
       setApplicationDate({
@@ -75,33 +65,36 @@ const ReadyContainer = ({
       return;
     }
 
-    dates.map((date) => {
+    const days = differenceInDays(applicationDate.to, applicationDate.from) + 1;
+
+    const totalArrayOfDays = Array.from({ length: days }, (_, i) =>
+      format(addDays(applicationDate.from as Date, i), "yyyy-MM-dd", {
+        locale: ko,
+      })
+    );
+
+    const possibleDays: AvailableDay[] = [];
+
+    totalArrayOfDays.map((date) => {
       if (isSunday(date)) {
         return;
       }
-      if (
-        holidayData &&
-        (holidayData[format(date, "yyyy-MM-dd")] || isSaturday(date))
-      ) {
-        availableDays.push({ date, isLunch: true, isDinner: false });
+      if (holidayData && (holidayData[date] || isSaturday(date))) {
+        possibleDays.push({
+          date: date,
+          isLunch: true,
+          isDinner: false,
+        });
         return;
       }
-
-      availableDays.push({ date, isLunch: true, isDinner: true });
+      possibleDays.push({
+        date: date,
+        isLunch: true,
+        isDinner: true,
+      });
     });
 
-    const daysThatAreAvailable = await getMenuAvailableDays({
-      days: availableDays.map((day) => new Date(day.date)),
-    });
-
-    availableDays.forEach((day) => {
-      if (daysThatAreAvailable.includes(day.date)) {
-        finalDays.push(day);
-      }
-    });
-
-    console.log(4, finalDays);
-    setApplyDates(finalDays);
+    setApplyDates(possibleDays);
     setIsLoading(false);
   };
 

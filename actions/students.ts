@@ -8,7 +8,7 @@ import { verifySession } from "./session";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 import type { Meals } from "@prisma/client";
 
 export const getMenu = async ({
@@ -68,17 +68,12 @@ export const getMenuAvailableDays = async ({ days }: { days: Date[] }) => {
       date: true,
     },
   });
-  return found.map((day) => day.date.toString());
+  return found.map((day) => format(new Date(day.date), "yyyy-MM-dd"));
 };
 
 export const saveShoppingCart = async (
-  meals: z.infer<typeof MealSchemaArraySchema>
+  meals: { date: string; mealType: "LUNCH" | "DINNER" }[]
 ) => {
-  const validatedMeals = MealSchemaArraySchema.safeParse(meals);
-  if (!validatedMeals.success) {
-    console.error(validatedMeals.error);
-    return { error: "잘못된 요청입니다" };
-  }
   const session = await verifySession();
 
   if (!session) {
@@ -86,8 +81,8 @@ export const saveShoppingCart = async (
   }
 
   const created = await prisma.savedMeals.createMany({
-    data: validatedMeals.data.map((meal) => ({
-      date: meal.date,
+    data: meals.map((meal) => ({
+      date: new Date(meal.date),
       mealType: meal.mealType,
       studentId: session.userId,
     })),
