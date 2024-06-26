@@ -31,10 +31,8 @@ export type AvailableDay = {
 };
 
 const ReadyContainer = ({
-  validFiles,
   holidayData,
 }: {
-  validFiles?: string[];
   holidayData?: { [key: string]: string };
 }) => {
   const [applicationDate, setApplicationDate] = useState<DateRange | undefined>(
@@ -48,13 +46,13 @@ const ReadyContainer = ({
 
   const handleApply = async () => {
     setIsLoading(true);
-    if (!validFiles || !holidayData) {
-      alert("신청일을 선택해주세요.");
+    if (!holidayData) {
+      alert("공휴일 조회에 실패 했습니다");
       setIsLoading(false);
-      return;
     }
     const availableDays: AvailableDay[] = [];
     const finalDays: AvailableDay[] = [];
+
     if (!applicationDate || !applicationDate.from || !applicationDate.to) {
       alert("신청일을 선택해주세요.");
       setIsLoading(false);
@@ -62,7 +60,7 @@ const ReadyContainer = ({
     }
 
     const days = differenceInDays(applicationDate.to, applicationDate.from) + 1;
-
+    console.log(1, days);
     const dates = Array.from({ length: days }, (_, i) =>
       addDays(applicationDate.from as Date, i).toString()
     );
@@ -76,12 +74,15 @@ const ReadyContainer = ({
       setIsLoading(false);
       return;
     }
-
+    console.log(2, dates);
     dates.map((date) => {
       if (isSunday(date)) {
         return;
       }
-      if (holidayData[format(date, "yyyy-MM-dd")] || isSaturday(date)) {
+      if (
+        holidayData &&
+        (holidayData[format(date, "yyyy-MM-dd")] || isSaturday(date))
+      ) {
         availableDays.push({ date, isLunch: true, isDinner: false });
         return;
       }
@@ -93,18 +94,20 @@ const ReadyContainer = ({
       days: availableDays.map((day) => new Date(day.date)),
     });
 
+    console.log(3, daysThatAreAvailable);
     for (const day of availableDays) {
       if (daysThatAreAvailable.includes(day.date)) {
         finalDays.push(day);
       }
     }
+    console.log(4, finalDays);
     setApplyDates(finalDays);
     setIsLoading(false);
   };
 
   return (
     <div className="w-full space-y-4">
-      <MonthlyMenuContainer validFiles={validFiles} />
+      <MonthlyMenuContainer />
       <div className="max-w-md w-full mx-auto space-y-4">
         <aside className="w-full flex gap-4">
           <Popover>

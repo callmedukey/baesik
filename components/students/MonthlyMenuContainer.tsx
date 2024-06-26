@@ -13,7 +13,7 @@ import {
 import { ko } from "date-fns/locale/ko";
 import { format } from "date-fns";
 
-const MonthlyMenuContainer = ({ validFiles }: { validFiles?: string[] }) => {
+const MonthlyMenuContainer = () => {
   const [findDate, setFindDate] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -50,9 +50,7 @@ const MonthlyMenuContainer = ({ validFiles }: { validFiles?: string[] }) => {
 
   return (
     <div className="">
-      <h1 className="text-center text-2xl font-bold">
-        {new Date().getMonth() + 1}월 메뉴
-      </h1>
+      <h1 className="text-center text-2xl font-bold">학식 조회</h1>
       <aside className="w-full flex gap-4 my-6 mx-auto max-w-md">
         <Popover>
           <PopoverTrigger asChild>
@@ -98,22 +96,6 @@ const MonthlyMenuContainer = ({ validFiles }: { validFiles?: string[] }) => {
           {isLoading ? "로딩중..." : "조회하기"}
         </Button>
       </aside>
-      {!imgSrc.length &&
-        validFiles &&
-        validFiles.length > 0 &&
-        validFiles.map((fileName) => (
-          <Link
-            href={`/api/images?fileName=${fileName}`}
-            target="_blank"
-            key={fileName}
-          >
-            <img
-              src={`/api/images?fileName=${fileName}`}
-              alt="준비된 이미지"
-              className="max-w-[90vw] w-full mx-auto object-contain max-h-[80vh] h-full"
-            />
-          </Link>
-        ))}
 
       {imgSrc.length > 0 &&
         imgSrc.map((fileName) => (

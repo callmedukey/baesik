@@ -9,22 +9,11 @@ import { getHolidayDataFromApi } from "@/actions/common";
 export const dynamic = "force-dynamic";
 
 const StudentPage = async () => {
-  const { beginningDay, endingDay } = getBeginningAndEndingDays();
-
-  const [data, holidayData] = await Promise.all([
-    getMenu({
-      fromDate: beginningDay,
-      toDate: endingDay,
-    }),
-    getHolidayDataFromApi(),
-  ]);
+  const holidayData = await getHolidayDataFromApi();
 
   return (
     <MainContainer className="block py-12" hasHeader>
-      <ReadyContainer
-        validFiles={data.validFiles as string[]}
-        holidayData={holidayData}
-      />
+      <ReadyContainer holidayData={holidayData} />
     </MainContainer>
   );
 };

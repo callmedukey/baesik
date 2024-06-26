@@ -31,7 +31,7 @@ const SchoolManageTable = ({
         </TableRow>
       </TableHeader>
       <TableBody className="text-center">
-        {schools.length &&
+        {schools.length > 0 &&
           schools.map((school) => (
             <TableRow key={school.id}>
               <TableCell>{school.name}</TableCell>

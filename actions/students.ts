@@ -34,7 +34,7 @@ export const getMenu = async ({
         date: "desc",
       },
     });
-
+    console.log(found);
     if (found.length === 0) {
       return { message: "해당 날짜에 메뉴가 없습니다", notReady: true };
     }
