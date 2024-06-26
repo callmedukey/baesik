@@ -40,18 +40,12 @@ export const StudentSignUpSchema = z.object({
     .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
     .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
     .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
-    .regex(/[^a-zA-Z0-9]/, {
-      message: "비밀번호에 특문자가 포함되어야 합니다.",
-    })
     .trim(),
   confirmPassword: z
     .string({ required_error: "비밀번호를 입력해주세요." })
     .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
     .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
     .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
-    .regex(/[^a-zA-Z0-9]/, {
-      message: "비밀번호에 특문자가 포함되어야 합니다.",
-    })
     .trim(),
   phone: z
     .string({ required_error: "핸드폰 번호를 입력해주세요." })
