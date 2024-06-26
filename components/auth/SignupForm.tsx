@@ -15,6 +15,8 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const SignupForm = async () => {
   const schools = await prisma.school.findMany();
 
