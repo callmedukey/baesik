@@ -75,14 +75,14 @@ export const POST = async (req: NextRequest) => {
     }
 
     const payActionUrl = "https://payaction.app/api/1.1/wf/order";
-    
+
     const body = {
       apikey: process.env.PAYACTION_KEY,
       secretkey: process.env.PAYACTION_SECRET,
       mall_id: process.env.PAYACTION_MALLID,
       order_number: payment.createdAt.toISOString(),
       order_amount: amount,
-      order_date: payment.createdAt.toISOString(),
+      order_date: new Date(payment.createdAt),
       billing_name: billingName,
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),

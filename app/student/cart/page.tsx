@@ -4,13 +4,12 @@ import { format } from "date-fns";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export const dynamic = "force-dynamic";
-
 import DeleteMealFromCartButton from "@/components/students/DeleteMealFromCartButton";
 import { parseKoreanMealType } from "@/lib/parseKoreanMealType";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
 const StudentShoppingCart = async () => {
   const meals = await getShoppingCart();
 
