@@ -3,9 +3,7 @@
 import prisma from "@/lib/prisma";
 import path from "path";
 import { existsSync } from "fs";
-import { MealSchemaArraySchema } from "@/lib/definitions";
 import { verifySession } from "./session";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { addDays, format } from "date-fns";
@@ -141,7 +139,11 @@ export const getPaymentAmount = async (id: string) => {
 };
 
 export const getPayments = async () => {
+  const session = await verifySession();
   const payments = await prisma.payments.findMany({
+    where: {
+      studentId: session?.userId,
+    },
     orderBy: {
       createdAt: "desc",
     },

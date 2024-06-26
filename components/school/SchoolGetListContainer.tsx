@@ -31,6 +31,7 @@ const SchoolGetListContainer = ({}: {}) => {
     }
   );
   const [isLoading, setIsLoading] = useState(false);
+
   const [studentsWithMeals, setStudentsWithMeals] = useState<
     StudentsWithMeals[]
   >([]);
