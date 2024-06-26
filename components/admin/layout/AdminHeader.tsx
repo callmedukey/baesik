@@ -8,49 +8,28 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { adminNavs } from "./adminNavs";
+import AdminMobileMenu from "./AdminMobileMenu";
 
 const AdminHeader = () => {
   return (
     <header className="h-16 flex items-center border-b shadow-sm px-2">
-      <NavigationMenu className="ml-auto mr-0">
+      <NavigationMenu className="ml-auto mr-0 hidden md:flex">
         <NavigationMenuList className="">
-          <NavigationMenuItem>
-            <Link href="/admin/dashboard" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                홈
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/admin/dashboard/schools" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                명단 관리
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/admin/dashboard/menus" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                메뉴 관리
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/admin/dashboard/payments" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                입금 관리
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/admin/dashboard/refunds" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                환불 관리
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+          {adminNavs.map((nav) => (
+            <NavigationMenuItem key={nav.href}>
+              <Link href={nav.href} legacyBehavior passHref>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle())}
+                >
+                  {nav.label}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
+      <AdminMobileMenu />
     </header>
   );
 };

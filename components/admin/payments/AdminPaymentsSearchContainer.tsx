@@ -73,7 +73,7 @@ const AdminPaymentsSearchContainer = () => {
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <aside className="my-6 flex items-center justify-center gap-4">
         <Form {...form}>
           <form
@@ -186,7 +186,7 @@ const AdminPaymentsSearchContainer = () => {
         </div>
       )}
       {payments && payments.length > 0 && (
-        <section className="grid grid-cols-2 lg:grid-cols-3 items-center justify-center gap-2 max-w-4xl w-full mx-auto border p-2 rounded-md shadow-sm">
+        <section className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 items-center justify-center gap-2 max-w-4xl w-full mx-auto border p-2 rounded-md shadow-sm">
           {payments.map((payment) => (
             <AdminPaymentContainer key={payment.id} payment={payment} />
           ))}
