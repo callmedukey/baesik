@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import path from "path";
 import { existsSync } from "fs";
-import { CancelMealSchema, MealSchemaArraySchema } from "@/lib/definitions";
+import { MealSchemaArraySchema } from "@/lib/definitions";
 import { verifySession } from "./session";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
