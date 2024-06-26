@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import type { DateRange } from "react-day-picker";
 import { verifySession } from "./session";
 import { redirect } from "next/navigation";
+
 export const findStudentsWithMeals = async (date: DateRange) => {
   const { from, to } = date;
   if (!from || !to) return;
