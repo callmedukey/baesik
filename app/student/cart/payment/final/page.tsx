@@ -9,7 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
+
 export const dynamic = "force-dynamic";
+
 const page = async ({ searchParams }: { searchParams: { id: string } }) => {
   const { id } = searchParams;
   if (!id) {
@@ -28,11 +30,11 @@ const page = async ({ searchParams }: { searchParams: { id: string } }) => {
         <CardContent>
           <div>
             <span>예금주: </span>
-            <span>홍길동</span>
+            <span>조성영</span>
           </div>
           <div>
             <span>계좌: </span>
-            <span>1234567890</span>
+            <span>국민은행 452937-04-006720</span>
           </div>
           <div>
             <span>금액: </span>
@@ -43,7 +45,7 @@ const page = async ({ searchParams }: { searchParams: { id: string } }) => {
           <p>입금 후 결제내역에서 입금 완료 상태를 확인해주세요.</p>
           <p>확인이 안되신다면, 아래 연락처로 문의해주세요.</p>
           <p className="py-2 border px-2 rounded-md my-6">
-            홍길동 010-1234-5678
+            고객센터 010-8683-5914
           </p>
         </CardFooter>
       </Card>
