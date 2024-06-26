@@ -13,7 +13,7 @@ import {
 import { z } from "zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { adminLogin } from "@/actions/auth";
+import { adminLogin, createAdmin } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 
 const AdminLoginForm = () => {
@@ -68,6 +68,17 @@ const AdminLoginForm = () => {
         />
 
         <Button className="mt-6 w-full font-semibold">로그인</Button>
+        <Button
+          className="mt-6 w-full font-semibold"
+          onClick={async () => {
+            await createAdmin({
+              username: "admin",
+              password: "admin2024@",
+            });
+          }}
+        >
+          관리자 생성
+        </Button>
       </form>
     </Form>
   );
