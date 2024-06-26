@@ -6,7 +6,7 @@ import { decrypt } from "./actions/session";
 // 1. Specify protected and public routes
 const protectedRoutes = ["/admin", "/student", "/school"];
 const publicRoutes = ["/", "/login", "/signup", "/find-id", "/reset-password"];
-const disabled = true;
+const disabled = false;
 export default async function middleware(req: NextRequest) {
   if (disabled) {
     return NextResponse.next();
@@ -22,7 +22,7 @@ export default async function middleware(req: NextRequest) {
   const session = await decrypt(cookie);
 
   // 4. Redirect
-  if (isProtectedRoute && !session?.userId) {
+  if (isProtectedRoute && !session?.userId && path !== "/admin") {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
