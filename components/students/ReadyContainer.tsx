@@ -60,7 +60,7 @@ const ReadyContainer = ({
     }
 
     const days = differenceInDays(applicationDate.to, applicationDate.from) + 1;
-    console.log(1, days);
+
     const dates = Array.from({ length: days }, (_, i) =>
       addDays(applicationDate.from as Date, i).toString()
     );
@@ -74,7 +74,7 @@ const ReadyContainer = ({
       setIsLoading(false);
       return;
     }
-    console.log(2, dates);
+
     dates.map((date) => {
       if (isSunday(date)) {
         return;
@@ -94,12 +94,12 @@ const ReadyContainer = ({
       days: availableDays.map((day) => new Date(day.date)),
     });
 
-    console.log(3, daysThatAreAvailable);
-    for (const day of availableDays) {
+    availableDays.forEach((day) => {
       if (daysThatAreAvailable.includes(day.date)) {
         finalDays.push(day);
       }
-    }
+    });
+
     console.log(4, finalDays);
     setApplyDates(finalDays);
     setIsLoading(false);
