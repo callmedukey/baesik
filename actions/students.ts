@@ -197,6 +197,9 @@ export const getCancelableMeals = async () => {
       date: {
         gte: addDays(new Date(new Date().setHours(0, 0, 0, 0)), 2),
       },
+      refundRequest: {
+        complete: false,
+      },
     },
     orderBy: {
       date: "asc",

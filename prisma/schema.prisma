@@ -98,9 +98,9 @@ model Payments {
   payer      String
   payerPhone String
 
-  amount       Int
-  paid         Boolean @default(false)
-  creditAmount Int?
+  amount Int
+  paid   Boolean   @default(false)
+  paidOn DateTime?
 
   studentId String
   createdAt DateTime @default(now())

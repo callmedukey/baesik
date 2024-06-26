@@ -2,10 +2,15 @@
 import prisma from "@/lib/prisma";
 import { verifySession } from "./session";
 import { redirect } from "next/navigation";
-import { AddSchoolSchema } from "@/lib/definitions";
+import {
+  AddSchoolSchema,
+  PaymentSearchSchema,
+  RefundSearchSchema,
+} from "@/lib/definitions";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { addDays } from "date-fns";
+import type { DateRange } from "react-day-picker";
 
 export const getSchools = async () => {
   try {
@@ -250,4 +255,229 @@ export const getSchoolsWithStudentsForMeals = async () => {
     }),
   ]);
   return { todayRequests, tomorrowRequests };
+};
+
+export const findPayment = async ({
+  type,
+  searchTerm,
+  searchDate,
+}: {
+  type: z.infer<typeof PaymentSearchSchema>["type"];
+  searchTerm: z.infer<typeof PaymentSearchSchema>["searchTerm"];
+  searchDate: DateRange;
+}) => {
+  if (!searchDate || !searchDate.from || !searchDate.to) {
+    return null;
+  }
+
+  if (type === "payer") {
+    const payers = await prisma.payments.findMany({
+      where: {
+        payer: {
+          contains: searchTerm,
+        },
+        createdAt: {
+          gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+          lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return payers;
+  }
+
+  if (type === "school") {
+    const schools = await prisma.payments.findMany({
+      where: {
+        schoolName: {
+          contains: searchTerm,
+        },
+        createdAt: {
+          gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+          lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return schools;
+  }
+
+  if (type === "student") {
+    const students = await prisma.payments.findMany({
+      where: {
+        studentName: {
+          contains: searchTerm,
+        },
+        createdAt: {
+          gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+          lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return students;
+  }
+
+  return null;
+};
+
+export const getRefundRequests = async ({
+  type,
+  searchTerm,
+  searchDate,
+}: {
+  type: z.infer<typeof RefundSearchSchema>["type"];
+  searchTerm: z.infer<typeof RefundSearchSchema>["searchTerm"];
+  searchDate: DateRange;
+}) => {
+  if (!searchDate || !searchDate.from || !searchDate.to) {
+    return null;
+  }
+
+  switch (type) {
+    case "accountHolder":
+      return await prisma.refundRequest.findMany({
+        where: {
+          accountHolder: {
+            contains: searchTerm,
+          },
+          createdAt: {
+            gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+          },
+        },
+        include: {
+          student: {
+            include: {
+              school: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    case "bank":
+      return await prisma.refundRequest.findMany({
+        where: {
+          bankDetails: {
+            contains: searchTerm,
+          },
+          createdAt: {
+            gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+          },
+        },
+        include: {
+          student: {
+            include: {
+              school: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    case "school":
+      return await prisma.refundRequest.findMany({
+        where: {
+          student: {
+            school: {
+              name: {
+                contains: searchTerm,
+              },
+            },
+          },
+          createdAt: {
+            gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+          },
+        },
+        include: {
+          student: {
+            include: {
+              school: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    case "student":
+      return await prisma.refundRequest.findMany({
+        where: {
+          student: {
+            name: {
+              contains: searchTerm,
+            },
+          },
+          createdAt: {
+            gte: new Date(new Date(searchDate.from).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(searchDate.to).setHours(23, 59, 59, 999)),
+          },
+        },
+        include: {
+          student: {
+            include: {
+              school: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    default:
+      return null;
+  }
+};
+
+export const confirmSingleRefund = async (refundRequestId: string) => {
+  const refundRequest = await prisma.refundRequest.findUnique({
+    where: {
+      id: refundRequestId,
+    },
+    include: {
+      cancelledMeals: true,
+    },
+  });
+
+  if (!refundRequest) return null;
+
+  const updated = await prisma.refundRequest.update({
+    where: {
+      id: refundRequestId,
+    },
+    data: {
+      complete: true,
+      cancelledMeals: {
+        updateMany: {
+          where: {
+            studentId: refundRequest.studentId,
+            id: {
+              in: refundRequest.cancelledMeals.map((meal) => meal.id),
+            },
+          },
+          data: {
+            isCancelled: true,
+          },
+        },
+      },
+    },
+  });
+
+  if (updated) {
+    revalidatePath("/admin/dashboard/refunds");
+    return {
+      message: "확불처리를 성공적으로 완료했습니다",
+    };
+  } else return { error: "확불처리를 실패했습니다" };
 };

@@ -2,7 +2,7 @@ import { z } from "zod";
 import testValidPhoneNumber from "./regex/testPhoneNumber";
 import testAlphabetsAndNumbers from "./regex/testAlphabetsAndNumbers";
 import { testBankDetails } from "./testBankDetails";
-import type { Meals, School, Student } from "@prisma/client";
+import type { Meals, RefundRequest, School, Student } from "@prisma/client";
 
 export interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -10,6 +10,13 @@ export interface StudentsWithMeals extends Student {
 
 export interface SchoolsWithStudentsWithMeals extends School {
   students: StudentsWithMeals[];
+}
+
+export interface StudentWithSchool extends Student {
+  school: School;
+}
+export interface RefundRequestWithStudent extends RefundRequest {
+  student: StudentWithSchool;
 }
 
 export const StudentSignUpSchema = z.object({
@@ -107,4 +114,14 @@ export const CancelMealSchema = z.object({
     message: "올바른 은행 정보를 입력해주세요.",
   }),
   accountHolder: z.string().min(2, { message: "예금주명을 입력해주세요." }),
+});
+
+export const PaymentSearchSchema = z.object({
+  searchTerm: z.string(),
+  type: z.enum(["school", "student", "payer"]),
+});
+
+export const RefundSearchSchema = z.object({
+  searchTerm: z.string(),
+  type: z.enum(["school", "student", "accountHolder", "bank"]),
 });
