@@ -10,7 +10,7 @@ import CancelMealForm from "./CancelMealForm";
 
 const CancelMealContainer = ({ meals }: { meals: Meals[] }) => {
   const [selectedMeal, setSelectedMeal] = useState<Meals[]>([]);
-  
+
   const [confirmedCancel, setConfirmedCancel] = useState<boolean>(false);
 
   const handleSelectMeal = (meal: Meals) => {
@@ -56,6 +56,7 @@ const CancelMealContainer = ({ meals }: { meals: Meals[] }) => {
       <Button
         className="mt-2 w-full"
         variant={"secondary"}
+        disabled={selectedMeal.length === 0}
         onClick={() => {
           setConfirmedCancel((prev) => !prev);
         }}

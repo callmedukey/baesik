@@ -31,6 +31,10 @@ const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = async (data: z.infer<typeof CancelMealSchema>) => {
+    if (selectedMeals.length === 0) {
+      alert("취소할 식사가 없습니다");
+      return;
+    }
     try {
       setLoading(true);
 

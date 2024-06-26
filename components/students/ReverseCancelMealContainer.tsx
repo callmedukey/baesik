@@ -19,6 +19,10 @@ const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
   };
 
   const confirmReverse = async () => {
+    if (selectedMeal.length === 0) {
+      alert("재신청할 식사가 없습니다");
+      return;
+    }
     if (!confirm("재신청하시겠습니까?")) return;
     setLoading(true);
     const response = await reverseMeal({ meals: selectedMeal });
@@ -68,7 +72,7 @@ const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
       <Button
         className="mt-2 w-full"
         variant={"secondary"}
-        disabled={loading}
+        disabled={loading || selectedMeal.length === 0}
         onClick={async () => {
           await confirmReverse();
         }}
