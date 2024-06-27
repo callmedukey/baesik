@@ -95,6 +95,7 @@ export const POST = async (req: NextRequest) => {
 
     console.log(body);
     revalidatePath("/student/payments");
+    revalidatePath("/student/cart");
 
     const response = await fetch(payActionUrl, {
       method: "POST",

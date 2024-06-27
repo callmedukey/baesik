@@ -183,6 +183,7 @@ export const getCancelableMeals = async () => {
   if (!session) {
     redirect("/login");
   }
+
   const meals = await prisma.meals.findMany({
     where: {
       isCancelled: false,
@@ -194,15 +195,12 @@ export const getCancelableMeals = async () => {
       date: {
         gte: addDays(new Date(new Date().setHours(0, 0, 0, 0)), 2),
       },
-      refundRequest: {
-        complete: false,
-      },
     },
     orderBy: {
       date: "asc",
     },
   });
-
+  console.log(meals);
   return meals;
 };
 
