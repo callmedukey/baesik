@@ -93,12 +93,14 @@ export const POST = async (req: NextRequest) => {
       identity_number: "010-3974-8429",
     };
 
-    console.log(body);
     revalidatePath("/student/payments");
     revalidatePath("/student/cart");
 
     const response = await fetch(payActionUrl, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
     console.log(await response.json());
