@@ -53,7 +53,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
           name="ordererName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>주문자</FormLabel>
+              <FormLabel>학생 이름</FormLabel>
               <FormControl>
                 <Input {...field} placeholder="예) 홍길동 학원이름X 숫자X" />
               </FormControl>
