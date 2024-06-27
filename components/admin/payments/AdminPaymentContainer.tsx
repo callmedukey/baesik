@@ -42,7 +42,7 @@ const AdminPaymentContainer = ({
         {payment.paid ? "입금" : "미입금"}
       </div>
       <div className="text-center">입금자: {payment.payer}</div>
-      <div className="grid grid-cols-2 text-center my-4">
+      <div className="grid grid-cols-2 text-center my-4 text-sm">
         <div>학생: {payment.studentName}</div>
         <div>{payment.schoolName}</div>
       </div>

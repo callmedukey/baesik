@@ -81,7 +81,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
             <FormItem>
               <FormLabel>핸드폰 번호</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="01012345678 - 없이" />
               </FormControl>
               <FormMessage />
             </FormItem>
