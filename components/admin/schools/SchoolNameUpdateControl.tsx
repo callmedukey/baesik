@@ -50,7 +50,7 @@ const SchoolNameUpdateControl = ({
     const response = await updateSchool({ ...data, id: schoolId });
     if (response && response.message) {
       toast({
-        title: "학교 이름 수정 성공",
+        title: "학원 이름 수정 성공",
         description: response.message,
         variant: "default",
       });
@@ -58,7 +58,7 @@ const SchoolNameUpdateControl = ({
 
     if (response && response.error) {
       toast({
-        title: "학교 이름 수정 실패",
+        title: "학원 이름 수정 실패",
         description: response.error,
         variant: "destructive",
       });
@@ -69,9 +69,9 @@ const SchoolNameUpdateControl = ({
     <Dialog open={schoolUpdateOpen} onOpenChange={setSchoolUpdateOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>학교 이름 수정</DialogTitle>
+          <DialogTitle>학원 이름 수정</DialogTitle>
         </DialogHeader>
-        <DialogDescription>학교 이름을 수정합니다.</DialogDescription>
+        <DialogDescription>학원 이름을 수정합니다.</DialogDescription>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(updateSchoolFn)}>
             <FormField
@@ -79,7 +79,7 @@ const SchoolNameUpdateControl = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>학교 이름</FormLabel>
+                  <FormLabel>학원 이름</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

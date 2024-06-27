@@ -33,15 +33,15 @@ const SchoolManageControlContainer = () => {
     if (!response) {
       setLoading(false);
       return toast({
-        title: "학교 추가 실패",
-        description: "학교 추가에 실패했습니다.",
+        title: "학원 추가 실패",
+        description: "학원 추가에 실패했습니다.",
         variant: "destructive",
       });
     }
     if (response && response?.error) {
       setLoading(false);
       return toast({
-        title: "학교 추가 실패",
+        title: "학원 추가 실패",
         description: response.error,
         variant: "destructive",
       });
@@ -50,7 +50,7 @@ const SchoolManageControlContainer = () => {
     if (response && response?.message) {
       setLoading(false);
       return toast({
-        title: "학교 추가 성공",
+        title: "학원 추가 성공",
         description: response.message,
       });
     }
@@ -67,12 +67,12 @@ const SchoolManageControlContainer = () => {
             name="name"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="sr-only">학교 이름</FormLabel>
+                <FormLabel className="sr-only">학원 이름</FormLabel>
                 <FormControl className="">
                   <Input
                     className="!mt-0 py-0 w-full"
                     {...field}
-                    placeholder="추가할 학교 이름을 입력해주세요."
+                    placeholder="추가할 학원 이름을 입력해주세요."
                   />
                 </FormControl>
               </FormItem>

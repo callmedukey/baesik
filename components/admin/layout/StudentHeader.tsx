@@ -20,7 +20,7 @@ const StudentHeader = () => {
           <NavigationMenuItem>
             <Link href="/student" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                학식 조회
+                식사 신청 및 조회
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>

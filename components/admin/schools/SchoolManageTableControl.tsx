@@ -28,7 +28,7 @@ const SchoolManageTableControl = ({
   const { toast } = useToast();
 
   const deleteSchoolFn = async () => {
-    if (!confirm("삭제한 학교는 복구할 수 없습니다. 삭제하시겠습니까?")) {
+    if (!confirm("삭제한 학원는 복구할 수 없습니다. 삭제하시겠습니까?")) {
       return;
     }
     setLoading(true);
@@ -36,13 +36,13 @@ const SchoolManageTableControl = ({
 
     if (response && response?.message) {
       toast({
-        title: "학교 삭제 성공",
+        title: "학원 삭제 성공",
         description: response.message,
       });
     }
     if (response && response?.error) {
       toast({
-        title: "학교 삭제 실패",
+        title: "학원 삭제 실패",
         description: response.error,
         variant: "destructive",
       });

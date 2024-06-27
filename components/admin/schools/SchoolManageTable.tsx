@@ -25,7 +25,7 @@ const SchoolManageTable = ({
     <Table className="w-full">
       <TableHeader>
         <TableRow className="">
-          <TableHead className="w-3/5 text-center">학교이름</TableHead>
+          <TableHead className="w-3/5 text-center">학원이름</TableHead>
           <TableHead className="w-1/5 text-center">학생수</TableHead>
           <TableHead className="w-1/5 text-center"></TableHead>
         </TableRow>

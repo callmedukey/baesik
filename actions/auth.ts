@@ -61,7 +61,7 @@ export async function studentSignup(
 
   if (!school) {
     return {
-      error: "학교 이름이 올바르지 않습니다.",
+      error: "학원 이름이 올바르지 않습니다.",
     };
   }
 
@@ -133,7 +133,7 @@ export async function schoolUserSignup(
 
   if (!school) {
     return {
-      error: "학교 이름이 올바르지 않습니다.",
+      error: "학원 이름이 올바르지 않습니다.",
     };
   }
 
@@ -154,7 +154,7 @@ export async function schoolUserSignup(
 
   if (!registeredSchoolUser) {
     return {
-      error: "학교 관리자 등록에 실패했습니다.",
+      error: "학원 관리자 등록에 실패했습니다.",
     };
   }
 
@@ -405,7 +405,7 @@ export const findSchoolUsername = async ({
   });
 
   if (!user) {
-    return { error: "해당하는 학교 관리자가 없습니다." };
+    return { error: "해당하는 학원 관리자가 없습니다." };
   }
 
   return { username: censorUsername(user.username) };

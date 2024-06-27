@@ -26,7 +26,7 @@ const ResetPasswordPage = () => {
                 학생
               </TabsTrigger>
               <TabsTrigger value="school" className="w-full">
-                학교
+                학원
               </TabsTrigger>
             </TabsList>
             <TabsContent value="student">

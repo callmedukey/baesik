@@ -53,7 +53,7 @@ export const StudentSignUpSchema = z.object({
     .refine((val) => testValidPhoneNumber(val), {
       message: "올바른 핸드폰 번호를 입력해주세요.",
     }),
-  schoolName: z.string({ required_error: "학교를 선택해주세요." }),
+  schoolName: z.string({ required_error: "학원를 선택해주세요." }),
 });
 
 export const SchoolSignUpSchema = StudentSignUpSchema.extend({

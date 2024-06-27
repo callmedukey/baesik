@@ -6,7 +6,7 @@ const SchoolsDetailPage = ({ params }: { params: { id: string } }) => {
     redirect("/admin/dashboard/schools");
   }
 
-  return <div>학교 관리 페이지</div>;
+  return <div>학원 관리 페이지</div>;
 };
 
 export default SchoolsDetailPage;

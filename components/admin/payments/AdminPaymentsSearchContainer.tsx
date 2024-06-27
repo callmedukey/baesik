@@ -116,7 +116,7 @@ const AdminPaymentsSearchContainer = () => {
                         <FormControl>
                           <RadioGroupItem value="school" />
                         </FormControl>
-                        <FormLabel className="font-normal">학교</FormLabel>
+                        <FormLabel className="font-normal">학원</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0 sm:space-x-3">
                         <FormControl>
@@ -187,7 +187,12 @@ const AdminPaymentsSearchContainer = () => {
       {payments && payments.length > 0 && (
         <section className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 items-center justify-center gap-2 max-w-4xl w-full mx-auto border p-2 rounded-md shadow-sm">
           {payments.map((payment) => (
-            <AdminPaymentContainer key={payment.id} payment={payment} payments={payments} setPayments={setPayments} />
+            <AdminPaymentContainer
+              key={payment.id}
+              payment={payment}
+              payments={payments}
+              setPayments={setPayments}
+            />
           ))}
         </section>
       )}

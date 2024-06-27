@@ -126,7 +126,7 @@ const AdminRefundsSearchContainer = () => {
                         <FormControl>
                           <RadioGroupItem value="school" />
                         </FormControl>
-                        <FormLabel className="font-normal">학교</FormLabel>
+                        <FormLabel className="font-normal">학원</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0 sm:space-x-3">
                         <FormControl>

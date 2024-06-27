@@ -70,7 +70,7 @@ export const AddSchoolToList = async (
 
     if (found) {
       return {
-        error: "이미 존재하는 학교입니다.",
+        error: "이미 존재하는 학원입니다.",
       };
     }
 
@@ -85,7 +85,7 @@ export const AddSchoolToList = async (
       revalidatePath("/login");
       revalidatePath("/signup");
       return {
-        message: "학교를 성공적으로 추가했습니다",
+        message: "학원를 성공적으로 추가했습니다",
       };
     }
   } catch (error) {
@@ -110,7 +110,7 @@ export const deleteSchool = async (schoolId: string) => {
     if (school) {
       revalidatePath("/admin/dashboard/schools");
       return {
-        message: "학교를 명단에서 삭제했습니다",
+        message: "학원를 명단에서 삭제했습니다",
       };
     }
   } catch (error) {
@@ -142,7 +142,7 @@ export const updateSchool = async (
     if (school) {
       revalidatePath("/admin/dashboard/schools");
       return {
-        message: "학교 정보를 성공적으로 업데이트했습니다",
+        message: "학원 정보를 성공적으로 업데이트했습니다",
       };
     } else {
       return {

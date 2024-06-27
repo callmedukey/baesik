@@ -1,4 +1,5 @@
 import { getPaymentAmount } from "@/actions/students";
+import Contacts from "@/components/admin/layout/Contacts";
 import MainContainer from "@/components/layout/main-container";
 import {
   Card,
@@ -44,9 +45,7 @@ const page = async ({ searchParams }: { searchParams: { id: string } }) => {
         <CardFooter className="text-center block">
           <p>입금 후 결제내역에서 입금 완료 상태를 확인해주세요.</p>
           <p>확인이 안되신다면, 아래 연락처로 문의해주세요.</p>
-          <p className="py-2 border px-2 rounded-md my-6">
-            고객센터 010-8683-5914
-          </p>
+          <Contacts />
         </CardFooter>
       </Card>
     </MainContainer>

@@ -25,7 +25,7 @@ const AdminRefundsContainer = ({
       <div className="text-center">예금주: {refundRequest.accountHolder}</div>
 
       <div>학생: {refundRequest.student.name}</div>
-      <div>학교: {refundRequest.student.school.name}</div>
+      <div>학원: {refundRequest.student.school.name}</div>
       <div>{refundRequest.bankDetails}</div>
       <div className="flex justify-between">
         <div className="text-left text-sm text-gray-500">

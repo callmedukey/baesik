@@ -227,6 +227,7 @@ export const cancelMeals = async ({
         amount: Math.floor(meals.reduce((acc, meal) => acc + 7000, 0)),
       },
     });
+  
     const updated = await tx.meals.updateMany({
       where: {
         isComplete: false,

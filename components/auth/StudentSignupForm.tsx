@@ -92,7 +92,7 @@ const StudentSignupForm = ({ schools }: { schools: School[] }) => {
             <FormItem>
               <FormLabel>전화번호</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="01012345678 - 없이 입력" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -142,11 +142,11 @@ const StudentSignupForm = ({ schools }: { schools: School[] }) => {
           name="schoolName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>학교</FormLabel>
+              <FormLabel>학원</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="학교를 선택해주세요" />
+                    <SelectValue placeholder="학원를 선택해주세요" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
