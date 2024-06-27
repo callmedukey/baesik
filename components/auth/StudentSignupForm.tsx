@@ -79,7 +79,7 @@ const StudentSignupForm = ({ schools }: { schools: School[] }) => {
             <FormItem>
               <FormLabel>아이디</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="예) biology101" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,7 +105,7 @@ const StudentSignupForm = ({ schools }: { schools: School[] }) => {
             <FormItem>
               <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="예) biology101@gmail.com" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,7 +118,7 @@ const StudentSignupForm = ({ schools }: { schools: School[] }) => {
             <FormItem>
               <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} placeholder="예) abc101202" />
               </FormControl>
               <FormMessage />
             </FormItem>
