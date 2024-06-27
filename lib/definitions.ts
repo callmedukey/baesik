@@ -24,7 +24,9 @@ export const StudentSignUpSchema = z.object({
   name: z
     .string({ required_error: "이름을 입력해주세요." })
     .min(2, { message: "이름을 입력해주세요." })
-    .trim(),
+    .refine((val) => testName(val), {
+      message: "이름을 입력해주세요.",
+    }),
   username: z
     .string()
     .min(4, { message: "아이디는 최소 4자 최대 14자 입니다." })

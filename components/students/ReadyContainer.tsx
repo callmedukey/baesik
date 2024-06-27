@@ -40,6 +40,7 @@ const ReadyContainer = ({
       to: undefined,
     }
   );
+
   const [isLoading, setIsLoading] = useState(false);
   const [applyDates, setApplyDates] = useState<AvailableDay[]>([]);
 
@@ -61,6 +62,21 @@ const ReadyContainer = ({
         from: undefined,
         to: undefined,
       });
+      setIsLoading(false);
+      return;
+    }
+
+    const selectedFrom = format(applicationDate.from, "yyyy-MM-dd", {
+      locale: ko,
+    });
+
+    if (selectedFrom <= "2024-06-30") {
+      alert("신청 가능한 날짜는 2024년 7월 1일부터입니다.");
+      setApplicationDate({
+        from: undefined,
+        to: undefined,
+      });
+      setApplyDates([]);
       setIsLoading(false);
       return;
     }

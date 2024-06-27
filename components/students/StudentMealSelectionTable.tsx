@@ -13,8 +13,6 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { saveShoppingCart } from "@/actions/students";
 import { useRouter } from "next/navigation";
-import { MealSchema } from "@/lib/definitions";
-import { z } from "zod";
 import { parseMealSelectionOption } from "@/lib/parseMealSelectionOption";
 import { cn } from "@/lib/utils";
 import { parseWeekDay } from "@/lib/parseWeekDay";
