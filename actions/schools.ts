@@ -25,9 +25,6 @@ export const findStudentsWithMeals = async (date: DateRange) => {
             lte: new Date(new Date(to).setHours(23, 59, 59, 999)),
           },
           isCancelled: false,
-          payments: {
-            paid: true,
-          },
         },
       },
     },
@@ -39,9 +36,6 @@ export const findStudentsWithMeals = async (date: DateRange) => {
             lte: new Date(new Date(to).setHours(23, 59, 59, 999)),
           },
           isCancelled: false,
-          payments: {
-            paid: true,
-          },
         },
       },
     },

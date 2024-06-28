@@ -521,3 +521,44 @@ export const confirmMeals = async (meals: { id: string }[]) => {
     };
   } else return { error: "학식 확정을 실패했습니다" };
 };
+
+export const deletePayment = async (paymentId: string) => {
+  const search = await prisma.payments.findUnique({
+    where: {
+      id: paymentId,
+    },
+    include: {
+      meals: true,
+    },
+  });
+
+  //check if any meals had requested refunds
+  const check = [];
+
+  search?.meals.forEach((meal) => {
+    if (meal.refundRequestId) {
+      check.push(meal.refundRequestId);
+    }
+  });
+
+  if (check.length > 0) {
+    return {
+      error: "환불 요청이 존재하는 결제는 삭제할 수 없습니다",
+    };
+  }
+
+  const deleted = await prisma.payments.delete({
+    where: {
+      id: paymentId,
+    },
+  });
+
+  if (deleted) {
+    revalidatePath("/admin/dashboard/payments");
+    revalidatePath("/student/payments");
+    revalidatePath("/school/students");
+    return {
+      message: "결제를 성공적으로 삭제했습니다",
+    };
+  } else return { error: "결제를 삭제하지 못했습니다" };
+};
