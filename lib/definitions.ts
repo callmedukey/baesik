@@ -154,3 +154,18 @@ export const ResetPasswordVerificationSchema = z.object({
     .min(6, "인증번호는 최소 6자 이상입니다.")
     .regex(/^\d{6}$/, "인증번호를 확인해주세요"),
 });
+
+export const ResetPasswordFinalSchema = z.object({
+  password: z
+    .string()
+    .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
+    .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
+    .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
+    .trim(),
+  confirmPassword: z
+    .string()
+    .min(8, { message: "비밀번호는 최소 8자 이상입니다." })
+    .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
+    .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
+    .trim(),
+});

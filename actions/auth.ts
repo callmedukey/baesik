@@ -588,34 +588,23 @@ export const resetStudentPasswordSecondStep = async ({
   username: string;
 }) => {
   try {
-    const deleteCode = await prisma.studentPasswordResetCode.delete({
+    const foundCode = await prisma.studentPasswordResetCode.findUnique({
       where: {
         code,
         studentUsername: username,
       },
     });
 
-    if (!deleteCode) {
+    if (!foundCode) {
       return {
         error: "인증번호를 확인해주세요.",
       };
     }
 
-    const uniqueCode = await prisma.studentOneTimeUniqueCode.create({
-      data: {
-        studentUsername: username,
-      },
-    });
-
-    if (uniqueCode) {
-      return {
-        message: "인증번호 확인 완료",
-        redirectTo: `/reset-password/reset?code=${uniqueCode.id}`,
-      };
-    } else
-      return {
-        error: "인증번호 확인 오류",
-      };
+    return {
+      message: "인증번호 확인 완료",
+      redirectTo: `/reset-password/student?code=${foundCode.id}`,
+    };
   } catch (error) {
     return {
       error: "인증번호를 확인해주세요.",
@@ -630,37 +619,103 @@ export const resetSchoolPasswordSecondStep = async ({
   username: string;
 }) => {
   try {
-    const deleteCode = await prisma.schoolPasswordResetCode.delete({
+    const foundCode = await prisma.schoolPasswordResetCode.findUnique({
       where: {
         code,
         schoolUserUsername: username,
       },
     });
 
-    if (!deleteCode) {
+    if (!foundCode) {
       return {
         error: "인증번호를 확인해주세요.",
       };
     }
 
-    const uniqueCode = await prisma.schoolOneTimeUniqueCode.create({
-      data: {
-        schoolUserUsername: username,
-      },
-    });
-
-    if (uniqueCode) {
-      return {
-        message: "인증번호 확인 완료",
-        redirectTo: `/reset-password/reset?code=${uniqueCode.id}`,
-      };
-    } else
-      return {
-        error: "인증번호 확인 오류",
-      };
+    return {
+      message: "인증번호 확인 완료",
+      redirectTo: `/reset-password/school?code=${foundCode.id}`,
+    };
   } catch (error) {
     return {
       error: "인증번호를 확인해주세요.",
+    };
+  }
+};
+
+export const resetStudentPasswordLastStep = async ({
+  password,
+  confirmPassword,
+  username,
+}: {
+  password: string;
+  confirmPassword: string;
+  username: string;
+}) => {
+  if (password !== confirmPassword) {
+    return {
+      error: "비밀번호가 일치하지 않습니다.",
+    };
+  }
+
+  const updatedStudent = await prisma.student.update({
+    where: {
+      username,
+    },
+    data: {
+      password: await bcrypt.hash(password, 10),
+      passwordResetCode: {
+        delete: true,
+      },
+    },
+  });
+
+  if (updatedStudent) {
+    return {
+      message: "비밀번호 초기화 완료",
+      redirectTo: "/login",
+    };
+  } else {
+    return {
+      error: "비밀번호 초기화 오류",
+    };
+  }
+};
+export const resetSchoolPasswordLastStep = async ({
+  password,
+  confirmPassword,
+  username,
+}: {
+  password: string;
+  confirmPassword: string;
+  username: string;
+}) => {
+  if (password !== confirmPassword) {
+    return {
+      error: "비밀번호가 일치하지 않습니다.",
+    };
+  }
+
+  const updatedSchoolUser = await prisma.schoolUser.update({
+    where: {
+      username,
+    },
+    data: {
+      password: await bcrypt.hash(password, 10),
+      passwordResetCode: {
+        delete: true,
+      },
+    },
+  });
+
+  if (updatedSchoolUser) {
+    return {
+      message: "비밀번호 초기화 완료",
+      redirectTo: "/login",
+    };
+  } else {
+    return {
+      error: "비밀번호 초기화 오류",
     };
   }
 };
