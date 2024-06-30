@@ -9,4 +9,5 @@ export const adminNavs: AdminNav[] = [
   { href: "/admin/dashboard/menus", label: "메뉴 관리" },
   { href: "/admin/dashboard/payments", label: "입금 관리" },
   { href: "/admin/dashboard/refunds", label: "환불 관리" },
+  { href: "/admin/dashboard/students", label: "학생 관리" },
 ];

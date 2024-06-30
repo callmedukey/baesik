@@ -1,19 +1,14 @@
 import MainContainer from "@/components/layout/main-container";
 import React from "react";
-import getBeginningAndEndingDays from "@/lib/getBeginningAndEndingDays";
-import { getMenu } from "@/actions/students";
-import NotReadyContainer from "@/components/students/NotReadyContainer";
-import ReadyContainer from "@/components/students/ReadyContainer";
-import { getHolidayDataFromApi } from "@/actions/common";
+
+import MonthlyMenuContainer from "@/components/students/MonthlyMenuContainer";
 
 export const dynamic = "force-dynamic";
 
 const StudentPage = async () => {
-  const holidayData = await getHolidayDataFromApi();
-
   return (
     <MainContainer className="block py-12" hasHeader>
-      <ReadyContainer holidayData={holidayData} />
+      <MonthlyMenuContainer />
     </MainContainer>
   );
 };

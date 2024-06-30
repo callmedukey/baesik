@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import StudentMobileMenu from "./StudentMobileMenu";
+import { studentNavs } from "./studentNavs";
 
 const StudentHeader = () => {
   return (
@@ -17,41 +17,17 @@ const StudentHeader = () => {
 
       <NavigationMenu className="ml-auto mr-0 hidden md:flex">
         <NavigationMenuList className="">
-          <NavigationMenuItem>
-            <Link href="/student" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                식사 신청 및 조회
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/student/cancelation" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                취소 신청
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/student/reverse-cancelation" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                재신청
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/student/payments" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                결제 내역
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/student/cart" legacyBehavior passHref>
-              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
-                <ShoppingCartIcon className="size-5" />
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+          {studentNavs.map((nav) => (
+            <NavigationMenuItem key={nav.href}>
+              <Link href={nav.href} legacyBehavior passHref>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle())}
+                >
+                  {nav.label}
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
       <StudentMobileMenu />

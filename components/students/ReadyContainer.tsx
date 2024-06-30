@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/popover";
 
 import StudentMealSelectionTable from "./StudentMealSelectionTable";
-import { getMenuAvailableDays } from "@/actions/students";
-import MonthlyMenuContainer from "./MonthlyMenuContainer";
+
+import { getAlreadyAppliedMealDays } from "@/actions/students";
 
 export type AvailableDay = {
   date: string;
@@ -43,6 +43,9 @@ const ReadyContainer = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [applyDates, setApplyDates] = useState<AvailableDay[]>([]);
+  const [existingMealDates, setExistingMealDates] = useState<AvailableDay[]>(
+    []
+  );
 
   const handleApply = async () => {
     setIsLoading(true);
@@ -65,6 +68,10 @@ const ReadyContainer = ({
       setIsLoading(false);
       return;
     }
+    const alreadyAppliedMealDays = await getAlreadyAppliedMealDays({
+      fromDate: applicationDate.from,
+      toDate: applicationDate.to,
+    });
 
     const selectedFrom = format(applicationDate.from, "yyyy-MM-dd", {
       locale: ko,
@@ -95,6 +102,7 @@ const ReadyContainer = ({
       if (isSunday(date)) {
         return;
       }
+
       if (holidayData && (holidayData[date] || isSaturday(date))) {
         possibleDays.push({
           date: date,
@@ -111,12 +119,13 @@ const ReadyContainer = ({
     });
 
     setApplyDates(possibleDays);
+    setExistingMealDates(alreadyAppliedMealDays);
     setIsLoading(false);
   };
 
   return (
     <div className="w-full space-y-4">
-      <MonthlyMenuContainer />
+      <h1 className="text-center text-2xl font-bold">식사 신청</h1>
       <div className="max-w-md w-full mx-auto space-y-4">
         <aside className="w-full flex gap-4">
           <Popover>
@@ -167,6 +176,7 @@ const ReadyContainer = ({
           <StudentMealSelectionTable
             meals={applyDates}
             holidayData={holidayData}
+            existingMealDates={existingMealDates}
           />
         )}
       </div>

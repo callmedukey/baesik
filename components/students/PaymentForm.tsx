@@ -1,5 +1,5 @@
 "use client";
-import { PaymentInitSchema, PaymentSchema } from "@/lib/definitions";
+import { PaymentInitSchema } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

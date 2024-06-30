@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { addDays, format } from "date-fns";
 import type { Meals } from "@prisma/client";
+import { ko } from "date-fns/locale/ko";
 
 export const getMenu = async ({
   fromDate,
@@ -227,7 +228,7 @@ export const cancelMeals = async ({
         amount: Math.floor(meals.reduce((acc, meal) => acc + 7000, 0)),
       },
     });
-  
+
     const updated = await tx.meals.updateMany({
       where: {
         isComplete: false,
@@ -348,4 +349,48 @@ export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
     }
     return { error: "재신청되지 않았습니다" };
   });
+};
+
+export const getAlreadyAppliedMealDays = async ({
+  fromDate,
+  toDate,
+}: {
+  fromDate: Date;
+  toDate: Date;
+}) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const meals = await prisma.meals.findMany({
+    where: {
+      date: {
+        gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
+        lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
+      },
+      studentId: session.userId,
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+  const savedMeals = await prisma.savedMeals.findMany({
+    where: {
+      studentId: session.userId,
+    },
+  });
+  return meals
+    .map((meal) => ({
+      date: format(new Date(meal.date), "yyyy-MM-dd", { locale: ko }),
+      isLunch: meal.mealType === "LUNCH" || false,
+      isDinner: meal.mealType === "DINNER" || false,
+    }))
+    .concat(
+      savedMeals.map((meal) => ({
+        date: format(new Date(meal.date), "yyyy-MM-dd", { locale: ko }),
+        isLunch: meal.mealType === "LUNCH" || false,
+        isDinner: meal.mealType === "DINNER" || false,
+      }))
+    );
 };

@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
@@ -50,7 +51,7 @@ const MonthlyMenuContainer = () => {
 
   return (
     <div className="">
-      <h1 className="text-center text-2xl font-bold">학식 조회</h1>
+      <h1 className="text-center text-2xl font-bold">메뉴 조회</h1>
       <aside className="w-full flex gap-4 my-6 mx-auto max-w-md">
         <Popover>
           <PopoverTrigger asChild>

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
+
 const StudentShoppingCart = async () => {
   const meals = await getShoppingCart();
 

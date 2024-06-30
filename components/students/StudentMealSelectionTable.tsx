@@ -20,9 +20,11 @@ import { parseWeekDay } from "@/lib/parseWeekDay";
 const StudentMealSelectionTable = ({
   meals,
   holidayData,
+  existingMealDates,
 }: {
   meals: AvailableDay[];
   holidayData?: { [key: string]: string };
+  existingMealDates: AvailableDay[];
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -77,7 +79,7 @@ const StudentMealSelectionTable = ({
           disabled={selectedMeals.length === 0}
           onClick={resetAll}
         >
-          전체 삭제하기
+          전체 미선택하기
         </Button>
         <Button
           className="w-full col-span-2"
@@ -89,7 +91,6 @@ const StudentMealSelectionTable = ({
         </Button>
       </div>
       <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow className="">
             <TableHead className="text-left">날짜</TableHead>
@@ -120,6 +121,7 @@ const StudentMealSelectionTable = ({
                     holidayData: holidayData || {},
                     date: meal.date,
                     mealType: "LUNCH",
+                    existingMealDates: existingMealDates,
                   }) === "선택불가"
                     ? "text-gray-500 cursor-not-allowed"
                     : "cursor-pointer"
@@ -137,7 +139,21 @@ const StudentMealSelectionTable = ({
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "LUNCH",
-                    }) === "선택불가"
+                      existingMealDates: existingMealDates,
+                    }) === "선택불가" ||
+                    parseMealSelectionOption({
+                      condition: selectedMeals.some(
+                        (m) =>
+                          m.date.toString() === meal.date &&
+                          m.mealType === "LUNCH"
+                      ),
+                      whenYes: "선택",
+                      whenNo: "미선택",
+                      holidayData: holidayData || {},
+                      date: meal.date,
+                      mealType: "LUNCH",
+                      existingMealDates: existingMealDates,
+                    }) === "이미신청"
                   ) {
                     return;
                   }
@@ -179,6 +195,7 @@ const StudentMealSelectionTable = ({
                   holidayData: holidayData || {},
                   date: meal.date,
                   mealType: "LUNCH",
+                  existingMealDates: existingMealDates,
                 })}
               </TableCell>
               <TableCell
@@ -195,6 +212,7 @@ const StudentMealSelectionTable = ({
                     holidayData: holidayData || {},
                     date: meal.date,
                     mealType: "DINNER",
+                    existingMealDates: existingMealDates,
                   }) === "선택불가"
                     ? "text-gray-500 cursor-not-allowed"
                     : "cursor-pointer"
@@ -212,7 +230,21 @@ const StudentMealSelectionTable = ({
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "DINNER",
-                    }) === "선택불가"
+                      existingMealDates: existingMealDates,
+                    }) === "선택불가" ||
+                    parseMealSelectionOption({
+                      condition: selectedMeals.some(
+                        (m) =>
+                          m.date.toString() === meal.date &&
+                          m.mealType === "DINNER"
+                      ),
+                      whenYes: "선택",
+                      whenNo: "미선택",
+                      holidayData: holidayData || {},
+                      date: meal.date,
+                      mealType: "DINNER",
+                      existingMealDates: existingMealDates,
+                    }) === "이미신청"
                   ) {
                     return;
                   }
@@ -254,6 +286,7 @@ const StudentMealSelectionTable = ({
                   holidayData: holidayData || {},
                   date: meal.date,
                   mealType: "DINNER",
+                  existingMealDates: existingMealDates,
                 })}
               </TableCell>
             </TableRow>

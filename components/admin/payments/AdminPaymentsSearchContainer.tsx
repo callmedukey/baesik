@@ -28,7 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { findPayment } from "@/actions/admin";
+import { findPayment, findUnpaidPayment } from "@/actions/admin";
 import AdminPaymentContainer from "./AdminPaymentContainer";
 
 const AdminPaymentsSearchContainer = () => {
@@ -48,6 +48,13 @@ const AdminPaymentsSearchContainer = () => {
   });
 
   const [payments, setPayments] = useState<Payments[]>([]);
+
+  const handleUnpaidSearch = async () => {
+    setLoading(true);
+    const payments = await findUnpaidPayment();
+    setPayments(payments || []);
+    setLoading(false);
+  };
 
   const handleSearch = async (values: z.infer<typeof PaymentSearchSchema>) => {
     if (!searchDate || !searchDate.from || !searchDate.to) {
@@ -175,6 +182,15 @@ const AdminPaymentsSearchContainer = () => {
               type="submit"
             >
               조회
+            </Button>
+            <Button
+              className="w-full !mt-2"
+              disabled={loading}
+              type="submit"
+              variant={"outline"}
+              onClick={handleUnpaidSearch}
+            >
+              미입금 조회
             </Button>
           </form>
         </Form>

@@ -59,6 +59,20 @@ export const StudentSignUpSchema = z.object({
   schoolName: z.string({ required_error: "학원를 선택해주세요." }),
 });
 
+export const UpdateStudentSchema = StudentSignUpSchema.omit({
+  password: true,
+  confirmPassword: true,
+}).extend({
+  id: z.string(),
+});
+
+export const UpdateStudentPasswordSchema = StudentSignUpSchema.pick({
+  password: true,
+  confirmPassword: true,
+}).extend({
+  id: z.string(),
+});
+
 export const SchoolSignUpSchema = StudentSignUpSchema.extend({
   phone: z
     .string({ required_error: "담당자 핸드폰 번호를 입력해주세요." })
@@ -168,4 +182,9 @@ export const ResetPasswordFinalSchema = z.object({
     .regex(/[a-zA-Z]/, { message: "비밀번호에 영문자가 포함되어야 합니다." })
     .regex(/[0-9]/, { message: "비밀번호에 숫자가 포함되어야 합니다." })
     .trim(),
+});
+
+export const StudentSearchSchema = z.object({
+  searchTerm: z.string(),
+  type: z.enum(["username", "studentName", "schoolName", "studentEmail"]),
 });
