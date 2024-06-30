@@ -4,7 +4,8 @@ import prisma from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   try {
     const { mall_id, order_number, order_status } = await req.json();
-
+    console.log("web hook arrived");
+    console.log(mall_id, order_number, order_status);
     if (
       mall_id !== process.env.PAYACTION_MALLID ||
       order_status !== "매칭완료"
