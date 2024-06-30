@@ -77,8 +77,13 @@ const ReadyContainer = ({
       locale: ko,
     });
 
-    if (selectedFrom <= "2024-06-30") {
-      alert("신청 가능한 날짜는 2024년 7월 1일부터입니다.");
+    if (
+      selectedFrom <
+      format(addDays(new Date(), 2), "yyyy-MM-dd", {
+        locale: ko,
+      })
+    ) {
+      alert("신청 가능한 날짜는 최소 2일 전부터입니다.");
       setApplicationDate({
         from: undefined,
         to: undefined,
