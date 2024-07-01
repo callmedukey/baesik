@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
       mall_id !== process.env.PAYACTION_MALLID ||
       order_status !== "매칭완료"
     ) {
+      console.log("webhook failed");
       return Response.json({ error: "Invalid mall_id" }, { status: 400 });
     }
 
@@ -23,12 +24,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (updated) {
+      console.log("webhook success");
       return new Response("OK", { status: 200 });
     } else {
+      console.log("webhook failed");
       return new Response("Failed", { status: 500 });
     }
   } catch (error) {
     console.error(error);
+    console.log("webhook failed server");
     return Response.json({ error: "Invalid request" }, { status: 500 });
   }
 }
