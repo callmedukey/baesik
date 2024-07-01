@@ -8,10 +8,13 @@ import DeleteMealFromCartButton from "@/components/students/DeleteMealFromCartBu
 import { parseKoreanMealType } from "@/lib/parseKoreanMealType";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { verifySession } from "@/actions/session";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const StudentShoppingCart = async () => {
+  await verifySession();
   const meals = await getShoppingCart();
 
   if (!Array.isArray(meals) && meals.error) {

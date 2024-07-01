@@ -19,7 +19,7 @@ const StudentHeader = () => {
         <NavigationMenuList className="">
           {studentNavs.map((nav) => (
             <NavigationMenuItem key={nav.href}>
-              <Link href={nav.href} legacyBehavior passHref>
+              <Link href={nav.href} legacyBehavior passHref prefetch={false}>
                 <NavigationMenuLink
                   className={cn(navigationMenuTriggerStyle())}
                 >
