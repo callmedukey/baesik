@@ -89,11 +89,10 @@ export const POST = async (req: NextRequest) => {
       orderer_name: ordererName,
       orderer_phone_number: formatPhoneNumber(phone),
       orderer_email: student.email,
-      trade_usage: "소득공제용",
-      identity_number: "010-3974-8429",
     };
 
     revalidatePath("/student/payments");
+    revalidatePath("/student/meals");
     revalidatePath("/student/cart");
 
     const response = await fetch(payActionUrl, {

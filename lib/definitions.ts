@@ -2,11 +2,22 @@ import { z } from "zod";
 import testValidPhoneNumber from "./regex/testPhoneNumber";
 import testAlphabetsAndNumbers from "./regex/testAlphabetsAndNumbers";
 import { testBankDetails } from "./testBankDetails";
-import type { Meals, RefundRequest, School, Student } from "@prisma/client";
+import type {
+  Meals,
+  Payments,
+  RefundRequest,
+  School,
+  SchoolUser,
+  Student,
+} from "@prisma/client";
 import { testName } from "./regex/testName";
 
 export interface StudentsWithMeals extends Student {
   meals: Meals[];
+}
+
+export interface MealsWithPayments extends Meals {
+  payments: Payments;
 }
 
 export interface SchoolsWithStudentsWithMeals extends School {
@@ -18,6 +29,10 @@ export interface StudentWithSchool extends Student {
 }
 export interface RefundRequestWithStudent extends RefundRequest {
   student: StudentWithSchool;
+}
+
+export interface TeacherWithSchool extends SchoolUser {
+  school: School;
 }
 
 export const StudentSignUpSchema = z.object({
@@ -67,6 +82,20 @@ export const UpdateStudentSchema = StudentSignUpSchema.omit({
 });
 
 export const UpdateStudentPasswordSchema = StudentSignUpSchema.pick({
+  password: true,
+  confirmPassword: true,
+}).extend({
+  id: z.string(),
+});
+
+export const UpdateTeacherSchema = StudentSignUpSchema.omit({
+  password: true,
+  confirmPassword: true,
+}).extend({
+  id: z.string(),
+});
+
+export const UpdateTeacherPasswordSchema = StudentSignUpSchema.pick({
   password: true,
   confirmPassword: true,
 }).extend({
@@ -187,4 +216,8 @@ export const ResetPasswordFinalSchema = z.object({
 export const StudentSearchSchema = z.object({
   searchTerm: z.string(),
   type: z.enum(["username", "studentName", "schoolName", "studentEmail"]),
+});
+export const SchoolUserSearchSchema = z.object({
+  searchTerm: z.string(),
+  type: z.enum(["username", "schoolName", "name"]),
 });

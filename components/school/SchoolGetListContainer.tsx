@@ -1,7 +1,5 @@
 "use client";
-
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
+import * as React from "react";
 import { ko } from "date-fns/locale/ko";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -13,94 +11,123 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { findStudentsWithMeals } from "@/actions/schools";
-import SchoolListContainer from "./SchoolListContainer";
-import type { StudentsWithMeals } from "@/lib/definitions";
+import type { Meals, Student } from "@prisma/client";
+import { getStudentsWithMeals } from "@/actions/admin";
+import DailyMealTable from "@/components/DailyMealTable";
 
-export type AvailableDay = {
-  date: string;
-  isLunch: boolean;
-  isDinner: boolean;
-};
+interface StudentsWithMeals extends Student {
+  meals: Meals[];
+}
 
-const SchoolGetListContainer = ({}: {}) => {
-  const [applicationDate, setApplicationDate] = useState<DateRange | undefined>(
-    {
-      from: undefined,
-      to: undefined,
+export function School({ schoolId }: { schoolId: string }) {
+  const [singleDay, setSingleDay] = React.useState<Date | undefined>(undefined);
+
+  const [loading, setLoading] = React.useState(false);
+
+  const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
+
+  const studentsWithLunch = React.useMemo(
+    () =>
+      students
+        .filter((student) => {
+          if (student.meals.some((meal) => meal.mealType === "LUNCH")) {
+            return true;
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [students]
+  );
+
+  const studentsWithDinner = React.useMemo(
+    () =>
+      students
+        .filter((student) => {
+          if (student.meals.some((meal) => meal.mealType === "DINNER")) {
+            return true;
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [students]
+  );
+
+  const handleSearch = async () => {
+    setLoading(true);
+    if (!singleDay) {
+      alert("날짜를 선택해주세요.");
+      return;
     }
-  );
-  const [isLoading, setIsLoading] = useState(false);
+    const listOfStudents = await getStudentsWithMeals({
+      schoolId,
+      fromDate: singleDay,
+      toDate: singleDay,
+    });
 
-  const [studentsWithMeals, setStudentsWithMeals] = useState<
-    StudentsWithMeals[]
-  >([]);
+    if (listOfStudents && Array.isArray(listOfStudents))
+      setStudents(listOfStudents);
+    setLoading(false);
 
-  const handleApply = async () => {
-    if (!applicationDate) return;
-    setIsLoading(true);
-    const students = await findStudentsWithMeals(applicationDate);
-
-    if (students && students.length > 0) {
-      setStudentsWithMeals(students);
-    } else alert("학식을 신청한 학생이 없습니다");
-
-    setIsLoading(false);
+    if (!listOfStudents) {
+      alert("학생 조회에 실패했습니다.");
+    }
   };
-
   return (
-    <div className="w-full space-y-4">
-      <div className="max-w-md w-full mx-auto space-y-4">
-        <aside className="w-full flex gap-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !applicationDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {applicationDate?.from ? (
-                  applicationDate.to ? (
-                    <>
-                      {format(applicationDate.from, "yyyy-MM-dd")} -{" "}
-                      {format(applicationDate.to, "yyyy-MM-dd")}
-                    </>
-                  ) : (
-                    format(applicationDate.from, "yyyy-MM-dd")
-                  )
-                ) : (
-                  <span>날짜 선택</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                locale={ko}
-                defaultMonth={applicationDate?.from}
-                selected={applicationDate}
-                onSelect={setApplicationDate}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          <Button
-            disabled={!applicationDate || isLoading}
-            onClick={handleApply}
-            type="button"
-            className="w-[100px]"
-          >
-            {isLoading ? "조회중..." : "조회"}
-          </Button>
-        </aside>
-        <SchoolListContainer studentsWithMeals={studentsWithMeals} />
-      </div>
-    </div>
-  );
-};
+    <section>
+      <aside className="my-6 flex items-center justify-center gap-4 print:hidden">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn(
+                "w-[300px] justify-start text-left font-normal",
+                !singleDay && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {singleDay ? (
+                <>{format(singleDay, "yyyy-MM-dd")}</>
+              ) : (
+                <span>날짜 선택</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="single"
+              locale={ko}
+              selected={singleDay}
+              onSelect={(day) => setSingleDay(day || undefined)}
+            />
+          </PopoverContent>
+        </Popover>
+        <Button
+          disabled={!singleDay || loading}
+          onClick={handleSearch}
+          type="button"
+        >
+          조회
+        </Button>
+      </aside>
 
-export default SchoolGetListContainer;
+      {students && Array.isArray(students) && students.length > 0 ? (
+        <div className="flex flex-col justify-center items-center gap-4 lg:grid lg:grid-cols-2 lg:items-start text-center print:grid print:grid-cols-2 print:items-start">
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-600">
+              점심 x{studentsWithLunch.length}
+            </h2>
+            <DailyMealTable students={studentsWithLunch} />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-600">
+              저녁 x{studentsWithDinner.length}
+            </h2>
+            <DailyMealTable students={studentsWithDinner} />
+          </div>
+        </div>
+      ) : (
+        <div className="text-center">학생이 없습니다.</div>
+      )}
+    </section>
+  );
+}

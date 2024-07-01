@@ -119,6 +119,23 @@ export async function schoolUserSignup(
 
   const removedDashPhone = phone.replace(/-/g, "");
 
+  const [foundUsername, foundPhone] = await prisma.$transaction([
+    prisma.schoolUser.findFirst({ where: { username } }),
+    prisma.schoolUser.findFirst({ where: { phone: removedDashPhone } }),
+  ]);
+
+  if (foundUsername) {
+    return {
+      error: "이미 존재하는 아이디 입니다.",
+    };
+  }
+
+  if (foundPhone) {
+    return {
+      error: "이미 존재하는 전화번호 입니다.",
+    };
+  }
+
   // 3. Register School user, they will be disabled by default till admin grants access
 
   // Hash the user's password
@@ -233,7 +250,7 @@ export async function schoolLogin(
   }
 
   // 2. Query the database for the user with the given email
-  const user = await prisma.student.findUnique({
+  const user = await prisma.schoolUser.findUnique({
     where: {
       username: validatedFields.data.username,
     },
@@ -260,7 +277,7 @@ export async function schoolLogin(
 
   await createSession({
     userId,
-    schoolId: user.schoolId,
+    schoolId: user.schoolId as string,
     isStudent: false,
   });
 
@@ -695,19 +712,21 @@ export const resetSchoolPasswordLastStep = async ({
       error: "비밀번호가 일치하지 않습니다.",
     };
   }
-
+  const hashedPassword = await bcrypt.hash(password, 10);
   const updatedSchoolUser = await prisma.schoolUser.update({
     where: {
       username,
     },
     data: {
-      password: await bcrypt.hash(password, 10),
+      password: hashedPassword,
       passwordResetCode: {
         delete: true,
       },
     },
   });
-
+  console.log(hashedPassword);
+  console.log(updatedSchoolUser.password);
+  console.log(await bcrypt.compare(password, hashedPassword));
   if (updatedSchoolUser) {
     return {
       message: "비밀번호 초기화 완료",

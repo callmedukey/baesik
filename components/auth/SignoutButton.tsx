@@ -6,7 +6,7 @@ import { logout } from "@/actions/auth";
 const SignoutButton = ({ isAdmin }: { isAdmin?: boolean }) => {
   return (
     <Button
-      className="w-full max-w-md mx-auto flex mb-6"
+      className="w-full max-w-md mx-auto flex mb-6 print:hidden"
       variant="outline"
       onClick={async () => {
         await logout(isAdmin ? "/admin" : "/");

@@ -73,7 +73,7 @@ model School {
 model SchoolUser {
   id String @id @default(uuid())
 
-  name     String @unique
+  name     String 
   username String @unique
   email    String
   password String

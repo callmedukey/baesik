@@ -13,10 +13,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import {
-  resetSchoolPasswordLastStep,
-  resetStudentPasswordLastStep,
-} from "@/actions/auth";
+import { resetSchoolPasswordLastStep } from "@/actions/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 const ResetSchoolPasswordFinalForm = ({ username }: { username: string }) => {
   const searchParams = useSearchParams();

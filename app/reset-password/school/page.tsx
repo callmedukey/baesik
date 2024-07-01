@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 
 import Link from "next/link";
-import ResetStudentPasswordFinalForm from "@/components/auth/ResetStudentPasswordFinalForm";
+
+import ResetSchoolPasswordFinalForm from "@/components/auth/ResetSchoolPasswordFinalForm";
 
 const page = async ({ searchParams }: { searchParams: { code: string } }) => {
   const { code } = searchParams;
@@ -44,7 +45,7 @@ const page = async ({ searchParams }: { searchParams: { code: string } }) => {
           <CardTitle>비밀번호 초기화</CardTitle>
         </CardHeader>
         <CardContent className="w-full">
-          <ResetStudentPasswordFinalForm
+          <ResetSchoolPasswordFinalForm
             username={foundCode.schoolUser.username}
           />
         </CardContent>

@@ -11,7 +11,7 @@ import Link from "next/link";
 
 const SchoolHeader = () => {
   return (
-    <header className="h-16 flex items-center border-b shadow-sm px-2 sticky top-0 bg-white z-10">
+    <header className="h-16 flex items-center border-b shadow-sm px-2 sticky top-0 bg-white z-10 print:hidden">
       <h1 className="text-2xl font-bold ml-2">준푸드</h1>
       <NavigationMenu className="ml-auto mr-0">
         <NavigationMenuList className="">

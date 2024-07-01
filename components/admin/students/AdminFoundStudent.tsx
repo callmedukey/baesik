@@ -18,6 +18,11 @@ const AdminFoundStudent = ({ student }: { student: StudentWithSchool }) => {
       <Button asChild className="w-full mt-2" variant={"outline"}>
         <Link href={`/admin/dashboard/students/${student.id}`}>수정</Link>
       </Button>
+      <Button asChild className="w-full mt-2" variant={"outline"}>
+        <Link href={`/admin/dashboard/students/${student.id}/meals`}>
+          식사 내역
+        </Link>
+      </Button>
     </div>
   );
 };

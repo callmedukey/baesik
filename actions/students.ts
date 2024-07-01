@@ -394,3 +394,23 @@ export const getAlreadyAppliedMealDays = async ({
       }))
     );
 };
+
+export const getStudentMealHistory = async () => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const meals = await prisma.meals.findMany({
+    where: {
+      studentId: session.userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      payments: true,
+    },
+  });
+  return meals;
+};

@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { ko } from "date-fns/locale/ko";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,88 +11,55 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { DateRange } from "react-day-picker";
 import type { Meals, Student } from "@prisma/client";
 import { getStudentsWithMeals } from "@/actions/admin";
-import SchoolListItem from "@/components/school/SchoolListItem";
+import DailyMealTable from "@/components/DailyMealTable";
 
 interface StudentsWithMeals extends Student {
   meals: Meals[];
 }
 
 export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 14),
-  });
+  const [singleDay, setSingleDay] = React.useState<Date | undefined>(undefined);
 
   const [loading, setLoading] = React.useState(false);
 
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
 
-  // const studentsWithMeals = React.useMemo(() => {
-  //   const obj: {
-  //     [key: string]: {
-  //       name: string;
-  //       date: any;
-  //       hasLunch: boolean;
-  //       hasDinner: boolean;
-  //     };
-  //   } = {};
-
-  //   students.forEach((student, i) => {
-  //     obj[student.id] = {
-  //       name: student.name,
-  //       date: student.meals.map((meal) => meal.date)[i],
-  //       hasLunch: student.meals.some((meal) => meal.mealType === "LUNCH"),
-  //       hasDinner: student.meals.some((meal) => meal.mealType === "DINNER"),
-  //     };
-  //     // obj[student.name]["date"] = student.meals.map((meal) => meal.date)[0];
-  //     // obj[student.name]["hasLunch"] = student.meals.some(
-  //     //   (meal) => meal.mealType === "LUNCH"
-  //     // );
-  //     // obj[student.name]["hasDinner"] = student.meals.some(
-  //     //   (meal) => meal.mealType === "DINNER"
-  //     // );
-  //   });
-
-  //   console.log(
-  //     Object.entries(obj).map(([key, value]) => ({
-  //       name: key,
-  //       date: value.date,
-  //       hasLunch: value.hasLunch,
-  //       hasDinner: value.hasDinner,
-  //     }))
-  //   );
-  //   return [];
-  // }, [students]);
-
   const studentsWithLunch = React.useMemo(
     () =>
-      students.filter((student) => {
-        if (student.meals.some((meal) => meal.mealType === "LUNCH")) {
-          return true;
-        }
-      }),
+      students
+        .filter((student) => {
+          if (student.meals.some((meal) => meal.mealType === "LUNCH")) {
+            return true;
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
     [students]
   );
 
   const studentsWithDinner = React.useMemo(
     () =>
-      students.filter((student) => {
-        if (student.meals.some((meal) => meal.mealType === "DINNER")) {
-          return true;
-        }
-      }),
+      students
+        .filter((student) => {
+          if (student.meals.some((meal) => meal.mealType === "DINNER")) {
+            return true;
+          }
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
     [students]
   );
 
   const handleSearch = async () => {
     setLoading(true);
+    if (!singleDay) {
+      alert("날짜를 선택해주세요.");
+      return;
+    }
     const listOfStudents = await getStudentsWithMeals({
       schoolId,
-      fromDate: date?.from ? date.from : new Date(),
-      toDate: date?.to ? date.to : new Date(),
+      fromDate: singleDay,
+      toDate: singleDay,
     });
 
     if (listOfStudents && Array.isArray(listOfStudents))
@@ -105,7 +72,7 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
   };
   return (
     <section>
-      <aside className="my-6 flex items-center justify-center gap-4">
+      <aside className="my-6 flex items-center justify-center gap-4 print:hidden">
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -113,19 +80,12 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
               variant={"outline"}
               className={cn(
                 "w-[300px] justify-start text-left font-normal",
-                !date && "text-muted-foreground"
+                !singleDay && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, "yyyy-MM-dd")} -{" "}
-                    {format(date.to, "yyyy-MM-dd")}
-                  </>
-                ) : (
-                  format(date.from, "yyyy-MM-dd")
-                )
+              {singleDay ? (
+                <>{format(singleDay, "yyyy-MM-dd")}</>
               ) : (
                 <span>날짜 선택</span>
               )}
@@ -134,45 +94,40 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               initialFocus
-              mode="range"
+              mode="single"
               locale={ko}
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
-              numberOfMonths={2}
+              selected={singleDay}
+              onSelect={(day) => setSingleDay(day || undefined)}
             />
           </PopoverContent>
         </Popover>
         <Button
-          disabled={!date || loading}
+          disabled={!singleDay || loading}
           onClick={handleSearch}
           type="button"
         >
           조회
         </Button>
       </aside>
+      {singleDay && (
+        <div className="text-2xl text-center font-bold">
+          <span>{format(singleDay, "yyyy-MM-dd")}</span>
+        </div>
+      )}
 
       {students && Array.isArray(students) && students.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2 items-start justify-center text-center max-w-md w-full mx-auto">
+        <div className="flex flex-col justify-center items-center gap-4 lg:grid lg:grid-cols-2 lg:items-start text-center print:grid print:grid-cols-2 print:items-start">
           <div className="space-y-2">
-            <div className="border shadow-sm py-2 rounded-md">
+            <h2 className="text-xl font-bold text-gray-600">
               점심 x{studentsWithLunch.length}
-            </div>
-            {studentsWithLunch.map((student) => {
-              return (
-                <SchoolListItem key={student.id} studentWithMeal={student} />
-              );
-            })}
+            </h2>
+            <DailyMealTable students={studentsWithLunch} />
           </div>
           <div className="space-y-2">
-            <div className="border shadow-sm py-2 rounded-md">
+            <h2 className="text-xl font-bold text-gray-600">
               저녁 x{studentsWithDinner.length}
-            </div>
-            {studentsWithDinner.map((student) => {
-              return (
-                <SchoolListItem key={student.id} studentWithMeal={student} />
-              );
-            })}
+            </h2>
+            <DailyMealTable students={studentsWithDinner} />
           </div>
         </div>
       ) : (

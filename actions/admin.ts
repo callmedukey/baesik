@@ -7,9 +7,12 @@ import {
   AddSchoolSchema,
   PaymentSearchSchema,
   RefundSearchSchema,
+  SchoolUserSearchSchema,
   StudentSearchSchema,
   UpdateStudentPasswordSchema,
   UpdateStudentSchema,
+  UpdateTeacherPasswordSchema,
+  UpdateTeacherSchema,
 } from "@/lib/definitions";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -732,4 +735,150 @@ export const findUnpaidPayment = async () => {
     },
   });
   return payments;
+};
+
+//teachers search and update
+export const findTeachersAsAdmin = async ({
+  searchTerm,
+  type,
+}: {
+  searchTerm: z.infer<typeof SchoolUserSearchSchema>["searchTerm"];
+  type: z.infer<typeof SchoolUserSearchSchema>["type"];
+}) => {
+  switch (type) {
+    case "username":
+      const teacherWithUsername = await prisma.schoolUser.findMany({
+        where: {
+          username: {
+            contains: searchTerm,
+          },
+        },
+        include: {
+          school: true,
+        },
+      });
+      return teacherWithUsername;
+
+    case "name":
+      const teacherWithName = await prisma.schoolUser.findMany({
+        where: {
+          name: {
+            contains: searchTerm,
+          },
+        },
+        include: {
+          school: true,
+        },
+      });
+      return teacherWithName;
+
+    case "schoolName":
+      const teacherWithSchoolName = await prisma.schoolUser.findMany({
+        where: {
+          school: {
+            name: {
+              contains: searchTerm,
+            },
+          },
+        },
+        include: {
+          school: true,
+        },
+      });
+      return teacherWithSchoolName;
+
+    default:
+      return [];
+  }
+};
+
+export const adminFindSingleTeacher = async (teacherId: string) => {
+  const teacher = await prisma.schoolUser.findUnique({
+    where: {
+      id: teacherId,
+    },
+    include: {
+      school: true,
+    },
+  });
+
+  return teacher;
+};
+
+export const updateTeacher = async (
+  data: z.infer<typeof UpdateTeacherSchema>
+) => {
+  const teacher = await prisma.schoolUser.update({
+    where: {
+      id: data.id,
+    },
+    data: {
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      school: {
+        connect: {
+          name: data.schoolName,
+        },
+      },
+    },
+  });
+
+  revalidatePath("/admin/dashboard/school-admins");
+  revalidatePath(`/admin/dashboard/school-admins/${data.id}`);
+
+  if (teacher) {
+    return {
+      message: "선생 정보 수정을 성공적으로 완료했습니다",
+    };
+  } else {
+    return {
+      error: "선생 정보 수정을 실패했습니다",
+    };
+  }
+};
+
+export const updateTeacherPassword = async (
+  data: z.infer<typeof UpdateTeacherPasswordSchema>
+) => {
+  if (data.password !== data.confirmPassword) {
+    return { error: "비밀번호가 일치하지 않습니다" };
+  }
+
+  const teacher = await prisma.schoolUser.update({
+    where: {
+      id: data.id,
+    },
+    data: {
+      password: await bcrypt.hash(data.password, 10),
+    },
+  });
+
+  revalidatePath("/admin/dashboard/school-admins");
+  revalidatePath(`/admin/dashboard/school-admins/${data.id}`);
+
+  if (teacher) {
+    return {
+      message: "비밀번호 변경을 성공적으로 완료했습니다",
+    };
+  } else {
+    return {
+      error: "비밀번호 변경을 실패했습니다",
+    };
+  }
+};
+
+export const getStudentMealHistory = async (studentId: string) => {
+  const meals = await prisma.meals.findMany({
+    where: {
+      studentId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      payments: true,
+    },
+  });
+  return meals;
 };

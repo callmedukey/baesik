@@ -15,7 +15,6 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { resetSchoolPasswordFirstStep } from "@/actions/auth";
 import { ResetPasswordSchema } from "@/lib/definitions";
-import ResetStudentPasswordVerificationForm from "./ResetStudentPasswordVerificationForm";
 import ResetSchoolPasswordVerificationForm from "./ResetSchoolPasswordVerificationForm";
 
 const ResetSchoolPasswordForm = () => {
