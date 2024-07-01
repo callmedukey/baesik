@@ -29,6 +29,44 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
   const [loading, setLoading] = React.useState(false);
 
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
+
+  // const studentsWithMeals = React.useMemo(() => {
+  //   const obj: {
+  //     [key: string]: {
+  //       name: string;
+  //       date: any;
+  //       hasLunch: boolean;
+  //       hasDinner: boolean;
+  //     };
+  //   } = {};
+
+  //   students.forEach((student, i) => {
+  //     obj[student.id] = {
+  //       name: student.name,
+  //       date: student.meals.map((meal) => meal.date)[i],
+  //       hasLunch: student.meals.some((meal) => meal.mealType === "LUNCH"),
+  //       hasDinner: student.meals.some((meal) => meal.mealType === "DINNER"),
+  //     };
+  //     // obj[student.name]["date"] = student.meals.map((meal) => meal.date)[0];
+  //     // obj[student.name]["hasLunch"] = student.meals.some(
+  //     //   (meal) => meal.mealType === "LUNCH"
+  //     // );
+  //     // obj[student.name]["hasDinner"] = student.meals.some(
+  //     //   (meal) => meal.mealType === "DINNER"
+  //     // );
+  //   });
+
+  //   console.log(
+  //     Object.entries(obj).map(([key, value]) => ({
+  //       name: key,
+  //       date: value.date,
+  //       hasLunch: value.hasLunch,
+  //       hasDinner: value.hasDinner,
+  //     }))
+  //   );
+  //   return [];
+  // }, [students]);
+
   const studentsWithLunch = React.useMemo(
     () =>
       students.filter((student) => {
@@ -53,8 +91,8 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     setLoading(true);
     const listOfStudents = await getStudentsWithMeals({
       schoolId,
-      fromDate: date?.from ? new Date(date.from) : new Date(),
-      toDate: date?.to ? new Date(date.to) : new Date(),
+      fromDate: date?.from ? date.from : new Date(),
+      toDate: date?.to ? date.to : new Date(),
     });
 
     if (listOfStudents && Array.isArray(listOfStudents))

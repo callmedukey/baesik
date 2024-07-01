@@ -179,11 +179,20 @@ export const getStudentsWithMeals = async ({
             gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
             lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
           },
+          isCancelled: false,
         },
       },
     },
     include: {
-      meals: true,
+      meals: {
+        where: {
+          date: {
+            gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
+            lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
+          },
+          isCancelled: false,
+        },
+      },
     },
   });
 
@@ -205,6 +214,7 @@ export const getSchoolsWithStudentsForMeals = async () => {
                   gte: new Date(new Date().setHours(0, 0, 0, 0)),
                   lte: new Date(new Date().setHours(23, 59, 59, 999)),
                 },
+                isCancelled: false,
               },
             },
           },
@@ -219,6 +229,7 @@ export const getSchoolsWithStudentsForMeals = async () => {
                   gte: new Date(new Date().setHours(0, 0, 0, 0)),
                   lte: new Date(new Date().setHours(23, 59, 59, 999)),
                 },
+                isCancelled: false,
               },
             },
           },
@@ -237,6 +248,7 @@ export const getSchoolsWithStudentsForMeals = async () => {
                     addDays(new Date(), 1).setHours(23, 59, 59, 999)
                   ),
                 },
+                isCancelled: false,
               },
             },
           },
@@ -253,6 +265,7 @@ export const getSchoolsWithStudentsForMeals = async () => {
                     addDays(new Date(), 1).setHours(23, 59, 59, 999)
                   ),
                 },
+                isCancelled: false,
               },
             },
           },

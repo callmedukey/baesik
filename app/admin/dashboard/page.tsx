@@ -20,15 +20,9 @@ const AdminPage = async () => {
             <h3 className="text-sm text-gray-500">당일 학식 없음</h3>
           </div>
         )}
-        <div className="grid grid-cols sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {todayRequests &&
-            todayRequests.length > 0 &&
-            todayRequests.map((school) => (
-              <div key={school.id} className="p-4">
-                <h3 className="text-lg font-bold">{school.name}</h3>
-              </div>
-            ))}
-        </div>
+        {todayRequests && todayRequests.length > 0 && (
+          <AdminDashboardSchoolList schools={todayRequests} />
+        )}
       </div>
       <div className="border shadow-md p-2 rounded-md w-full text-center">
         <div className="text-xl font-bold text-center flex items-center justify-center gap-4">
