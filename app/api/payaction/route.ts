@@ -91,10 +91,6 @@ export const POST = async (req: NextRequest) => {
       orderer_email: student.email,
     };
 
-    revalidatePath("/student/payments");
-    revalidatePath("/student/meals");
-    revalidatePath("/student/cart");
-
     const response = await fetch(payActionUrl, {
       method: "POST",
       headers: {

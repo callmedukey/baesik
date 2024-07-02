@@ -15,6 +15,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { invalidateCart } from "@/actions/students";
 
 const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
       });
       const json = await res.json();
       if (json.success) {
+        invalidateCart();
         router.push(`/student/cart/payment/final?id=${json.id}`);
       } else alert("결제 중 오류가 발생했습니다.");
     } catch (error) {

@@ -31,8 +31,12 @@ export type AvailableDay = {
 
 const ReadyContainer = ({
   holidayData,
+  isAdmin,
+  studentId,
 }: {
   holidayData?: { [key: string]: string };
+  isAdmin?: boolean;
+  studentId?: string;
 }) => {
   const [applicationDate, setApplicationDate] = useState<DateRange | undefined>(
     {
@@ -71,6 +75,7 @@ const ReadyContainer = ({
     const alreadyAppliedMealDays = await getAlreadyAppliedMealDays({
       fromDate: applicationDate.from,
       toDate: applicationDate.to,
+      studentId,
     });
 
     const selectedFrom = format(applicationDate.from, "yyyy-MM-dd", {
@@ -79,9 +84,10 @@ const ReadyContainer = ({
 
     if (
       selectedFrom <
-      format(addDays(new Date(), 2), "yyyy-MM-dd", {
-        locale: ko,
-      })
+        format(addDays(new Date(), 2), "yyyy-MM-dd", {
+          locale: ko,
+        }) &&
+      !isAdmin
     ) {
       alert("신청 가능한 날짜는 최소 2일 전부터입니다.");
       setApplicationDate({
@@ -182,6 +188,8 @@ const ReadyContainer = ({
             meals={applyDates}
             holidayData={holidayData}
             existingMealDates={existingMealDates}
+            isAdmin={isAdmin}
+            studentId={studentId}
           />
         )}
       </div>

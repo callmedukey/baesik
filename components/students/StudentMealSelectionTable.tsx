@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -9,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import type { AvailableDay } from "./ReadyContainer";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { saveShoppingCart } from "@/actions/students";
 import { useRouter } from "next/navigation";
@@ -21,10 +20,14 @@ const StudentMealSelectionTable = ({
   meals,
   holidayData,
   existingMealDates,
+  isAdmin,
+  studentId,
 }: {
   meals: AvailableDay[];
   holidayData?: { [key: string]: string };
   existingMealDates: AvailableDay[];
+  isAdmin?: boolean;
+  studentId?: string;
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -38,13 +41,20 @@ const StudentMealSelectionTable = ({
   const selectAll = () => {
     const parseInput: { date: string; mealType: "LUNCH" | "DINNER" }[] = [];
     meals.forEach((meal) => {
-      if (meal.isLunch) {
+      if (
+        meal.isLunch &&
+        !existingMealDates.some((m) => m.date === meal.date && m.isLunch)
+      ) {
         parseInput.push({ date: meal.date, mealType: "LUNCH" });
       }
-      if (meal.isDinner) {
+      if (
+        meal.isDinner &&
+        !existingMealDates.some((m) => m.date === meal.date && m.isDinner)
+      ) {
         parseInput.push({ date: meal.date, mealType: "DINNER" });
       }
     });
+
     setSelectedMeals(parseInput);
   };
 
@@ -54,15 +64,25 @@ const StudentMealSelectionTable = ({
 
   const storeToStorage = async () => {
     setLoading(true);
-    const result = await saveShoppingCart(selectedMeals);
+    const result = await saveShoppingCart(selectedMeals, studentId);
     if (result.error) {
       alert(result.error);
     }
+    if (isAdmin) {
+      alert(result?.message || "장바구니에 추가 완료");
+      return router.push("/admin/dashboard/students");
+    }
     if (result.redirectTo) {
-      router.push(result.redirectTo);
+      if (!isAdmin) {
+        router.push(result.redirectTo);
+      }
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    setSelectedMeals([]);
+  }, [meals, existingMealDates]);
   return (
     <>
       <div className="grid grid-cols-2 w-full gap-2">

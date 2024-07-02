@@ -71,7 +71,8 @@ export const getMenuAvailableDays = async ({ days }: { days: Date[] }) => {
 };
 
 export const saveShoppingCart = async (
-  meals: { date: string; mealType: "LUNCH" | "DINNER" }[]
+  meals: { date: string; mealType: "LUNCH" | "DINNER" }[],
+  studentId?: string
 ) => {
   const session = await verifySession();
 
@@ -83,11 +84,16 @@ export const saveShoppingCart = async (
     data: meals.map((meal) => ({
       date: new Date(meal.date),
       mealType: meal.mealType,
-      studentId: session.userId,
+      studentId: studentId || session.userId,
     })),
   });
   revalidatePath("/student/cart");
   if (created && created.count === meals.length) {
+    if (studentId) {
+      return {
+        message: "장바구니에 추가되었습니다",
+      };
+    }
     return {
       message: "장바구니에 추가되었습니다",
       redirectTo: "/student/cart",
@@ -354,9 +360,11 @@ export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
 export const getAlreadyAppliedMealDays = async ({
   fromDate,
   toDate,
+  studentId,
 }: {
   fromDate: Date;
   toDate: Date;
+  studentId?: string;
 }) => {
   const session = await verifySession();
   if (!session) {
@@ -369,7 +377,7 @@ export const getAlreadyAppliedMealDays = async ({
         gte: new Date(new Date(fromDate).setHours(0, 0, 0, 0)),
         lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
       },
-      studentId: session.userId,
+      studentId: studentId || session.userId,
     },
     orderBy: {
       date: "asc",
@@ -377,7 +385,7 @@ export const getAlreadyAppliedMealDays = async ({
   });
   const savedMeals = await prisma.savedMeals.findMany({
     where: {
-      studentId: session.userId,
+      studentId: studentId || session.userId,
     },
   });
   return meals
@@ -413,4 +421,10 @@ export const getStudentMealHistory = async () => {
     },
   });
   return meals;
+};
+
+export const invalidateCart = () => {
+  revalidatePath("/student/payments");
+  revalidatePath("/student/meals");
+  revalidatePath("/student/cart");
 };
