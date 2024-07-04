@@ -64,13 +64,15 @@ const ReadyContainer = ({
       return;
     }
     if (applicationDate.from < new Date()) {
-      alert("이미 지난 날짜입니다.");
-      setApplicationDate({
-        from: undefined,
-        to: undefined,
-      });
-      setIsLoading(false);
-      return;
+      if (!isAdmin) {
+        alert("이미 지난 날짜입니다.");
+        setApplicationDate({
+          from: undefined,
+          to: undefined,
+        });
+        setIsLoading(false);
+        return;
+      }
     }
     const alreadyAppliedMealDays = await getAlreadyAppliedMealDays({
       fromDate: applicationDate.from,
