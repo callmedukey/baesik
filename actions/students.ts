@@ -428,3 +428,50 @@ export const invalidateCart = () => {
   revalidatePath("/student/meals");
   revalidatePath("/student/cart");
 };
+
+export const getAllPostsAndCount = async ({ page }: { page: number }) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+  const [posts, count, myPosts, myPostsCount, pinnedPosts] = await Promise.all([
+    prisma.posts.findMany({
+      where: {
+        isPinned: false,
+      },
+      skip: (page > 1 ? page - 1 : 1) * 20,
+      take: 20,
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.posts.count({
+      where: {
+        isPinned: false,
+      },
+    }),
+    prisma.posts.findMany({
+      where: {
+        student: {
+          id: session.userId,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.posts.count({
+      where: {
+        student: {
+          id: session.userId,
+        },
+      },
+    }),
+    prisma.posts.findMany({
+      where: {
+        isPinned: true,
+      },
+    }),
+  ]);
+  return { posts, count, myPosts, myPostsCount, pinnedPosts };
+};

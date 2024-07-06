@@ -18,6 +18,8 @@ model Admin {
   username String @unique
   password String
 
+  posts Posts[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -46,6 +48,8 @@ model Student {
   school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String
 
+  posts Posts[]
+
   meals             Meals[]
   payments          Payments[]
   savedMeals        SavedMeals[]
@@ -63,6 +67,8 @@ model School {
   phone   String?
   email   String?
 
+  posts Posts[]
+
   students   Student[]
   schoolUser SchoolUser[]
 
@@ -73,7 +79,7 @@ model School {
 model SchoolUser {
   id String @id @default(uuid())
 
-  name     String 
+  name     String
   username String @unique
   email    String
   password String
@@ -194,4 +200,27 @@ model SchoolOneTimeUniqueCode {
   schoolUser         SchoolUser @relation(fields: [schoolUserUsername], references: [username], onDelete: Cascade)
   schoolUserUsername String     @unique
   createdAt          DateTime   @default(now())
+}
+
+model Posts {
+  id String @id @default(uuid())
+
+  name String
+  title   String
+  content String
+
+  isAdmin  Boolean @default(false)
+  isPinned Boolean @default(false)
+  isAnonymous Boolean @default(false)
+  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admin     Admin?   @relation(fields: [adminId], references: [id])
+  adminId   String?
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
+  school    School?  @relation(fields: [schoolId], references: [id])
+  schoolId  String?
 }

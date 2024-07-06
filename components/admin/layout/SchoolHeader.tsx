@@ -29,6 +29,13 @@ const SchoolHeader = () => {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/school/board" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                게시판
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
     </header>
