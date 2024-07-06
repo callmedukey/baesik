@@ -9,7 +9,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
     <div className="border border-input bg-transparent rounded-md w-full">
       <Toggle
         size="sm"
-        pressed={editor.isActive("bold")}
+        pressed={editor.isActive("heading1")}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
       >
         <Heading1 />
@@ -23,21 +23,21 @@ const Toolbar = ({ editor }: { editor: Editor | null }) => {
       </Toggle>
       <Toggle
         size="sm"
-        pressed={editor.isActive("bold")}
+        pressed={editor.isActive("strike")}
         onClick={() => editor.chain().focus().toggleStrike().run()}
       >
         <Strikethrough />
       </Toggle>
       <Toggle
         size="sm"
-        pressed={editor.isActive("bold")}
+        pressed={editor.isActive("bulletList")}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
       >
         <List />
       </Toggle>
       <Toggle
         size="sm"
-        pressed={editor.isActive("bold")}
+        pressed={editor.isActive("orderedList")}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       >
         <ListOrdered />

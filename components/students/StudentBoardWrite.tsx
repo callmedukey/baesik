@@ -4,16 +4,39 @@ import StarterKit from "@tiptap/starter-kit";
 import Toolbar from "../common/Toolbar";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
 
-const StudentBoardWrite = () => {
+const StudentBoardWrite = ({ isAdmin }: { isAdmin?: boolean }) => {
   const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   const editor = useEditor({
-    extensions: [StarterKit.configure()],
-    content: "<p>Hello World! 🌎️</p>",
+    extensions: [
+      StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: "list-disc",
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: "list-decimal",
+          },
+        },
+        heading: {
+          HTMLAttributes: {
+            class: "text-2xl font-bold",
+          },
+        },
+      }),
+    ],
+    content: "",
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline focus:outline-primary px-4 py-2 w-full border rounded-md min-h-[300px] !min-w-full",
+          "mx-auto focus:outline focus:outline-primary px-6 py-2 w-full border rounded-md min-h-[300px] !min-w-full",
       },
     },
     onUpdate: ({ editor }) => {
@@ -21,13 +44,46 @@ const StudentBoardWrite = () => {
     },
   });
 
+  const handleSave = () => {};
+
   return (
     <>
+      <Input
+        placeholder="제목을 입력해주세요"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full"
+      />
       <Toolbar editor={editor} />
       <div className="flex flex-col justify-stretch min-h-[400px] w-full">
         <EditorContent editor={editor} />
       </div>
-      <Button>작성하기</Button>
+      <div className="flex items-center gap-2 justify-start w-full">
+        {!isAdmin && (
+          <>
+            <p>이름 비공개</p>
+            <Checkbox
+              checked={isPrivate}
+              onCheckedChange={(checked: boolean) => {
+                setIsPrivate(checked);
+              }}
+            />
+          </>
+        )}
+
+        {isAdmin && (
+          <>
+            <p>글 고정하기</p>
+            <Checkbox
+              checked={isPinned}
+              onCheckedChange={(checked: boolean) => {
+                setIsPinned(checked);
+              }}
+            />
+          </>
+        )}
+      </div>
+      <Button className="w-full my-4">작성하기</Button>
     </>
   );
 };
