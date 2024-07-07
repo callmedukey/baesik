@@ -1,17 +1,26 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Toolbar from "../common/Toolbar";
+import Toolbar from "./Toolbar";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 
-const StudentBoardWrite = ({ isAdmin }: { isAdmin?: boolean }) => {
+import { makePost } from "@/actions/common";
+
+const BoardWrite = ({
+  isAdmin = false,
+  isSchool = false,
+}: {
+  isAdmin?: boolean;
+  isSchool?: boolean;
+}) => {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
+  const [loading, setLoading] = useState(false);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -44,7 +53,41 @@ const StudentBoardWrite = ({ isAdmin }: { isAdmin?: boolean }) => {
     },
   });
 
-  const handleSave = () => {};
+  const handleSave = async () => {
+    if (title.trim() && title.length > 100) {
+      alert("제목은 100자 이하로 작성해주세요");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await makePost({
+        content: content.trim(),
+        title: title.trim(),
+        isPrivate,
+        isAdmin,
+        isPinned,
+        isSchool,
+      });
+
+      if (response && response.message) {
+        alert(response.message);
+        setContent("");
+        setTitle("");
+        setIsPrivate(false);
+        setIsPinned(false);
+        editor?.commands.clearContent();
+      }
+
+      if (response && response.error) {
+        alert(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("오류가 발생하였습니다");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -83,9 +126,16 @@ const StudentBoardWrite = ({ isAdmin }: { isAdmin?: boolean }) => {
           </>
         )}
       </div>
-      <Button className="w-full my-4">작성하기</Button>
+      <Button
+        className="w-full my-4"
+        onClick={handleSave}
+        type="button"
+        disabled={loading || !content || !title}
+      >
+        작성하기
+      </Button>
     </>
   );
 };
 
-export default StudentBoardWrite;
+export default BoardWrite;

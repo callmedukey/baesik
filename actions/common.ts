@@ -3,6 +3,10 @@ import path from "path";
 import getHolidayData from "@/lib/getHolidayData";
 import { existsSync } from "fs";
 import { access, mkdir, readFile, writeFile } from "fs/promises";
+import { verifySession } from "./session";
+import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 type HolidayResponse = {
   [key: string]: string;
@@ -54,4 +58,147 @@ export const getHolidayDataFromApi = async (
     const data = await readFile(filePath, "utf-8");
     return JSON.parse(data);
   }
+};
+
+export const makePost = async ({
+  content,
+  title,
+  isPrivate,
+  isAdmin,
+  isPinned,
+  isSchool,
+}: {
+  content: string;
+  title: string;
+  isPrivate: boolean;
+  isAdmin: boolean;
+  isPinned: boolean;
+  isSchool: boolean;
+}) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+  try {
+    const response = await prisma.$transaction(async (tx) => {
+      if (isAdmin) {
+        const admin = await tx.admin.findUnique({
+          where: {
+            id: session.userId,
+          },
+        });
+        if (!admin) return null;
+
+        const createdPost = await tx.posts.create({
+          data: {
+            content,
+            adminId: session.userId,
+            name: "관리자",
+            title,
+            isPinned: isPinned || false,
+            isAdmin: true,
+          },
+        });
+
+        if (createdPost) return { message: "게시글이 생성되었습니다" };
+        return { error: "게시글이 생성되지 않았습니다" };
+      }
+
+      if (isSchool) {
+        const schoolUser = await tx.schoolUser.findUnique({
+          where: {
+            id: session.userId,
+          },
+        });
+
+        if (!schoolUser) return null;
+
+        const createdPost = await tx.posts.create({
+          data: {
+            content,
+            schoolUserId: session.userId,
+            name: schoolUser?.name || "",
+            title,
+            isAnonymous: isPrivate || false,
+          },
+        });
+
+        if (createdPost) return { message: "게시글이 생성되었습니다" };
+        return { error: "게시글이 생성되지 않았습니다" };
+      }
+
+      if (!isAdmin && !isSchool) {
+        const student = await tx.student.findUnique({
+          where: {
+            id: session.userId,
+          },
+        });
+
+        if (!student) return null;
+
+        const createdPost = await tx.posts.create({
+          data: {
+            content,
+            studentId: session.userId,
+            name: student?.name || "",
+            title,
+            isAnonymous: isPrivate,
+          },
+        });
+
+        if (createdPost) return { message: "게시글이 생성되었습니다" };
+
+        return { error: "게시글이 생성되지 않았습니다" };
+      }
+    });
+
+    if (response?.message) {
+      revalidatePath("/student/board");
+      revalidatePath("/admin/dashboard/board");
+      revalidatePath("/school/board");
+      return { message: response.message };
+    }
+    return { error: "게시글이 생성되지 않았습니다" };
+  } catch (error) {
+    console.error(error);
+    return { error: "게시글이 생성되지 않았습니다" };
+  }
+};
+
+export const getBoardPost = async (postId: string, isAdmin = false) => {
+  const post = await prisma.posts.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (post?.isAnonymous && !isAdmin) {
+    return { ...post, name: "익명" };
+  }
+
+  return post;
+};
+
+export const deletePost = async (postId: string) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const post = await prisma.posts.delete({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (post) {
+    revalidatePath("/student/board");
+    revalidatePath("/admin/dashboard/board");
+    revalidatePath("/school/board");
+    revalidatePath(`/student/board/${postId}`);
+    revalidatePath(`/admin/dashboard/board/${postId}`);
+    revalidatePath(`/school/board/${postId}`);
+    return { message: "게시글이 삭제되었습니다" };
+  }
+  return { error: "게시글이 삭제되지 않았습니다" };
 };

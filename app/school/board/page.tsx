@@ -10,12 +10,13 @@ const page = async ({ searchParams }: { searchParams: { page: string } }) => {
   const page = Number(searchParams.page) || 1;
 
   if (!page) {
-    return redirect("/student/board?page=1");
+    return redirect("/school/board?page=1");
   }
 
   const { posts, count, myPosts, myPostsCount, pinnedPosts } =
     await getAllPostsAndCount({
       page,
+      isSchool: true,
     });
 
   const totalPage = Math.ceil(count / 20);
@@ -31,6 +32,7 @@ const page = async ({ searchParams }: { searchParams: { page: string } }) => {
           totalPage={totalPage}
           posts={posts}
           pinnedPosts={pinnedPosts}
+          isSchool
         />
       </section>
     </MainContainer>

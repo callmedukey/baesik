@@ -1,17 +1,19 @@
 "use client";
 import type { Posts } from "@prisma/client";
-import { StudentBoardTab } from "./StudentBoardTab";
+import { BoardTab } from "./BoardTab";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import StudentBoardWrite from "./StudentBoardWrite";
+import BoardWrite from "./BoardWrite";
 
-const StudentBoard = ({
+const Board = ({
   page,
   myPosts,
   myPostsCount,
   totalPage,
   posts,
   pinnedPosts,
+  isSchool = false,
+  isAdmin = false,
 }: {
   page: number;
   myPosts: Posts[];
@@ -19,6 +21,8 @@ const StudentBoard = ({
   totalPage: number;
   posts: Posts[];
   pinnedPosts: Posts[];
+  isSchool?: boolean;
+  isAdmin?: boolean;
 }) => {
   const [write, setWrite] = useState(false);
   return (
@@ -28,22 +32,24 @@ const StudentBoard = ({
         variant={"outline"}
         onClick={() => setWrite(!write)}
       >
-        글쓰기
+        {write ? "뒤로가기" : "글쓰기"}
       </Button>
       {write ? (
-        <StudentBoardWrite />
+        <BoardWrite isSchool={isSchool} isAdmin={isAdmin} />
       ) : (
-        <StudentBoardTab
+        <BoardTab
           page={page}
           myPosts={myPosts}
           myPostsCount={myPostsCount}
           totalPage={totalPage}
           posts={posts}
           pinnedPosts={pinnedPosts}
+          isSchool={isSchool}
+          isAdmin={isAdmin}
         />
       )}
     </>
   );
 };
 
-export default StudentBoard;
+export default Board;

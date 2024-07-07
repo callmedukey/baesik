@@ -882,3 +882,24 @@ export const getStudentMealHistory = async (studentId: string) => {
   });
   return meals;
 };
+
+export const updateboardPin = async (postId: string, isPinned: boolean) => {
+  const updated = await prisma.posts.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      isPinned,
+    },
+  });
+
+  if (updated) {
+    revalidatePath("/admin/dashboard/board");
+    revalidatePath(`/admin/dashboard/board/${postId}`);
+    revalidatePath("/student/board");
+    revalidatePath("/school/board");
+    return { message: "수정 되셨습니다" };
+  } else {
+    return { error: "수정을 실패했습니다" };
+  }
+};

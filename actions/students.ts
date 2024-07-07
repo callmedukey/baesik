@@ -429,17 +429,40 @@ export const invalidateCart = () => {
   revalidatePath("/student/cart");
 };
 
-export const getAllPostsAndCount = async ({ page }: { page: number }) => {
+export const getAllPostsAndCount = async ({
+  page,
+  isSchool = false,
+  isAdmin = false,
+}: {
+  page: number;
+  isSchool?: boolean;
+  isAdmin?: boolean;
+}) => {
   const session = await verifySession();
   if (!session) {
     redirect("/login");
+  }
+
+  let dataScope: Record<string, string> = {
+    studentId: session.userId,
+  };
+  if (isSchool) {
+    dataScope = {
+      schoolUserId: session.userId,
+    };
+  }
+
+  if (isAdmin) {
+    dataScope = {
+      adminId: session.userId,
+    };
   }
   const [posts, count, myPosts, myPostsCount, pinnedPosts] = await Promise.all([
     prisma.posts.findMany({
       where: {
         isPinned: false,
       },
-      skip: (page > 1 ? page - 1 : 1) * 20,
+      skip: page > 1 ? (page - 1) * 20 : 0,
       take: 20,
       orderBy: {
         createdAt: "desc",
@@ -451,11 +474,7 @@ export const getAllPostsAndCount = async ({ page }: { page: number }) => {
       },
     }),
     prisma.posts.findMany({
-      where: {
-        student: {
-          id: session.userId,
-        },
-      },
+      where: dataScope,
       orderBy: {
         createdAt: "desc",
       },
@@ -471,7 +490,22 @@ export const getAllPostsAndCount = async ({ page }: { page: number }) => {
       where: {
         isPinned: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     }),
   ]);
-  return { posts, count, myPosts, myPostsCount, pinnedPosts };
+  return {
+    posts: posts.map((post) => ({
+      ...post,
+      name: post.isAnonymous ? "익명" : post.name,
+    })),
+    count,
+    myPosts: myPosts.map((post) => ({
+      ...post,
+      name: post.isAnonymous ? "익명" : post.name,
+    })),
+    myPostsCount,
+    pinnedPosts,
+  };
 };

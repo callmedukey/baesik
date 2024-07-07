@@ -73,4 +73,17 @@
   body {
     @apply bg-background text-foreground;
   }
+  .board-post {
+    @apply mx-auto border border-primary px-6 py-2 w-full rounded-md min-h-[300px];
+  }
+  .board-post h1 {
+    @apply text-2xl font-bold;
+  }
+  .board-post ol {
+    @apply list-decimal;
+  }
+
+  .board-post ul {
+    @apply list-disc;
+  }
 }
