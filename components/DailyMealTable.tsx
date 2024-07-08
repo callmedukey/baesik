@@ -20,13 +20,15 @@ const DailyMealTable = ({
   dinnerCount: number;
 }) => {
   return (
-    <Table className="max-w-sm w-full mx-auto border rounded-md">
-      <TableHeader className="max-w-sm w-full">
+    <Table className="max-w-xl w-full mx-auto border rounded-md">
+      <TableHeader className="max-w-xl w-full">
         <TableRow className="divide-x">
           <TableHead className="w-[50px]">No.</TableHead>
-          <TableHead className="text-center">이름</TableHead>
+          <TableHead className="text-center min-w-[100px]">이름</TableHead>
           <TableHead className="text-center">점심 x{lunchCount}</TableHead>
+          <TableHead className="text-center">확인</TableHead>
           <TableHead className="text-center">저녁 x{dinnerCount}</TableHead>
+          <TableHead className="text-center">확인</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -34,12 +36,14 @@ const DailyMealTable = ({
           <TableRow key={student.studentId} className="divide-x text-center">
             <TableCell>{index + 1}</TableCell>
             <TableCell className="">{student.name}</TableCell>
-            <TableCell className="w-[100px] border text-gray-400">
+            <TableCell className="min-w-[100px] border text-gray-400">
               {student.hasLunch ? "O" : ""}
             </TableCell>
-            <TableCell className="w-[100px] border text-gray-400">
+            <TableCell className="min-w-[100px] border text-gray-400"></TableCell>
+            <TableCell className="min-w-[100px] border text-gray-400">
               {student.hasDinner ? "O" : ""}
             </TableCell>
+            <TableCell className="min-w-[100px] border text-gray-400"></TableCell>
           </TableRow>
         ))}
       </TableBody>

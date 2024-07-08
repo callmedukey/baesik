@@ -1,4 +1,4 @@
-import Contacts from "@/components/admin/layout/Contacts";
+import StudentFooter from "@/components/admin/layout/StudentFooter";
 import StudentHeader from "@/components/admin/layout/StudentHeader";
 import SignoutButton from "@/components/auth/SignoutButton";
 
@@ -7,8 +7,8 @@ const layout = ({ children }: { children?: React.ReactNode }) => {
     <div>
       <StudentHeader />
       {children}
-      <Contacts className="text-center" />
       <SignoutButton />
+      <StudentFooter />
     </div>
   );
 };
