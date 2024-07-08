@@ -14,6 +14,10 @@ import {
 import type { Meals, Student } from "@prisma/client";
 import { getStudentsWithMeals } from "@/actions/admin";
 import DailyMealTable from "@/components/DailyMealTable";
+import {
+  StudentsWithLunchAndDinner,
+  StudentsWithLunchAndDinnerArray,
+} from "../admin/schools/students/SchoolStudentsList";
 
 interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -26,29 +30,31 @@ export function School({ schoolId }: { schoolId: string }) {
 
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
 
-  const studentsWithLunch = React.useMemo(
-    () =>
-      students
-        .filter((student) => {
-          if (student.meals.some((meal) => meal.mealType === "LUNCH")) {
-            return true;
-          }
-        })
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [students]
-  );
+  const studentsWithMeals: StudentsWithLunchAndDinnerArray =
+    React.useMemo(() => {
+      const studentMeals: StudentsWithLunchAndDinner = {};
+      students.forEach((student) => {
+        studentMeals[student.id] = {
+          name: student.name,
+          hasLunch: student.meals.some((meal) => meal.mealType === "LUNCH"),
+          hasDinner: student.meals.some((meal) => meal.mealType === "DINNER"),
+        };
+      });
+      return Object.entries(studentMeals)
+        .map(([studentId, meals]) => ({
+          studentId,
+          ...meals,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }, [students, singleDay]);
 
-  const studentsWithDinner = React.useMemo(
-    () =>
-      students
-        .filter((student) => {
-          if (student.meals.some((meal) => meal.mealType === "DINNER")) {
-            return true;
-          }
-        })
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [students]
-  );
+  const studentWithLunchCount = React.useMemo(() => {
+    return studentsWithMeals.filter((student) => student.hasLunch).length;
+  }, [studentsWithMeals]);
+
+  const studentWithDinnerCount = React.useMemo(() => {
+    return studentsWithMeals.filter((student) => student.hasDinner).length;
+  }, [studentsWithMeals]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -110,21 +116,14 @@ export function School({ schoolId }: { schoolId: string }) {
         </Button>
       </aside>
 
-      {students && Array.isArray(students) && students.length > 0 ? (
-        <div className="flex flex-col justify-center items-center gap-4 lg:grid lg:grid-cols-2 lg:items-start text-center print:grid print:grid-cols-2 print:items-start">
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-600">
-              점심 x{studentsWithLunch.length}
-            </h2>
-            <DailyMealTable students={studentsWithLunch} />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-600">
-              저녁 x{studentsWithDinner.length}
-            </h2>
-            <DailyMealTable students={studentsWithDinner} />
-          </div>
-        </div>
+      {studentsWithMeals &&
+      Array.isArray(studentsWithMeals) &&
+      studentsWithMeals.length > 0 ? (
+        <DailyMealTable
+          students={studentsWithMeals}
+          lunchCount={studentWithLunchCount}
+          dinnerCount={studentWithDinnerCount}
+        />
       ) : (
         <div className="text-center">학생이 없습니다.</div>
       )}
