@@ -34,11 +34,11 @@ const DailyMealTable = ({
           <TableRow key={student.studentId} className="divide-x text-center">
             <TableCell>{index + 1}</TableCell>
             <TableCell className="">{student.name}</TableCell>
-            <TableCell className="w-[100px] border">
-              {student.hasLunch ? "" : "X"}
+            <TableCell className="w-[100px] border text-gray-400">
+              {student.hasLunch ? "O" : ""}
             </TableCell>
-            <TableCell className="w-[100px] border">
-              {student.hasDinner ? "" : "X"}
+            <TableCell className="w-[100px] border text-gray-400">
+              {student.hasDinner ? "O" : ""}
             </TableCell>
           </TableRow>
         ))}

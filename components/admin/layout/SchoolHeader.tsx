@@ -23,6 +23,13 @@ const SchoolHeader = () => {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
+            <Link href="/school/menu" legacyBehavior passHref>
+              <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
+                메뉴 조회
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
             <Link href="/school/students" legacyBehavior passHref>
               <NavigationMenuLink className={cn(navigationMenuTriggerStyle())}>
                 학생 관리
