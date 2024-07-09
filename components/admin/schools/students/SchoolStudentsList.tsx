@@ -43,6 +43,18 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
 
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
 
+  const studentsWithLunch = React.useMemo(() => {
+    return students.filter((student) =>
+      student.meals.some((meal) => meal.mealType === "LUNCH")
+    );
+  }, [students]);
+
+  const studentsWithDinner = React.useMemo(() => {
+    return students.filter((student) =>
+      student.meals.some((meal) => meal.mealType === "DINNER")
+    );
+  }, [students]);
+
   const studentsWithMeals: StudentsWithLunchAndDinnerArray =
     React.useMemo(() => {
       const studentMeals: StudentsWithLunchAndDinner = {};
@@ -61,34 +73,19 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
         .sort((a, b) => a.name.localeCompare(b.name));
     }, [students, singleDay]);
 
-  const studentWithLunchCount = React.useMemo(() => {
-    return studentsWithMeals.filter((student) => student.hasLunch).length;
-  }, [studentsWithMeals]);
-
-  const studentWithDinnerCount = React.useMemo(() => {
-    return studentsWithMeals.filter((student) => student.hasDinner).length;
-  }, [studentsWithMeals]);
-
   const excelData = React.useMemo(() => {
     const data: any[][] = [
       [
-        `점심 x ${studentWithLunchCount}`,
+        `점심 x ${studentsWithLunch.length}`,
         "",
         "",
         "",
-        `저녁 x ${studentWithDinnerCount}`,
+        `저녁 x ${studentsWithDinner.length}`,
         "",
         "",
       ],
       ["No.", "이름", "확인", "", "No.", "이름", "확인"],
     ];
-
-    const studentsWithLunch = studentsWithMeals.filter(
-      (student) => student.hasLunch
-    );
-    const studentsWithDinner = studentsWithMeals.filter(
-      (student) => student.hasDinner
-    );
 
     const mostLength = Math.max(
       studentsWithLunch.length,
@@ -116,7 +113,7 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     }
 
     return data;
-  }, [studentsWithMeals]);
+  }, [studentsWithMeals, studentsWithLunch, studentsWithDinner]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -191,17 +188,28 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
           <span>{format(singleDay, "yyyy-MM-dd")}</span>
         </div>
       )}
-      {studentsWithMeals &&
-      Array.isArray(studentsWithMeals) &&
-      studentsWithMeals.length > 0 ? (
-        <DailyMealTable
-          students={studentsWithMeals}
-          lunchCount={studentWithLunchCount}
-          dinnerCount={studentWithDinnerCount}
-        />
-      ) : (
-        <div className="text-center">학생이 없습니다.</div>
-      )}
+      <article className="grid grid-cols-2 gap-4 text-center">
+        {studentsWithLunch &&
+        Array.isArray(studentsWithLunch) &&
+        studentsWithLunch.length > 0 ? (
+          <div>
+            <div>점심 x{studentsWithLunch.length}</div>
+            <DailyMealTable students={studentsWithLunch} />
+          </div>
+        ) : (
+          <div className="text-center">점심 식사 학생이 없습니다.</div>
+        )}
+        {studentsWithDinner &&
+        Array.isArray(studentsWithDinner) &&
+        studentsWithDinner.length > 0 ? (
+          <div>
+            <div>저녁 x{studentsWithDinner.length}</div>
+            <DailyMealTable students={studentsWithDinner} />
+          </div>
+        ) : (
+          <div className="text-center">저녁 식사 학생이 없습니다.</div>
+        )}
+      </article>
     </section>
   );
 }

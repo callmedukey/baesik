@@ -24,7 +24,6 @@ const MealExcelExport = ({
   };
   return (
     <div className="flex justify-end items-center gap-2 mb-6 print:hidden">
-      <p className="font-semibold text-gray-600">{`점심, 저녁 식사 명단 분리된 파일 ->`}</p>
       <Button className="" variant={"outline"} onClick={exportExcel}>
         엑셀 다운로드
       </Button>
