@@ -46,6 +46,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "file-saver": "^2.0.5",
     "jose": "^5.4.1",
     "jsdom": "^24.1.0",
     "lodash": "^4.17.21",
@@ -61,11 +62,13 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.1",
     "xhr2": "^0.2.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",
     "@types/bcrypt": "^5.0.2",
+    "@types/file-saver": "^2.0.7",
     "@types/jsdom": "^21.1.7",
     "@types/lodash": "^4.17.5",
     "@types/node": "^20",

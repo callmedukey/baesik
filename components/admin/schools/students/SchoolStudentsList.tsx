@@ -14,6 +14,7 @@ import {
 import type { Meals, Student } from "@prisma/client";
 import { getStudentsWithMeals } from "@/actions/admin";
 import DailyMealTable from "@/components/DailyMealTable";
+import MealExcelExport from "@/components/common/MealExcelExport";
 
 interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -68,6 +69,55 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     return studentsWithMeals.filter((student) => student.hasDinner).length;
   }, [studentsWithMeals]);
 
+  const excelData = React.useMemo(() => {
+    const data: any[][] = [
+      [
+        `점심 x ${studentWithLunchCount}`,
+        "",
+        "",
+        "",
+        `저녁 x ${studentWithDinnerCount}`,
+        "",
+        "",
+      ],
+      ["No.", "이름", "확인", "", "No.", "이름", "확인"],
+    ];
+
+    const studentsWithLunch = studentsWithMeals.filter(
+      (student) => student.hasLunch
+    );
+    const studentsWithDinner = studentsWithMeals.filter(
+      (student) => student.hasDinner
+    );
+
+    const mostLength = Math.max(
+      studentsWithLunch.length,
+      studentsWithDinner.length
+    );
+
+    for (let i = 0; i < mostLength; i++) {
+      if (studentsWithLunch[i] && studentsWithDinner[i]) {
+        data.push([
+          `${i + 1}`,
+          studentsWithLunch[i].name,
+          "",
+          "",
+          `${i + 1}`,
+          studentsWithDinner[i].name,
+          "",
+        ]);
+      }
+      if (studentsWithLunch[i] && !studentsWithDinner[i]) {
+        data.push([`${i + 1}`, studentsWithLunch[i].name, "", "", "", ""]);
+      }
+      if (!studentsWithLunch[i] && studentsWithDinner[i]) {
+        data.push(["", "", "", `${i + 1}`, studentsWithDinner[i].name, ""]);
+      }
+    }
+
+    return data;
+  }, [studentsWithMeals]);
+
   const handleSearch = async () => {
     setLoading(true);
     if (!singleDay) {
@@ -88,6 +138,7 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
       alert("학생 조회에 실패했습니다.");
     }
   };
+
   return (
     <section>
       <aside className="my-6 flex items-center justify-center gap-4 print:hidden">
@@ -127,6 +178,14 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
           조회
         </Button>
       </aside>
+      {studentsWithMeals &&
+        Array.isArray(studentsWithMeals) &&
+        studentsWithMeals.length > 0 && (
+          <MealExcelExport
+            excelData={excelData}
+            filename={format(singleDay as Date, "yyyy-MM-dd")}
+          />
+        )}
       {singleDay && (
         <div className="text-2xl text-center font-bold">
           <span>{format(singleDay, "yyyy-MM-dd")}</span>
