@@ -108,12 +108,12 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
         data.push([`${i + 1}`, studentsWithLunch[i].name, "", "", "", ""]);
       }
       if (!studentsWithLunch[i] && studentsWithDinner[i]) {
-        data.push(["", "", "", `${i + 1}`, studentsWithDinner[i].name, ""]);
+        data.push(["", "", "", "", `${i + 1}`, studentsWithDinner[i].name, ""]);
       }
     }
 
     return data;
-  }, [studentsWithMeals, studentsWithLunch, studentsWithDinner]);
+  }, [studentsWithLunch, studentsWithDinner]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -188,11 +188,11 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
           <span>{format(singleDay, "yyyy-MM-dd")}</span>
         </div>
       )}
-      <article className="grid grid-cols-2 gap-4 text-center">
+      <article className="grid md:grid-cols-2 gap-4 text-center place-items-start justify-center">
         {studentsWithLunch &&
         Array.isArray(studentsWithLunch) &&
         studentsWithLunch.length > 0 ? (
-          <div>
+          <div className="max-w-sm">
             <div>점심 x{studentsWithLunch.length}</div>
             <DailyMealTable students={studentsWithLunch} />
           </div>
@@ -202,7 +202,7 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
         {studentsWithDinner &&
         Array.isArray(studentsWithDinner) &&
         studentsWithDinner.length > 0 ? (
-          <div>
+          <div className="max-w-sm">
             <div>저녁 x{studentsWithDinner.length}</div>
             <DailyMealTable students={studentsWithDinner} />
           </div>
