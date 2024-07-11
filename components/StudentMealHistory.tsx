@@ -40,7 +40,7 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
         hasLunch: meal.hasLunch,
         hasDinner: meal.hasDinner,
       }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+      .sort((a, b) => -a.date.localeCompare(b.date));
   }, [meals]);
 
   return (

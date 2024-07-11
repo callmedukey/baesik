@@ -79,7 +79,7 @@ const AdminPaymentContainer = ({
         variant={"destructive"}
         onClick={handleDeletePayment}
       >
-        입금 상태 변경
+        삭제
       </Button>
     </div>
   );

@@ -29,11 +29,13 @@ const ReverseCancelMealContainer = ({ meals }: { meals: Meals[] }) => {
 
     if (response?.message) {
       setLoading(false);
+      setSelectedMeal([]);
       return alert(response.message);
     }
 
     if (response?.error) {
       setLoading(false);
+      setSelectedMeal([]);
       alert(response.error);
     }
   };

@@ -207,7 +207,25 @@ export const getCancelableMeals = async () => {
       date: "asc",
     },
   });
-  console.log(meals);
+
+  return meals;
+};
+
+export const getCancelHistory = async () => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+  const meals = await prisma.meals.findMany({
+    where: {
+      studentId: session.userId,
+      isCancelled: true,
+    },
+    orderBy: {
+      date: "desc",
+    },
+    take: 100,
+  });
   return meals;
 };
 
@@ -311,7 +329,7 @@ export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
   );
 
   return await prisma.$transaction(async (tx) => {
-    const updatedArray = [];
+    const updatedArray: string[] = [];
     //find the refundRequests and update refund amount
     refundsObjectArray.forEach(async (refund) => {
       const updated = await tx.refundRequest.update({
@@ -349,6 +367,15 @@ export const reverseMeal = async ({ meals }: { meals: Meals[] }) => {
       updated.count === meals.length &&
       updatedArray.length === refundsObjectArray.length
     ) {
+      await tx.refundRequest.deleteMany({
+        where: {
+          id: {
+            in: updatedArray,
+          },
+          amount: 0,
+        },
+      });
+
       revalidatePath("/student/reverse-cancelation");
       revalidatePath("/student/cancelation");
       return { message: "재신청되었습니다" };
@@ -413,13 +440,16 @@ export const getStudentMealHistory = async () => {
     where: {
       studentId: session.userId,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+
     include: {
       payments: true,
     },
+    orderBy: {
+      date: "desc",
+    },
+    take: 200,
   });
+
   return meals;
 };
 
