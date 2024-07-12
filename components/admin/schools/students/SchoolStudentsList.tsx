@@ -44,15 +44,19 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
   const [students, setStudents] = React.useState<StudentsWithMeals[]>([]);
 
   const studentsWithLunch = React.useMemo(() => {
-    return students.filter((student) =>
-      student.meals.some((meal) => meal.mealType === "LUNCH")
-    );
+    return students
+      .filter((student) =>
+        student.meals.some((meal) => meal.mealType === "LUNCH")
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [students]);
 
   const studentsWithDinner = React.useMemo(() => {
-    return students.filter((student) =>
-      student.meals.some((meal) => meal.mealType === "DINNER")
-    );
+    return students
+      .filter((student) =>
+        student.meals.some((meal) => meal.mealType === "DINNER")
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [students]);
 
   const studentsWithMeals: StudentsWithLunchAndDinnerArray =
