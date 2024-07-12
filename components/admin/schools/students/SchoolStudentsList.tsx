@@ -74,7 +74,10 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     }, [students, singleDay]);
 
   const excelData = React.useMemo(() => {
+    if (!singleDay) return [];
+
     const data: any[][] = [
+      [format(singleDay as Date, "yyyy-MM-dd")],
       [
         `점심 x ${studentsWithLunch.length}`,
         "",
@@ -113,7 +116,7 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
     }
 
     return data;
-  }, [studentsWithLunch, studentsWithDinner]);
+  }, [studentsWithLunch, studentsWithDinner, singleDay]);
 
   const handleSearch = async () => {
     setLoading(true);
