@@ -7,38 +7,50 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { parseWeekDay } from "@/lib/parseWeekDay";
 
 import type { Meals } from "@prisma/client";
-import { format } from "date-fns";
+import { format, isSaturday } from "date-fns";
 import { ko } from "date-fns/locale/ko";
 import { useMemo } from "react";
 
 const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
   const studentMeals = useMemo(() => {
     const mealObj: {
-      [key: string]: { hasLunch: boolean; hasDinner: boolean };
+      [key: string]: {
+        hasLunch: {
+          isCancelled: boolean;
+        };
+        hasDinner: {
+          isCancelled: boolean;
+        };
+      };
     } = {};
 
     meals.forEach((meal) => {
       if (meal.mealType === "LUNCH") {
         mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })] = {
           ...mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })],
-          hasLunch: meal.mealType === "LUNCH",
+          hasLunch: {
+            isCancelled: meal.isCancelled,
+          },
         };
       }
 
       if (meal.mealType === "DINNER") {
         mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })] = {
           ...mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })],
-          hasDinner: meal.mealType === "DINNER",
+          hasDinner: {
+            isCancelled: meal.isCancelled,
+          },
         };
       }
     });
     return Object.entries(mealObj)
       .map(([date, meal]) => ({
         date,
-        hasLunch: meal.hasLunch,
-        hasDinner: meal.hasDinner,
+        hasLunch: !meal.hasLunch?.isCancelled,
+        hasDinner: !meal.hasDinner?.isCancelled,
       }))
       .sort((a, b) => -a.date.localeCompare(b.date));
   }, [meals]);
@@ -55,12 +67,21 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
       <TableBody>
         {studentMeals.map((studentMeal, index) => (
           <TableRow key={studentMeal.date} className="divide-x text-center">
-            <TableCell className="">{studentMeal.date}</TableCell>
+            <TableCell className="flex flex-col gap-0.5">
+              <span>{studentMeal.date}</span>
+              <span className="text-xs text-gray-600">
+                {parseWeekDay(new Date(studentMeal.date))}
+              </span>
+            </TableCell>
             <TableCell className="">
               {studentMeal.hasLunch ? "O" : "X"}
             </TableCell>
             <TableCell className="">
-              {studentMeal.hasDinner ? "O" : "X"}
+              {isSaturday(studentMeal.date)
+                ? "X"
+                : studentMeal.hasDinner
+                ? "O"
+                : "X"}
             </TableCell>
           </TableRow>
         ))}

@@ -494,10 +494,22 @@ export const confirmSingleRefund = async (refundRequestId: string) => {
         },
       },
     },
+    include: {
+      student: {
+        include: {
+          school: true,
+        },
+      },
+    },
   });
 
   if (updated) {
     revalidatePath("/admin/dashboard/refunds");
+    revalidatePath(`/admin/dashboard/students/${updated.studentId}/meals`);
+    revalidatePath(
+      `/admin/dashboard/schools/${updated.student.schoolId}/students/students`
+    );
+
     return {
       message: "확불처리를 성공적으로 완료했습니다",
     };

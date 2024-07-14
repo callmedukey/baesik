@@ -222,3 +222,4 @@ model Posts {
   schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id])
   schoolUserId String?
 }
+
