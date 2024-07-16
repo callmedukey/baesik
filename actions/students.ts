@@ -194,6 +194,7 @@ export const getCancelableMeals = async () => {
   const meals = await prisma.meals.findMany({
     where: {
       isCancelled: false,
+      isRefunded: false,
       isComplete: false,
       studentId: session?.userId,
       payments: {
@@ -286,6 +287,7 @@ export const getReversibleMeals = async () => {
     where: {
       isCancelled: true,
       isComplete: false,
+      isRefunded: false,
       studentId: session.userId,
       payments: {
         paid: true,
@@ -416,6 +418,7 @@ export const getAlreadyAppliedMealDays = async ({
     },
   });
   return meals
+    .filter((meal) => !meal.isRefunded && !meal.isCancelled)
     .map((meal) => ({
       date: format(new Date(meal.date), "yyyy-MM-dd", { locale: ko }),
       isLunch: meal.mealType === "LUNCH" || false,

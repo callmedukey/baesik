@@ -143,6 +143,7 @@ model Meals {
   mealType MealType
 
   isCancelled Boolean @default(false)
+  isRefunded Boolean @default(false)
   isComplete  Boolean @default(false)
 
   payments   Payments? @relation(fields: [paymentsId], references: [id], onDelete: Cascade)

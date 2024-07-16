@@ -490,6 +490,7 @@ export const confirmSingleRefund = async (refundRequestId: string) => {
           },
           data: {
             isCancelled: true,
+            isRefunded: true,
           },
         },
       },
