@@ -1,13 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Student } from "@prisma/client";
+
 import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import * as React from "react";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
