@@ -27,6 +27,16 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
       };
     } = {};
 
+    // console.log(
+    //   meals
+    //     .filter((meal) => meal.mealType === "LUNCH")
+    //     .map((meal) => ({
+    //       date: format(meal.date, "yyyy-MM-dd"),
+    //       mealType: meal.mealType,
+    //       isCancelled: meal.isCancelled,
+    //     }))
+    // );
+
     meals.forEach((meal) => {
       if (meal.mealType === "LUNCH") {
         mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })] = {
@@ -46,13 +56,16 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
         };
       }
     });
-    return Object.entries(mealObj)
+
+    const values = Object.entries(mealObj)
       .map(([date, meal]) => ({
         date,
-        hasLunch: !meal.hasLunch?.isCancelled,
-        hasDinner: !meal.hasDinner?.isCancelled,
+        hasLunch: meal.hasLunch && !meal.hasLunch.isCancelled,
+        hasDinner: meal.hasDinner && !meal.hasDinner.isCancelled,
       }))
       .sort((a, b) => -a.date.localeCompare(b.date));
+    console.log(values);
+    return values;
   }, [meals]);
 
   return (
