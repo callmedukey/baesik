@@ -33,7 +33,7 @@ const AdminUserSearchContainer = () => {
     resolver: zodResolver(StudentSearchSchema),
     defaultValues: {
       searchTerm: "",
-      type: "username",
+      type: "studentName",
     },
   });
 
@@ -90,17 +90,17 @@ const AdminUserSearchContainer = () => {
                       defaultValue={field.value}
                       className="flex md:gap-6 items-center !mt-0 mx-auto [@media(max-width:365px)]:grid [@media(max-width:365px)]:grid-cols-2"
                     >
-                      <FormItem className="flex items-center space-x-2 space-y-0 sm:space-x-3">
-                        <FormControl>
-                          <RadioGroupItem value="username" />
-                        </FormControl>
-                        <FormLabel className="font-normal">아이디</FormLabel>
-                      </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="studentName" />
                         </FormControl>
                         <FormLabel className="font-normal">학생 이름</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0 sm:space-x-3">
+                        <FormControl>
+                          <RadioGroupItem value="username" />
+                        </FormControl>
+                        <FormLabel className="font-normal">아이디</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0 sm:space-x-3">
                         <FormControl>
