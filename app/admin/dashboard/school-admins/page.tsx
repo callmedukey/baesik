@@ -1,5 +1,5 @@
 import AdminSchoolUserSeachContainer from "@/components/admin/schools/AdminSchoolUserSeachContainer";
-import AdminUserSearchContainer from "@/components/admin/students/AdminSearchUser";
+
 import MainContainer from "@/components/layout/main-container";
 import React from "react";
 

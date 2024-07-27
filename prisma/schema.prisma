@@ -18,7 +18,8 @@ model Admin {
   username String @unique
   password String
 
-  posts Posts[]
+  posts    Posts[]
+  comments Comments[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -27,6 +28,15 @@ model Admin {
 model Menu {
   id       String  @id @default(uuid())
   fileName String?
+
+  date DateTime @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Holidays {
+  id String @id @default(uuid())
 
   date DateTime @unique
 
@@ -48,7 +58,8 @@ model Student {
   school   School @relation(fields: [schoolId], references: [id], onDelete: NoAction)
   schoolId String
 
-  posts Posts[]
+  posts    Posts[]
+  comments Comments[]
 
   meals             Meals[]
   payments          Payments[]
@@ -95,6 +106,7 @@ model SchoolUser {
   passwordResetCode SchoolPasswordResetCode?
   oneTimeUniqueCode SchoolOneTimeUniqueCode?
   Posts             Posts[]
+  comments          Comments[]
 }
 
 model Payments {
@@ -143,7 +155,7 @@ model Meals {
   mealType MealType
 
   isCancelled Boolean @default(false)
-  isRefunded Boolean @default(false)
+  isRefunded  Boolean @default(false)
   isComplete  Boolean @default(false)
 
   payments   Payments? @relation(fields: [paymentsId], references: [id], onDelete: Cascade)
@@ -222,5 +234,24 @@ model Posts {
   studentId    String?
   schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id])
   schoolUserId String?
+
+  comments Comments[]
 }
 
+model Comments {
+  id String @id @default(uuid())
+
+  content String
+  post    Posts  @relation(fields: [postId], references: [id])
+  postId  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student      Student?    @relation(fields: [studentId], references: [id])
+  studentId    String?
+  schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id])
+  schoolUserId String?
+  admin        Admin?      @relation(fields: [adminId], references: [id])
+  adminId      String?
+}

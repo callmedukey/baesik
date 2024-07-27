@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { parseMealSelectionOption } from "@/lib/parseMealSelectionOption";
 import { cn } from "@/lib/utils";
 import { parseWeekDay } from "@/lib/parseWeekDay";
+import { Holidays } from "@prisma/client";
 
 const StudentMealSelectionTable = ({
   meals,
@@ -22,12 +23,14 @@ const StudentMealSelectionTable = ({
   existingMealDates,
   isAdmin,
   studentId,
+  customHolidays,
 }: {
   meals: AvailableDay[];
   holidayData?: { [key: string]: string };
   existingMealDates: AvailableDay[];
   isAdmin?: boolean;
   studentId?: string;
+  customHolidays: Holidays[];
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -139,6 +142,7 @@ const StudentMealSelectionTable = ({
                     whenYes: "선택",
                     whenNo: "미선택",
                     holidayData: holidayData || {},
+                    customHolidays: customHolidays,
                     date: meal.date,
                     mealType: "LUNCH",
                     existingMealDates: existingMealDates,
@@ -156,6 +160,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
+                      customHolidays: customHolidays,
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "LUNCH",
@@ -169,6 +174,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
+                      customHolidays: customHolidays,
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "LUNCH",
@@ -212,6 +218,7 @@ const StudentMealSelectionTable = ({
                   ),
                   whenYes: "선택",
                   whenNo: "미선택",
+                  customHolidays: customHolidays,
                   holidayData: holidayData || {},
                   date: meal.date,
                   mealType: "LUNCH",
@@ -229,6 +236,7 @@ const StudentMealSelectionTable = ({
                     ),
                     whenYes: "선택",
                     whenNo: "미선택",
+                    customHolidays: customHolidays,
                     holidayData: holidayData || {},
                     date: meal.date,
                     mealType: "DINNER",
@@ -247,6 +255,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
+                      customHolidays: customHolidays,
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "DINNER",
@@ -260,6 +269,7 @@ const StudentMealSelectionTable = ({
                       ),
                       whenYes: "선택",
                       whenNo: "미선택",
+                      customHolidays: customHolidays,
                       holidayData: holidayData || {},
                       date: meal.date,
                       mealType: "DINNER",
@@ -304,6 +314,7 @@ const StudentMealSelectionTable = ({
                   whenYes: "선택",
                   whenNo: "미선택",
                   holidayData: holidayData || {},
+                  customHolidays: customHolidays,
                   date: meal.date,
                   mealType: "DINNER",
                   existingMealDates: existingMealDates,

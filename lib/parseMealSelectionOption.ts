@@ -1,5 +1,5 @@
 import type { AvailableDay } from "@/components/students/ReadyContainer";
-import type { MealType } from "@prisma/client";
+import type { Holidays, MealType } from "@prisma/client";
 import { format, isSaturday, isSunday } from "date-fns";
 
 export function parseMealSelectionOption({
@@ -10,6 +10,7 @@ export function parseMealSelectionOption({
   date,
   mealType,
   existingMealDates,
+  customHolidays,
 }: {
   condition: boolean;
   whenYes: string;
@@ -18,6 +19,7 @@ export function parseMealSelectionOption({
   date: string;
   mealType: MealType;
   existingMealDates: AvailableDay[];
+  customHolidays: Holidays[];
 }) {
   if (holidayData[format(date, "yyyy-MM-dd")]) {
     return "선택불가";
@@ -28,6 +30,14 @@ export function parseMealSelectionOption({
   }
 
   if (isSaturday(date) && mealType === "DINNER") {
+    return "선택불가";
+  }
+
+  if (
+    customHolidays.some(
+      (holiday) => format(holiday.date, "yyyy-MM-dd") === date
+    )
+  ) {
     return "선택불가";
   }
 

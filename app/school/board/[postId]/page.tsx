@@ -1,6 +1,7 @@
 import { getBoardPost } from "@/actions/common";
 import { verifySession } from "@/actions/session";
 import BoardDelete from "@/components/common/BoardDelete";
+import CommentSection from "@/components/common/CommentSection";
 import MainContainer from "@/components/layout/main-container";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
@@ -32,6 +33,12 @@ const page = async ({ params }: { params: { postId: string } }) => {
         <div
           className="board-post"
           dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+        <CommentSection
+          postId={post.id}
+          comments={post.comments}
+          isSchool
+          sessionId={session.userId}
         />
         {session.userId === post.schoolUserId && <BoardDelete />}
       </section>

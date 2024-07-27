@@ -170,6 +170,18 @@ export const getBoardPost = async (postId: string, isAdmin = false) => {
     where: {
       id: postId,
     },
+    include: {
+      comments: {
+        include: {
+          admin: true,
+          schoolUser: true,
+          student: true,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
   });
 
   if (post?.isAnonymous && !isAdmin) {
@@ -201,4 +213,98 @@ export const deletePost = async (postId: string) => {
     return { message: "게시글이 삭제되었습니다" };
   }
   return { error: "게시글이 삭제되지 않았습니다" };
+};
+
+export const postComment = async ({
+  postId,
+  comment,
+  isAdmin = false,
+  isSchool = false,
+}: {
+  postId: string;
+  comment: string;
+  isAdmin?: boolean;
+  isSchool?: boolean;
+}) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  let createdComment;
+
+  if (isAdmin) {
+    createdComment = await prisma.comments.create({
+      data: {
+        content: comment,
+        postId,
+        adminId: session.userId,
+      },
+    });
+  }
+
+  if (isSchool) {
+    createdComment = await prisma.comments.create({
+      data: {
+        content: comment,
+        postId,
+        schoolUserId: session.userId,
+      },
+    });
+  }
+
+  if (!isAdmin && !isSchool) {
+    createdComment = await prisma.comments.create({
+      data: {
+        content: comment,
+        postId,
+        studentId: session.userId,
+      },
+    });
+  }
+
+  if (createdComment) {
+    revalidatePath(`/student/board/${postId}`);
+    revalidatePath(`/admin/dashboard/board/${postId}`);
+    revalidatePath(`/school/board/${postId}`);
+    return { message: "댓글이 생성되었습니다", success: true };
+  }
+
+  return { error: "댓글이 생성되지 않았습니다", success: false };
+};
+
+export const deleteComment = async (commentId: string) => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  const comment = await prisma.comments.delete({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (comment) {
+    revalidatePath(`/student/board/${comment.postId}`);
+    revalidatePath(`/admin/dashboard/board/${comment.postId}`);
+    revalidatePath(`/school/board/${comment.postId}`);
+    return { message: "댓글이 삭제되었습니다", success: true };
+  }
+  return { error: "댓글이 삭제되지 않았습니다", success: false };
+};
+
+export const getCustomHolidays = async () => {
+  const session = await verifySession();
+  if (!session) {
+    redirect("/login");
+  }
+
+  return await prisma.holidays.findMany({
+    where: {
+      date: {
+        gte: new Date(),
+      },
+    },
+  });
 };

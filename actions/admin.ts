@@ -916,3 +916,57 @@ export const updateboardPin = async (postId: string, isPinned: boolean) => {
     return { error: "수정을 실패했습니다" };
   }
 };
+
+export const getHolidays = async () => {
+  const holidays = await prisma.holidays.findMany({
+    where: {
+      date: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      date: "asc",
+    },
+  });
+  return holidays;
+};
+
+export const makeHoliday = async (date: Date) => {
+  const check = await prisma.holidays.findMany({
+    where: {
+      date,
+    },
+  });
+
+  if (check.length > 0) {
+    return { message: "이미 휴일이 존재합니다" };
+  }
+
+  const holiday = await prisma.holidays.create({
+    data: {
+      date,
+    },
+  });
+
+  if (holiday) {
+    revalidatePath("/admin/dashboard/holidays");
+    return { message: "휴일 생성을 성공적으로 완료했습니다" };
+  } else {
+    return { message: "휴일 생성을 실패했습니다" };
+  }
+};
+
+export const deleteHoliday = async (holidayId: string) => {
+  const deleted = await prisma.holidays.delete({
+    where: {
+      id: holidayId,
+    },
+  });
+
+  if (deleted) {
+    revalidatePath("/admin/dashboard/holidays");
+    return { message: "휴일 삭제를 성공적으로 완료했습니다" };
+  } else {
+    return { message: "휴일 삭제를 실패했습니다" };
+  }
+};

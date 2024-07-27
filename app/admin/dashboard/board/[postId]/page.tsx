@@ -2,6 +2,7 @@ import { getBoardPost } from "@/actions/common";
 import { verifySession } from "@/actions/session";
 import AdminBoardPin from "@/components/common/AdminBoardPin";
 import BoardDelete from "@/components/common/BoardDelete";
+import CommentSection from "@/components/common/CommentSection";
 import MainContainer from "@/components/layout/main-container";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
@@ -34,8 +35,13 @@ const page = async ({ params }: { params: { postId: string } }) => {
           className="board-post"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+        <CommentSection
+          postId={post.id}
+          comments={post.comments}
+          isAdmin
+          sessionId={session.userId}
+        />
         {post.isAdmin && <AdminBoardPin isPinned={post.isPinned} />}
-
         <BoardDelete />
       </section>
     </MainContainer>

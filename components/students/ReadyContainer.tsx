@@ -22,6 +22,7 @@ import {
 import StudentMealSelectionTable from "./StudentMealSelectionTable";
 
 import { getAlreadyAppliedMealDays } from "@/actions/students";
+import type { Holidays } from "@prisma/client";
 
 export type AvailableDay = {
   date: string;
@@ -31,12 +32,14 @@ export type AvailableDay = {
 
 const ReadyContainer = ({
   holidayData,
+  customHolidays,
   isAdmin,
   studentId,
 }: {
   holidayData?: { [key: string]: string };
   isAdmin?: boolean;
   studentId?: string;
+  customHolidays: Holidays[];
 }) => {
   const [applicationDate, setApplicationDate] = useState<DateRange | undefined>(
     {
@@ -116,6 +119,13 @@ const ReadyContainer = ({
         return;
       }
 
+      const isCustomHoliday = customHolidays.some(
+        (holiday) => format(holiday.date, "yyyy-MM-dd", {locale: ko}) === date
+      );
+      if (isCustomHoliday) {
+        return;
+      }
+
       if (holidayData && (holidayData[date] || isSaturday(date))) {
         possibleDays.push({
           date: date,
@@ -124,6 +134,7 @@ const ReadyContainer = ({
         });
         return;
       }
+
       possibleDays.push({
         date: date,
         isLunch: true,
@@ -192,6 +203,7 @@ const ReadyContainer = ({
             existingMealDates={existingMealDates}
             isAdmin={isAdmin}
             studentId={studentId}
+            customHolidays={customHolidays}
           />
         )}
       </div>
