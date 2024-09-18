@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 
 import type { StudentsWithMeals } from "@/lib/definitions";
+import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
 
 const DailyMealTable = ({ students }: { students: StudentsWithMeals[] }) => {
   return (
@@ -24,7 +25,12 @@ const DailyMealTable = ({ students }: { students: StudentsWithMeals[] }) => {
         {students.map((student, index) => (
           <TableRow key={student.id} className="divide-x text-center">
             <TableCell>{index + 1}</TableCell>
-            <TableCell className="">{student.name}</TableCell>
+            <TableCell className="flex flex-col">
+              <span>{student.name}</span>
+              <span className="text-xs text-gray-600">
+                {formatPhoneNumber(student.phone)}
+              </span>
+            </TableCell>
             <TableCell className="min-w-[100px] border text-gray-400"></TableCell>
           </TableRow>
         ))}

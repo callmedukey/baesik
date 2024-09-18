@@ -1,5 +1,11 @@
 "use client";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CancelMealSchema } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -18,6 +24,7 @@ import type { Meals } from "@prisma/client";
 import { useState } from "react";
 import { cancelMeals } from "@/actions/students";
 import { useRouter } from "next/navigation";
+import { sortedBankNames } from "@/lib/bankData";
 
 const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
   const form = useForm<z.infer<typeof CancelMealSchema>>({
@@ -25,6 +32,7 @@ const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
     defaultValues: {
       bankDetails: "",
       accountHolder: "",
+      bankName: "",
     },
   });
   const router = useRouter();
@@ -71,14 +79,39 @@ const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="bankName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>은행</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="은행을 선택해주세요" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {sortedBankNames.map((bank) => (
+                    <SelectItem value={bank} key={bank}>
+                      {bank}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="bankDetails"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>환불 계좌</FormLabel>
+              <FormLabel>환불 계좌 번호</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="카카오뱅크 3333-33-3333333" />
+                <Input {...field} placeholder="3333-33-3333333" />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -141,6 +141,7 @@ model RefundRequest {
 
   accountHolder String
   bankDetails   String
+  bankName      String @default("-")
 
   cancelledMeals Meals[]
 

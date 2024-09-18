@@ -1,4 +1,6 @@
 "use client";
+import XLSX from "xlsx";
+
 import {
   type RefundRequestWithStudent,
   RefundSearchSchema,
@@ -30,8 +32,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { getRefundRequests } from "@/actions/admin";
+import { applyRefunds, getRefundRequests } from "@/actions/admin";
 import AdminRefundsContainer from "./AdminRefundsContainer";
+import { BankKey, bankNameToCode } from "@/lib/bankData";
 
 const AdminRefundsSearchContainer = () => {
   const [loading, setLoading] = useState(false);
@@ -73,6 +76,84 @@ const AdminRefundsSearchContainer = () => {
       alert("검색 결과가 없습니다.");
     }
     setRefundRequests(refunds || []);
+    setLoading(false);
+  };
+
+  const handleDownload = async () => {
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+    if (
+      !refundRequests.length ||
+      !searchDate ||
+      !searchDate.from ||
+      !searchDate.to
+    ) {
+      alert("검색된 환불건이 없습니다.");
+      return;
+    }
+    const fileName = `환불_${format(searchDate.from, "yyyy-MM-dd")}_${format(
+      searchDate.to,
+      "yyyy-MM-dd"
+    )}.xls`;
+    const data: string[][] = [];
+
+    refundRequests
+      .filter((refund) => refund.complete === false)
+      .forEach((refundRequest) => {
+        data.push([
+          bankNameToCode(refundRequest.bankName as BankKey),
+          refundRequest.bankDetails.trim(),
+          refundRequest.amount.toString(),
+          refundRequest.accountHolder.trim(),
+          `${refundRequest.student.name} 식사 환불`,
+          `${refundRequest.student.name} 식사 환불`,
+        ]);
+      });
+
+    const book = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(book, sheet, "sheet1");
+    XLSX.writeFile(book, fileName);
+    setLoading(false);
+  };
+
+  const handleApply = async () => {
+    if (loading) {
+      return;
+    }
+    if (!refundRequests.length) {
+      alert("검색된 환불 요청이 없습니다.");
+      return;
+    }
+    if (
+      !confirm(
+        "전체 환불 적용하시겠습니까? \n전체 환불 적용 후 되돌릴 수 없습니다."
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await applyRefunds(
+      refundRequests
+        .filter((refund) => refund.complete === false)
+        .map((refund) => refund.id)
+    );
+    if (result.message) {
+      alert(result.message);
+    }
+
+    if (result.success) {
+      setRefundRequests(
+        refundRequests.map((refund) => ({
+          ...refund,
+          complete: true,
+        }))
+      );
+    }
     setLoading(false);
   };
 
@@ -185,6 +266,24 @@ const AdminRefundsSearchContainer = () => {
               type="submit"
             >
               조회
+            </Button>
+            <Button
+              variant={"outline"}
+              className="w-full"
+              disabled={!searchDate || loading || !refundRequests.length}
+              type="button"
+              onClick={handleDownload}
+            >
+              전체 엑셀 다운로드
+            </Button>
+            <Button
+              variant={"outline"}
+              className="w-full"
+              disabled={!searchDate || loading || !refundRequests.length}
+              type="button"
+              onClick={handleApply}
+            >
+              전체 환불 적용
             </Button>
           </form>
         </Form>

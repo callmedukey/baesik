@@ -234,10 +234,12 @@ export const cancelMeals = async ({
   meals,
   accountHolder,
   bankDetails,
+  bankName,
 }: {
   meals: Meals[];
   accountHolder: string;
   bankDetails: string;
+  bankName: string;
 }) => {
   const session = await verifySession();
   if (!session) {
@@ -248,6 +250,7 @@ export const cancelMeals = async ({
     const createdRequest = await tx.refundRequest.create({
       data: {
         accountHolder,
+        bankName,
         bankDetails,
         studentId: session.userId,
         amount: Math.floor(meals.reduce((acc, meal) => acc + 7000, 0)),

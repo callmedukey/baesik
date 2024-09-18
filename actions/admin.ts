@@ -970,3 +970,28 @@ export const deleteHoliday = async (holidayId: string) => {
     return { message: "휴일 삭제를 실패했습니다" };
   }
 };
+
+
+export const applyRefunds = async (refundRequestsId: string[]) => {
+  if (refundRequestsId.length === 0) {
+    return { message: "환불 요청이 없습니다" };
+  }
+
+  const refundRequests = await prisma.refundRequest.updateMany({
+    where: {
+      id: {
+        in: refundRequestsId,
+      }
+    },
+    data: {
+      complete: true,
+    }
+  })
+
+  if (refundRequests.count === refundRequestsId.length) {
+    revalidatePath("/admin/dashboard/refunds");
+    return { message: "환불 요청을 성공적으로 완료했습니다", success: true };
+  } else {
+    return { message: "환불 요청을 실패했습니다" };
+  }
+}

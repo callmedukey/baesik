@@ -11,6 +11,7 @@ import type {
   Student,
 } from "@prisma/client";
 import { testName } from "./regex/testName";
+import testBankAccountNumber from "./regex/testBankAccountNumber";
 
 export interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -160,10 +161,13 @@ export const PaymentInitSchema = PaymentSchema.omit({
 });
 
 export const CancelMealSchema = z.object({
-  bankDetails: z.string().refine((val) => testBankDetails(val), {
-    message: "올바른 은행 정보를 입력해주세요.",
+  bankDetails: z.string().trim().refine((val) => testBankDetails(val), {
+    message: "올바른 계좌 번호를 입력해주세요.",
+  }).refine((val) => testBankAccountNumber(val), {
+    message: "글자는 입력할 수 없습니다.",
   }),
   accountHolder: z.string().min(2, { message: "예금주명을 입력해주세요." }),
+  bankName: z.string().min(2, { message: "은행 이름을 입력해주세요." }),
 });
 
 export const PaymentSearchSchema = z.object({

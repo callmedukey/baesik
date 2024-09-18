@@ -26,7 +26,8 @@ const AdminRefundsContainer = ({
 
       <div>학생: {refundRequest.student.name}</div>
       <div>학원: {refundRequest.student.school.name}</div>
-      <div>{refundRequest.bankDetails}</div>
+      <div>은행: {refundRequest.bankName}</div>
+      <div>계좌번호: {refundRequest.bankDetails}</div>
       <div className="flex justify-between">
         <div className="text-left text-sm text-gray-500">
           {format(refundRequest.createdAt, "yyyy-MM-dd HH:mm")}
