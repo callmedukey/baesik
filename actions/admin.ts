@@ -919,11 +919,6 @@ export const updateboardPin = async (postId: string, isPinned: boolean) => {
 
 export const getHolidays = async () => {
   const holidays = await prisma.holidays.findMany({
-    where: {
-      date: {
-        gte: new Date(),
-      },
-    },
     orderBy: {
       date: "asc",
     },
@@ -971,7 +966,6 @@ export const deleteHoliday = async (holidayId: string) => {
   }
 };
 
-
 export const applyRefunds = async (refundRequestsId: string[]) => {
   if (refundRequestsId.length === 0) {
     return { message: "환불 요청이 없습니다" };
@@ -981,12 +975,12 @@ export const applyRefunds = async (refundRequestsId: string[]) => {
     where: {
       id: {
         in: refundRequestsId,
-      }
+      },
     },
     data: {
       complete: true,
-    }
-  })
+    },
+  });
 
   if (refundRequests.count === refundRequestsId.length) {
     revalidatePath("/admin/dashboard/refunds");
@@ -994,4 +988,4 @@ export const applyRefunds = async (refundRequestsId: string[]) => {
   } else {
     return { message: "환불 요청을 실패했습니다" };
   }
-}
+};

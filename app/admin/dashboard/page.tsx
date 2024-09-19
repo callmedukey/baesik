@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 const AdminPage = async () => {
   const { todayRequests, tomorrowRequests } =
     await getSchoolsWithStudentsForMeals();
+    
   return (
     <MainContainer hasHeader className="block space-y-4">
       <div className="border shadow-md p-2 rounded-md w-full text-center">
