@@ -27,9 +27,6 @@ const DailyMealTable = ({ students }: { students: StudentsWithMeals[] }) => {
             <TableCell>{index + 1}</TableCell>
             <TableCell className="flex flex-col">
               <span>{student.name}</span>
-              <span className="text-xs text-gray-600">
-                {formatPhoneNumber(student.phone)}
-              </span>
             </TableCell>
             <TableCell className="min-w-[100px] border text-gray-400"></TableCell>
           </TableRow>

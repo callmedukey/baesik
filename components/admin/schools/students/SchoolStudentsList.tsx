@@ -15,7 +15,6 @@ import type { Meals, Student } from "@prisma/client";
 import { getStudentsWithMeals } from "@/actions/admin";
 import DailyMealTable from "@/components/DailyMealTable";
 import MealExcelExport from "@/components/common/MealExcelExport";
-import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
 
 interface StudentsWithMeals extends Student {
   meals: Meals[];
@@ -104,41 +103,19 @@ export function SchoolStudentsList({ schoolId }: { schoolId: string }) {
       if (studentsWithLunch[i] && studentsWithDinner[i]) {
         data.push([
           `${i + 1}`,
-          studentsWithLunch[i].name +
-            " " +
-            formatPhoneNumber(studentsWithLunch[i].phone),
+          studentsWithLunch[i].name,
           "",
           "",
           `${i + 1}`,
-          studentsWithDinner[i].name +
-            " " +
-            formatPhoneNumber(studentsWithDinner[i].phone),
+          studentsWithDinner[i].name,
           "",
         ]);
       }
       if (studentsWithLunch[i] && !studentsWithDinner[i]) {
-        data.push([
-          `${i + 1}`,
-          studentsWithLunch[i].name +
-            " " +
-            formatPhoneNumber(studentsWithLunch[i].phone),
-          "",
-          "",
-          "",
-          "",
-        ]);
+        data.push([`${i + 1}`, studentsWithLunch[i].name, "", "", "", ""]);
       }
       if (!studentsWithLunch[i] && studentsWithDinner[i]) {
-        data.push([
-          "",
-          "",
-          "",
-          "",
-          `${i + 1}`,
-          studentsWithDinner[i].name +
-            " " +
-            formatPhoneNumber(studentsWithDinner[i].phone),
-        ]);
+        data.push(["", "", "", "", `${i + 1}`, studentsWithDinner[i].name]);
       }
     }
 
