@@ -120,13 +120,17 @@ const ReadyContainer = ({
       }
 
       const isCustomHoliday = customHolidays.some(
-        (holiday) => format(holiday.date, "yyyy-MM-dd", {locale: ko}) === date
+        (holiday) => format(holiday.date, "yyyy-MM-dd", { locale: ko }) === date
       );
       if (isCustomHoliday) {
         return;
       }
 
-      if (holidayData && (holidayData[date] || isSaturday(date))) {
+      if (holidayData && holidayData[date]) {
+        return;
+      }
+
+      if (isSaturday(date)) {
         possibleDays.push({
           date: date,
           isLunch: true,
