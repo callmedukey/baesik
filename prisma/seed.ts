@@ -4,7 +4,24 @@ const prisma = new PrismaClient();
 
 async function main() {
 
-  const admin = await prisma.admin.findFirst();
+  await prisma.admin.upsert({
+    where: {
+      username: "iamdevduke",
+    },
+    update: {
+      password: await bcrypt.hash("admin2024@@", 10),
+    },
+    create: {
+      username: "iamdevduke",
+      password: await bcrypt.hash("admin2024@@", 10),
+    },
+  });
+
+  const admin = await prisma.admin.findUnique({
+    where: {
+      username: "admin",
+    },
+  });
   if (admin) {
     console.log("Admin already exists");
   } else {
