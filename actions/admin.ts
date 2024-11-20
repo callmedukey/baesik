@@ -989,3 +989,23 @@ export const applyRefunds = async (refundRequestsId: string[]) => {
     return { message: "환불 요청을 실패했습니다" };
   }
 };
+
+export const deleteStudent = async (studentId: string) => {
+  try {
+    const deleted = await prisma.student.delete({
+      where: {
+        id: studentId,
+      },
+    });
+
+    if (deleted) {
+      revalidatePath("/admin/dashboard/students");
+      return { message: "학생 삭제를 성공적으로 완료했습니다", success: true };
+    } else {
+      return { message: "학생 삭제를 실패했습니다", success: false };
+    }
+  } catch (error) {
+    console.error(error);
+    return { message: "학생 삭제를 실패했습니다", success: false };
+  }
+};

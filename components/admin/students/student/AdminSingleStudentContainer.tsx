@@ -26,7 +26,12 @@ import type { School } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateStudent, updateStudentPassword } from "@/actions/admin";
+import {
+  deleteStudent,
+  updateStudent,
+  updateStudentPassword,
+} from "@/actions/admin";
+import { useRouter } from "next/navigation";
 
 const AdminSingleStudentContainer = ({
   student,
@@ -35,6 +40,7 @@ const AdminSingleStudentContainer = ({
   student: StudentWithSchool;
   schools: School[];
 }) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof UpdateStudentSchema>>({
     resolver: zodResolver(UpdateStudentSchema),
     defaultValues: {
@@ -79,6 +85,27 @@ const AdminSingleStudentContainer = ({
     }
     if (response.message) {
       pwForm.reset();
+      return alert(response.message);
+    }
+  };
+
+  const handleDeleteStudent = async () => {
+    if (
+      !confirm(
+        "정말로 삭제하시겠습니까? 삭제된 학생의 전체 정보를 복구할 수 없습니다."
+      )
+    ) {
+      return;
+    }
+    const response = await deleteStudent(student.id);
+
+    if (response.success) {
+      alert(response.message);
+      router.replace("/admin/dashboard/students");
+      return;
+    }
+
+    if (response.message) {
       return alert(response.message);
     }
   };
@@ -172,6 +199,7 @@ const AdminSingleStudentContainer = ({
           <Button className="w-full my-6">수정하기</Button>
         </form>
       </Form>
+
       <Form {...pwForm}>
         <form onSubmit={pwForm.handleSubmit(onPwSubmit)}>
           <FormField
@@ -206,6 +234,14 @@ const AdminSingleStudentContainer = ({
           </Button>
         </form>
       </Form>
+      <Button
+        type="button"
+        className="w-full my-6"
+        variant={"destructive"}
+        onClick={handleDeleteStudent}
+      >
+        계정 삭제하기
+      </Button>
     </section>
   );
 };

@@ -112,7 +112,7 @@ model SchoolUser {
 model Payments {
   id String @id @default(uuid())
 
-  student Student @relation(fields: [studentId], references: [id], onDelete: NoAction)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   meals   Meals[]
 
   studentName String
@@ -133,7 +133,7 @@ model Payments {
 model RefundRequest {
   id String @id @default(uuid())
 
-  student   Student @relation(fields: [studentId], references: [id], onDelete: NoAction)
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String
 
   amount   Int
@@ -229,11 +229,11 @@ model Posts {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  admin        Admin?      @relation(fields: [adminId], references: [id])
+  admin        Admin?      @relation(fields: [adminId], references: [id], onDelete: Cascade)
   adminId      String?
-  student      Student?    @relation(fields: [studentId], references: [id])
+  student      Student?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String?
-  schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id])
+  schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id], onDelete: Cascade)
   schoolUserId String?
 
   comments Comments[]
@@ -243,16 +243,16 @@ model Comments {
   id String @id @default(uuid())
 
   content String
-  post    Posts  @relation(fields: [postId], references: [id])
+  post    Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student      Student?    @relation(fields: [studentId], references: [id])
+  student      Student?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String?
-  schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id])
+  schoolUser   SchoolUser? @relation(fields: [schoolUserId], references: [id], onDelete: Cascade)
   schoolUserId String?
-  admin        Admin?      @relation(fields: [adminId], references: [id])
+  admin        Admin?      @relation(fields: [adminId], references: [id], onDelete: Cascade)
   adminId      String?
 }
