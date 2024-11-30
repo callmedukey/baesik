@@ -18,7 +18,7 @@ const page = async () => {
   }
 
   if (Array.isArray(meals) && meals.length > 0) {
-    total = Math.floor(meals.reduce((acc, meal) => acc + 7000, 0));
+    total = Math.floor(meals.reduce((acc, meal) => acc + 8000, 0));
   }
   return (
     <MainContainer hasHeader className="justify-start">

@@ -246,6 +246,13 @@ export const cancelMeals = async ({
     redirect("/login");
   }
 
+  const mealsBeforePriceIncrease = meals.filter((meal) => {
+    return format(new Date(meal.createdAt), "yyyy-MM-dd") < "2024-12-01";
+  });
+  const mealsAfterPriceIncrease = meals.filter((meal) => {
+    return format(new Date(meal.createdAt), "yyyy-MM-dd") >= "2024-12-01";
+  });
+
   return await prisma.$transaction(async (tx) => {
     const createdRequest = await tx.refundRequest.create({
       data: {
@@ -253,7 +260,10 @@ export const cancelMeals = async ({
         bankName,
         bankDetails,
         studentId: session.userId,
-        amount: Math.floor(meals.reduce((acc, meal) => acc + 7000, 0)),
+        amount: Math.floor(
+          mealsBeforePriceIncrease.reduce((acc, meal) => acc + 7000, 0) +
+            mealsAfterPriceIncrease.reduce((acc, meal) => acc + 8000, 0)
+        ),
       },
     });
 

@@ -1009,3 +1009,24 @@ export const deleteStudent = async (studentId: string) => {
     return { message: "학생 삭제를 실패했습니다", success: false };
   }
 };
+
+export const deleteStudentsAsAdmin = async (studentIds: string[]) => {
+  if (studentIds.length === 0) {
+    return { message: "학생이 없습니다", success: false };
+  }
+
+  const deleted = await prisma.student.deleteMany({
+    where: {
+      id: {
+        in: studentIds,
+      },
+    },
+  });
+
+  if (deleted.count === studentIds.length) {
+    revalidatePath("/admin/dashboard/students");
+    return { message: "학생 삭제를 성공적으로 완료했습니다", success: true };
+  } else {
+    return { message: "학생 삭제를 실패했습니다", success: false };
+  }
+};

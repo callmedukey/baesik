@@ -1,12 +1,29 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { StudentWithSchool } from "@/lib/definitions";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale/ko";
 import Link from "next/link";
 
-const AdminFoundStudent = ({ student }: { student: StudentWithSchool }) => {
+const AdminFoundStudent = ({
+  student,
+  handleSelectStudent,
+  selectedStudent,
+}: {
+  student: StudentWithSchool;
+  handleSelectStudent: (studentId: string) => void;
+  selectedStudent: boolean;
+}) => {
   return (
-    <div className="border rounded-sm border-gray-700 p-2">
+    <div className="border rounded-sm border-gray-700 p-2 relative">
+      <Checkbox
+        className="absolute top-2 right-2"
+        id={student.id}
+        onCheckedChange={() => handleSelectStudent(student.id)}
+        checked={selectedStudent}
+      />
       <div>이름: {student.name}</div>
       <div>아이디: {student.username}</div>
       <div>이메일: {student.email}</div>

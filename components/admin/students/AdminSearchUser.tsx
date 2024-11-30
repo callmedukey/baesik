@@ -20,12 +20,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { findStudentsAsAdmin } from "@/actions/admin";
+import { deleteStudentsAsAdmin, findStudentsAsAdmin } from "@/actions/admin";
 import { StudentSearchSchema, StudentWithSchool } from "@/lib/definitions";
 import AdminFoundStudent from "./AdminFoundStudent";
 
 const AdminUserSearchContainer = () => {
   const [loading, setLoading] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof StudentSearchSchema>>({
     resolver: zodResolver(StudentSearchSchema),
@@ -38,6 +39,7 @@ const AdminUserSearchContainer = () => {
   const [studentList, setStudentList] = useState<StudentWithSchool[]>([]);
 
   const handleSearch = async (values: z.infer<typeof StudentSearchSchema>) => {
+    setSelectedStudent([]);
     setLoading(true);
     const foundStudents = await findStudentsAsAdmin({
       ...values,
@@ -52,6 +54,46 @@ const AdminUserSearchContainer = () => {
     }
     setStudentList(foundStudents || []);
     setLoading(false);
+  };
+  const handleSelectStudent = (studentId: string) => {
+    if (selectedStudent.includes(studentId)) {
+      setSelectedStudent((prev: string[]) =>
+        prev.filter((id) => id !== studentId)
+      );
+    } else {
+      setSelectedStudent((prev: string[]) => [...prev, studentId]);
+    }
+  };
+
+  const handleDeleteSelectedStudent = async () => {
+    if (selectedStudent.length === 0) {
+      alert("학생을 선택해주세요.");
+      return;
+    }
+
+    if (!confirm("정말 삭제하시겠습니까? 복구는 불가능합니다.")) {
+      return;
+    }
+
+    const result = await deleteStudentsAsAdmin(selectedStudent);
+    if (result.success) {
+      alert(result.message);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const selectAllStudent = () => {
+    if (studentList.length === 0) {
+      alert("학생이 없습니다.");
+      return;
+    }
+
+    if (selectedStudent.length === studentList.length) {
+      setSelectedStudent([]);
+    } else {
+      setSelectedStudent(studentList.map((student) => student.id));
+    }
   };
 
   return (
@@ -128,6 +170,30 @@ const AdminUserSearchContainer = () => {
             >
               조회
             </Button>
+            {selectedStudent.length > 0 && (
+              <Button
+                className="w-full"
+                variant="destructive"
+                disabled={!form.formState.isValid || loading}
+                onClick={handleDeleteSelectedStudent}
+                type="button"
+              >
+                {selectedStudent.length}개 선택 삭제
+              </Button>
+            )}
+            {studentList.length > 0 && (
+              <Button
+                className="w-full"
+                variant="outline"
+                disabled={!form.formState.isValid || loading}
+                onClick={selectAllStudent}
+                type="button"
+              >
+                {selectedStudent.length === studentList.length
+                  ? "전체 선택 해제"
+                  : "전체 선택"}
+              </Button>
+            )}
           </form>
         </Form>
       </aside>
@@ -139,7 +205,12 @@ const AdminUserSearchContainer = () => {
       {studentList && studentList.length > 0 && (
         <section className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 items-center justify-center gap-2 max-w-4xl w-full mx-auto border p-2 rounded-md shadow-sm">
           {studentList.map((student) => (
-            <AdminFoundStudent key={student.id} student={student} />
+            <AdminFoundStudent
+              key={student.id}
+              student={student}
+              handleSelectStudent={handleSelectStudent}
+              selectedStudent={selectedStudent.includes(student.id)}
+            />
           ))}
         </section>
       )}
