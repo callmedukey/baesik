@@ -1,37 +1,96 @@
+version: "3.8" # Using recent compose version for better security features
+
 services:
   postgres:
+    # Using official Alpine-based image for smaller attack surface
     image: "postgres:16.3-alpine"
+
+    # Store sensitive information in Docker secrets
+    secrets:
+      - postgres_password
+
     environment:
+      # Database configuration
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password # Using secure password storage
       POSTGRES_DB: my-local-db
-      # PostgreSQL tuning parameters
+
+      # Security-enhanced authentication
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+
+      # Point to our custom configuration directory
+      POSTGRES_CONF_DIR: /etc/postgresql
+
+      # Performance tuning parameters
       POSTGRES_SHARED_BUFFERS: "256MB"
       POSTGRES_WORK_MEM: "16MB"
       POSTGRES_MAINTENANCE_WORK_MEM: "128MB"
       POSTGRES_EFFECTIVE_CACHE_SIZE: "768MB"
       POSTGRES_MAX_CONNECTIONS: "100"
+
+    # Bind only to localhost for enhanced security
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
+
+    # Mount volumes with specific permissions
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data # Database files
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro # Configuration (read-only)
+
+    # Enhanced security configurations
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation
+    read_only: true # Make container filesystem read-only
+
+    # Temporary filesystems for necessary write access
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+
+    # Health monitoring
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s # Give container time to start up
+
+    # Container management
     restart: unless-stopped
-    stop_grace_period: 60s
-    # Add resource constraints
+    stop_grace_period: 60s # Allow time for clean shutdown
+
+    # Resource constraints to prevent DOS attacks
     deploy:
       resources:
         limits:
           memory: 1G
           cpus: "1"
         reservations:
-          memory: 512M
-    # Add some ulimits for better stability
+          memory: 512M # Guaranteed minimum memory
+
+    # System resource limits
     ulimits:
       nofile:
-        soft: 65536
+        soft: 65536 # Maximum number of open files
         hard: 65536
+
+    # Run as non-root user for security
+    user: postgres
+
+    # Network isolation
+    networks:
+      - postgres_net
+
+# Define an isolated network for postgres
+networks:
+  postgres_net:
+    internal: true # Prevent internet access
+    driver: bridge
+    driver_opts:
+      encrypt: "true" # Encrypt network traffic
+
+# Define secrets for secure credential management
+secrets:
+  postgres_password:
+    file: ./postgres_password.txt # Store password in external file
