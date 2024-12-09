@@ -39,7 +39,7 @@ const StudentShoppingCart = async () => {
               >
                 <div>{format(new Date(meal.date), "yyyy-MM-dd")}</div>
                 <div>{parseKoreanMealType(meal.mealType)}</div>
-                <div>7,000원</div>
+                <div>8,000원</div>
                 <DeleteMealFromCartButton id={meal.id} />
               </div>
             ))}
