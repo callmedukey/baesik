@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-
   await prisma.admin.upsert({
     where: {
       username: "iamdevduke",
@@ -14,6 +13,23 @@ async function main() {
     create: {
       username: "iamdevduke",
       password: await bcrypt.hash("admin2024@@", 10),
+    },
+  });
+
+  await prisma.student.upsert({
+    where: {
+      username: "kbuddies",
+    },
+    update: {
+      password: await bcrypt.hash("gen2kbgroup@", 10),
+    },
+    create: {
+      username: "kbuddies",
+      password: await bcrypt.hash("gen2kbgroup@", 10),
+      name: "김주형",
+      phone: "010-1234-5678",
+      email: "kbuddies.duke@gmail.com",
+      schoolId: (await prisma.school.findFirst())?.id as string,
     },
   });
 
@@ -89,8 +105,6 @@ async function main() {
   //     },
   //   });
   // }
-
-
 }
 
 main()

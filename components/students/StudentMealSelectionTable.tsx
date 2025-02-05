@@ -16,6 +16,7 @@ import { parseMealSelectionOption } from "@/lib/parseMealSelectionOption";
 import { cn } from "@/lib/utils";
 import { parseWeekDay } from "@/lib/parseWeekDay";
 import { Holidays } from "@prisma/client";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 const StudentMealSelectionTable = ({
   meals,
@@ -112,6 +113,12 @@ const StudentMealSelectionTable = ({
         >
           {loading ? "담는중..." : "장바구니 담기"}
         </Button>
+      </div>
+      <div className="my-6 p-4 bg-blue-50 border-l-4 border-primary rounded-r-lg flex items-center gap-3 shadow-sm">
+        <InfoCircledIcon className="w-6 h-6 text-primary flex-shrink-0" />
+        <p className="text-lg text-primary font-medium">
+          <span className="font-semibold">안내:</span> 신청 가능한 날짜는 최소 2일 전부터입니다
+        </p>
       </div>
       <Table>
         <TableHeader>

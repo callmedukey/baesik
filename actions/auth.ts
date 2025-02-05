@@ -408,7 +408,7 @@ export const findStudentUsername = async ({
     return { error: "해당하는 학생이 없습니다." };
   }
 
-  return { username: censorUsername(user.username) };
+  return { username: user.username };
 };
 export const findSchoolUsername = async ({
   name,
