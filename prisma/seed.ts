@@ -22,6 +22,7 @@ async function main() {
     },
     update: {
       password: await bcrypt.hash("gen2kbgroup@", 10),
+      phone: "010-3974-8429",
     },
     create: {
       username: "kbuddies",

@@ -13,7 +13,6 @@ import {
   isAfter,
   addBusinessDays,
 } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 import StudentMealSelectionTable from "./StudentMealSelectionTable";
@@ -44,7 +43,7 @@ const ReadyContainer = ({
 
   // Get the current date and the next two months
   const today = new Date();
-  const twoBusinessDaysFromNow = addBusinessDays(today, 2);
+  const twoDaysFromNow = addDays(today, 2);
   const months = [
     today,
     addMonths(today, 1),
@@ -82,7 +81,7 @@ const ReadyContainer = ({
       const currentDate = new Date(date);
       
       // Skip if the date is before 2 business days from now (unless admin)
-      if (!isAdmin && !isAfter(currentDate, twoBusinessDaysFromNow)) {
+      if (!isAdmin && !isAfter(currentDate, twoDaysFromNow)) {
         return;
       }
 
