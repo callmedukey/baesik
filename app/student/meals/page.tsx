@@ -9,7 +9,7 @@ const page = async () => {
 
   return (
     <MainContainer hasHeader className="block">
-      <StudentMealHistory meals={meals} />
+      <StudentMealHistory meals={meals} isAdmin={false} />
     </MainContainer>
   );
 };
