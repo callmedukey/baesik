@@ -8,21 +8,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { parseWeekDay } from "@/lib/parseWeekDay";
-
-import type { Meals } from "@prisma/client";
+import type { Meals, Payments } from "@prisma/client";
 import { format, isSaturday } from "date-fns";
 import { ko } from "date-fns/locale/ko";
 import { useMemo } from "react";
+import { Badge } from "@/components/ui/badge";
 
-const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
+type MealWithPayment = Meals & {
+  payments: Payments | null;
+};
+
+const StudentMealHistory = ({
+  meals,
+  isAdmin,
+}: {
+  meals: MealWithPayment[];
+  isAdmin: boolean;
+}) => {
   const studentMeals = useMemo(() => {
     const mealObj: {
       [key: string]: {
-        hasLunch: {
+        hasLunch?: {
           isCancelled: boolean;
+          isPaid: boolean;
         };
-        hasDinner: {
+        hasDinner?: {
           isCancelled: boolean;
+          isPaid: boolean;
         };
       };
     } = {};
@@ -43,6 +55,7 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
           ...mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })],
           hasLunch: {
             isCancelled: meal.isCancelled,
+            isPaid: meal.payments?.paid ?? false,
           },
         };
       }
@@ -52,6 +65,7 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
           ...mealObj[format(meal.date, "yyyy-MM-dd", { locale: ko })],
           hasDinner: {
             isCancelled: meal.isCancelled,
+            isPaid: meal.payments?.paid ?? false,
           },
         };
       }
@@ -60,8 +74,8 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
     const values = Object.entries(mealObj)
       .map(([date, meal]) => ({
         date,
-        hasLunch: meal.hasLunch && !meal.hasLunch.isCancelled,
-        hasDinner: meal.hasDinner && !meal.hasDinner.isCancelled,
+        hasLunch: meal.hasLunch,
+        hasDinner: meal.hasDinner,
       }))
       .sort((a, b) => -a.date.localeCompare(b.date));
     console.log(values);
@@ -78,7 +92,7 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {studentMeals.map((studentMeal, index) => (
+        {studentMeals.map((studentMeal) => (
           <TableRow key={studentMeal.date} className="divide-x text-center">
             <TableCell className="flex flex-col gap-0.5">
               <span>{studentMeal.date}</span>
@@ -86,15 +100,43 @@ const StudentMealHistory = ({ meals }: { meals: Meals[] }) => {
                 {parseWeekDay(new Date(studentMeal.date))}
               </span>
             </TableCell>
-            <TableCell className="">
-              {studentMeal.hasLunch ? "O" : "X"}
+            <TableCell>
+              {studentMeal.hasLunch ? (
+                <div className="flex flex-col items-center gap-1">
+                  {studentMeal.hasLunch.isCancelled ? (
+                    <Badge variant="destructive">취소됨</Badge>
+                  ) : (
+                    <Badge variant="default">신청됨</Badge>
+                  )}
+                  {isAdmin && (
+                    <Badge variant={studentMeal.hasLunch.isPaid ? "default" : "secondary"}>
+                      {studentMeal.hasLunch.isPaid ? "결제완료" : "미결제"}
+                    </Badge>
+                  )}
+                </div>
+              ) : (
+                "X"
+              )}
             </TableCell>
-            <TableCell className="">
-              {isSaturday(studentMeal.date)
-                ? "X"
-                : studentMeal.hasDinner
-                ? "O"
-                : "X"}
+            <TableCell>
+              {isSaturday(new Date(studentMeal.date)) ? (
+                "X"
+              ) : studentMeal.hasDinner ? (
+                <div className="flex flex-col items-center gap-1">
+                  {studentMeal.hasDinner.isCancelled ? (
+                    <Badge variant="destructive">취소됨</Badge>
+                  ) : (
+                    <Badge variant="default">신청됨</Badge>
+                  )}
+                  {isAdmin && (
+                    <Badge variant={studentMeal.hasDinner.isPaid ? "default" : "secondary"}>
+                      {studentMeal.hasDinner.isPaid ? "결제완료" : "미결제"}
+                    </Badge>
+                  )}
+                </div>
+              ) : (
+                "X"
+              )}
             </TableCell>
           </TableRow>
         ))}

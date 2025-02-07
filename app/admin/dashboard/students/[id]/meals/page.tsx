@@ -9,7 +9,7 @@ const page = async ({ params }: { params: { id: string } }) => {
 
   return (
     <MainContainer hasHeader className="block py-12">
-      <StudentMealHistory meals={meals} />
+      <StudentMealHistory meals={meals} isAdmin />
     </MainContainer>
   );
 };
