@@ -95,8 +95,8 @@ export const saveShoppingCart = async (
       };
     }
     return {
-      message: "장바구니에 추가되었습니다",
-      redirectTo: "/student/cart",
+      message: "결제 페이지로 이동합니다",
+      redirectTo: "/student/cart/payment",
     };
   }
   return { error: "장바구니에 추가되지 않았습니다" };

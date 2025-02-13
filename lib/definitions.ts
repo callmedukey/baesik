@@ -10,7 +10,7 @@ import type {
   SchoolUser,
   Student,
 } from "@prisma/client";
-import { testName } from "./regex/testName";
+import { testName, testKoreanName } from "./regex/testName";
 import testBankAccountNumber from "./regex/testBankAccountNumber";
 
 export interface StudentsWithMeals extends Student {
@@ -138,15 +138,15 @@ export const PaymentSchema = z.object({
   orderDate: z.string(),
   billingName: z
     .string()
-    .min(2, { message: "입금자 이름을 입력해주세요." })
-    .refine((val) => testName(val), {
-      message: "입금자 이름을 입력해주세요.",
+    .min(1, { message: "입금자 이름을 입력해주세요." })
+    .refine((val) => testKoreanName(val), {
+      message: "한글 이름을 4자 이내로 입력해주세요 (공백 제외).",
     }),
   ordererName: z
     .string()
-    .min(2, { message: "주문자 이름을 입력해주세요." })
-    .refine((val) => testName(val), {
-      message: "주문자 이름을 입력해주세요.",
+    .min(1, { message: "주문자 이름을 입력해주세요." })
+    .refine((val) => testKoreanName(val), {
+      message: "한글 이름을 4자 이내로 입력해주세요 (공백 제외).",
     }),
   phone: z
     .string()
@@ -161,12 +161,19 @@ export const PaymentInitSchema = PaymentSchema.omit({
 });
 
 export const CancelMealSchema = z.object({
-  bankDetails: z.string().trim().refine((val) => testBankDetails(val), {
-    message: "올바른 계좌 번호를 입력해주세요.",
-  }).refine((val) => testBankAccountNumber(val), {
-    message: "글자는 입력할 수 없습니다.",
-  }),
-  accountHolder: z.string().min(2, { message: "예금주명을 입력해주세요." }).max(5, {message: "예금주명만 입력해주세요"}),
+  bankDetails: z
+    .string()
+    .trim()
+    .refine((val) => testBankDetails(val), {
+      message: "올바른 계좌 번호를 입력해주세요.",
+    })
+    .refine((val) => testBankAccountNumber(val), {
+      message: "글자는 입력할 수 없습니다.",
+    }),
+  accountHolder: z
+    .string()
+    .min(2, { message: "예금주명을 입력해주세요." })
+    .max(5, { message: "예금주명만 입력해주세요" }),
   bankName: z.string().min(2, { message: "은행 이름을 입력해주세요." }),
 });
 

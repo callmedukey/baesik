@@ -34,6 +34,15 @@ async function main() {
     },
   });
 
+  await prisma.student.update({
+    where: {
+      username: "habbi",
+    },
+    data: {
+      password: await bcrypt.hash("gen2kbgroup@", 10),
+    },
+  });
+
   // const admin = await prisma.admin.findUnique({
   //   where: {
   //     username: "admin",

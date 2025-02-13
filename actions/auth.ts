@@ -234,7 +234,7 @@ export async function studentLogin(
     isStudent: true,
   });
 
-  redirect("/student");
+  redirect("/student/apply");
 }
 export async function schoolLogin(
   userLogin: z.infer<typeof LoginSchema>

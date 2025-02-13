@@ -111,7 +111,7 @@ const StudentMealSelectionTable = ({
           type="button"
           disabled={selectedMeals.length === 0 || loading}
         >
-          {loading ? "담는중..." : "장바구니 담기"}
+          {loading ? "로딩..." : "결제 페이지로 이동"}
         </Button>
       </div>
       <div className="my-6 p-4 bg-blue-50 border-l-4 border-primary rounded-r-lg flex items-center gap-3 shadow-sm">

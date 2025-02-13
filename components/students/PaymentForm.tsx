@@ -57,7 +57,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
             <FormItem>
               <FormLabel>학생 이름</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="예) 홍길동 학원이름X 숫자X" />
+                <Input {...field} placeholder="" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -70,7 +70,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
             <FormItem>
               <FormLabel>입금자</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="예) 홍길동 학원이름X 숫자X" />
+                <Input {...field} placeholder="" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -83,7 +83,7 @@ const PaymentForm = ({ totalAmount }: { totalAmount: number }) => {
             <FormItem>
               <FormLabel>핸드폰 번호</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="01012345678 - 없이" />
+                <Input {...field} placeholder="" />
               </FormControl>
               <FormMessage />
             </FormItem>

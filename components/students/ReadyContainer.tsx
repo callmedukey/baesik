@@ -11,7 +11,6 @@ import {
   startOfMonth,
   endOfMonth,
   isAfter,
-  addBusinessDays,
 } from "date-fns";
 import { Button } from "@/components/ui/button";
 
@@ -43,7 +42,7 @@ const ReadyContainer = ({
 
   // Get the current date and the next two months
   const today = new Date();
-  const twoDaysFromNow = addDays(today, 2);
+  const startDate = addDays(today, 1); // This will be the first available date
   const months = [
     today,
     addMonths(today, 1),
@@ -80,8 +79,8 @@ const ReadyContainer = ({
     totalArrayOfDays.forEach((date) => {
       const currentDate = new Date(date);
       
-      // Skip if the date is before 2 business days from now (unless admin)
-      if (!isAdmin && !isAfter(currentDate, twoDaysFromNow)) {
+      // Skip if the date is before the startDate (unless admin)
+      if (!isAdmin && !isAfter(currentDate, startDate)) {
         return;
       }
 
