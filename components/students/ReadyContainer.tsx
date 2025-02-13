@@ -11,6 +11,7 @@ import {
   startOfMonth,
   endOfMonth,
   isAfter,
+  startOfDay,
 } from "date-fns";
 import { Button } from "@/components/ui/button";
 
@@ -41,8 +42,8 @@ const ReadyContainer = ({
   const [selectedMonth, setSelectedMonth] = useState<Date | null>(null);
 
   // Get the current date and the next two months
-  const today = new Date();
-  const startDate = addDays(today, 1); // This will be the first available date
+  const today = startOfDay(new Date());
+  const startDate = addDays(today, 2); // This will be the first available date
   const months = [
     today,
     addMonths(today, 1),
