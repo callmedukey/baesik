@@ -79,9 +79,6 @@ export const POST = async (req: NextRequest) => {
     const payActionUrl = "https://api.payaction.app/order";
 
     const body = {
-      apikey: process.env.PAYACTION_KEY,
-      secretkey: process.env.PAYACTION_SECRET,
-      mall_id: process.env.PAYACTION_MALLID,
       order_number: payment.id,
       order_amount: amount,
       order_date: convertToCustomISO(new Date().toISOString()),
