@@ -76,7 +76,7 @@ export const POST = async (req: NextRequest) => {
       return Response.json({ error: "Payment failed" }, { status: 400 });
     }
 
-    const payActionUrl = "https://payaction.app/api/1.1/wf/order";
+    const payActionUrl = "https://api.payaction.app/order";
 
     const body = {
       apikey: process.env.PAYACTION_KEY,
@@ -95,6 +95,8 @@ export const POST = async (req: NextRequest) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": process.env.PAYACTION_KEY ?? "",
+        "x-mall-id": process.env.PAYACTION_MALLID ?? "",
       },
       body: JSON.stringify(body),
     });
