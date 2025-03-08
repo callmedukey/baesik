@@ -40,7 +40,9 @@ const page = async ({ params }: { params: { postId: string } }) => {
           isSchool
           sessionId={session.userId}
         />
-        {session.userId === post.schoolUserId && <BoardDelete />}
+        {session.userId === post.schoolUserId && (
+          <BoardDelete isSchool={true} />
+        )}
       </section>
     </MainContainer>
   );
