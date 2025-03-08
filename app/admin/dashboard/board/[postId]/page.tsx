@@ -42,7 +42,7 @@ const page = async ({ params }: { params: { postId: string } }) => {
           sessionId={session.userId}
         />
         {post.isAdmin && <AdminBoardPin isPinned={post.isPinned} />}
-        <BoardDelete />
+        <BoardDelete isAdmin={true} />
       </section>
     </MainContainer>
   );
