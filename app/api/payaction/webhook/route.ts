@@ -6,13 +6,6 @@ export async function POST(req: NextRequest) {
     const { mall_id, order_number, order_status } = await req.json();
     console.log("web hook arrived");
     console.log(mall_id, order_number, order_status);
-    if (
-      mall_id !== process.env.PAYACTION_MALLID ||
-      order_status !== "매칭완료"
-    ) {
-      console.log("webhook failed");
-      return Response.json({ error: "Invalid mall_id" }, { status: 400 });
-    }
 
     const updated = await prisma.payments.update({
       where: {
