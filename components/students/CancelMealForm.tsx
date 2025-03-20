@@ -43,6 +43,11 @@ const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
       alert("취소할 식사가 없습니다");
       return;
     }
+
+    if (isNaN(Number(data.bankDetails))) {
+      alert("계좌번호는 숫자로만 입력해주세요");
+      return;
+    }
     try {
       setLoading(true);
 
@@ -111,7 +116,12 @@ const CancelMealForm = ({ selectedMeals }: { selectedMeals: Meals[] }) => {
             <FormItem>
               <FormLabel>환불 계좌 번호</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="3333-33-3333333" />
+                <Input
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e.target.value.replace(/[^0-9]/g, ""));
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
