@@ -1,47 +1,58 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.admin.upsert({
+  const currentYear = new Date().getFullYear();
+  await prisma.meals.deleteMany({
     where: {
-      username: "iamdevduke",
-    },
-    update: {
-      password: await bcrypt.hash("admin2024@@", 10),
-    },
-    create: {
-      username: "iamdevduke",
-      password: await bcrypt.hash("admin2024@@", 10),
+      date: {
+        gte: new Date(`${currentYear}-01-01`),
+        lte: new Date(
+          `${currentYear}-02-${currentYear % 4 === 0 ? "29" : "28"}`
+        ),
+      },
     },
   });
 
-  await prisma.student.upsert({
-    where: {
-      username: "kbuddies",
-    },
-    update: {
-      password: await bcrypt.hash("gen2kbgroup@", 10),
-      phone: "010-3974-8429",
-    },
-    create: {
-      username: "kbuddies",
-      password: await bcrypt.hash("gen2kbgroup@", 10),
-      name: "김주형",
-      phone: "010-1234-5678",
-      email: "kbuddies.duke@gmail.com",
-      schoolId: (await prisma.school.findFirst())?.id as string,
-    },
-  });
+  // await prisma.admin.upsert({
+  //   where: {
+  //     username: "iamdevduke",
+  //   },
+  //   update: {
+  //     password: await bcrypt.hash("admin2024@@", 10),
+  //   },
+  //   create: {
+  //     username: "iamdevduke",
+  //     password: await bcrypt.hash("admin2024@@", 10),
+  //   },
+  // });
 
-  await prisma.student.update({
-    where: {
-      username: "habbi",
-    },
-    data: {
-      password: await bcrypt.hash("gen2kbgroup@", 10),
-    },
-  });
+  // await prisma.student.upsert({
+  //   where: {
+  //     username: "kbuddies",
+  //   },
+  //   update: {
+  //     password: await bcrypt.hash("gen2kbgroup@", 10),
+  //     phone: "010-3974-8429",
+  //   },
+  //   create: {
+  //     username: "kbuddies",
+  //     password: await bcrypt.hash("gen2kbgroup@", 10),
+  //     name: "김주형",
+  //     phone: "010-1234-5678",
+  //     email: "kbuddies.duke@gmail.com",
+  //     schoolId: (await prisma.school.findFirst())?.id as string,
+  //   },
+  // });
+
+  // await prisma.student.update({
+  //   where: {
+  //     username: "habbi",
+  //   },
+  //   data: {
+  //     password: await bcrypt.hash("gen2kbgroup@", 10),
+  //   },
+  // });
 
   // const admin = await prisma.admin.findUnique({
   //   where: {
