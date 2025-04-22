@@ -48,8 +48,8 @@ model Student {
   id       String @id @default(uuid())
   name     String
   username String @unique
-  phone    String @unique
-  email    String @unique
+  phone    String
+  email    String
 
   password  String
   createdAt DateTime @default(now())
