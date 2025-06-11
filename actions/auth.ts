@@ -35,11 +35,9 @@ export async function studentSignup(
   const removedDashPhone = phone.replace(/-/g, "");
 
   // 3. Check if the user's email already exists
-  const existingUser = await prisma.student.findUnique({
+  const existingUser = await prisma.student.findFirst({
     where: {
-      email,
-      username,
-      phone: removedDashPhone,
+      OR: [{ email }, { username }, { phone: removedDashPhone }],
     },
   });
 
@@ -446,10 +444,24 @@ export const resetStudentPasswordFirstStep = async ({
       };
     }
 
-    const updated = await prisma.student.update({
+    // First find the student with both username and phone
+    const student = await prisma.student.findFirst({
       where: {
         username,
         phone: phone.replace(/-/g, ""),
+      },
+    });
+
+    if (!student) {
+      return {
+        error: "아이디와 휴대폰 번호를 확인해주세요.",
+      };
+    }
+
+    // Then update using the unique username
+    const updated = await prisma.student.update({
+      where: {
+        username,
       },
       data: {
         passwordResetCode: {
@@ -530,10 +542,24 @@ export const resetSchoolPasswordFirstStep = async ({
       };
     }
 
-    const updated = await prisma.schoolUser.update({
+    // First find the school user with both username and phone
+    const schoolUser = await prisma.schoolUser.findFirst({
       where: {
         username,
         phone: phone.replace(/-/g, ""),
+      },
+    });
+
+    if (!schoolUser) {
+      return {
+        error: "아이디와 휴대폰 번호를 확인해주세요.",
+      };
+    }
+
+    // Then update using the unique username
+    const updated = await prisma.schoolUser.update({
+      where: {
+        username,
       },
       data: {
         passwordResetCode: {
