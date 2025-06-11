@@ -397,7 +397,7 @@ export const findStudentUsername = async ({
   name,
   phone,
 }: z.infer<typeof FindUsernameSchema>) => {
-  const user = await prisma.student.findUnique({
+  const user = await prisma.student.findFirst({
     where: {
       name,
       phone: phone.replace(/-/g, ""),
@@ -414,7 +414,7 @@ export const findSchoolUsername = async ({
   name,
   phone,
 }: z.infer<typeof FindUsernameSchema>) => {
-  const user = await prisma.schoolUser.findUnique({
+  const user = await prisma.schoolUser.findFirst({
     where: {
       name,
       phone: phone.replace(/-/g, ""),
