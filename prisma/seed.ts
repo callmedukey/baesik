@@ -1,18 +1,25 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  const currentYear = new Date().getFullYear();
-  const lastDayOfFeb = currentYear % 4 === 0 ? "29" : "28";
-
-  await prisma.meals.deleteMany({
+  await prisma.admin.update({
     where: {
-      date: {
-        gte: new Date(`${currentYear}-01-01`),
-        lte: new Date(`${currentYear}-02-${lastDayOfFeb}T23:59:59.999Z`),
-      },
+      username: "admin",
+    },
+    data: {
+      password: await bcrypt.hash("admin2025@", 10),
     },
   });
+
+  // await prisma.meals.deleteMany({
+  //   where: {
+  //     date: {
+  //       gte: new Date(`${currentYear}-01-01`),
+  //       lte: new Date(`${currentYear}-02-${lastDayOfFeb}T23:59:59.999Z`),
+  //     },
+  //   },
+  // });
 
   // await prisma.admin.upsert({
   //   where: {

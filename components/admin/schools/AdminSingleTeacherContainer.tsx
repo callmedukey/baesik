@@ -29,7 +29,12 @@ import type { School } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateStudent, updateStudentPassword } from "@/actions/admin";
+import {
+  updateStudent,
+  updateStudentPassword,
+  updateTeacher,
+  updateTeacherPassword,
+} from "@/actions/admin";
 
 const AdminSingleTeacherContainer = ({
   teacher,
@@ -60,7 +65,7 @@ const AdminSingleTeacherContainer = ({
   });
 
   const onSubmit = async (data: z.infer<typeof UpdateStudentSchema>) => {
-    const response = await updateStudent(data);
+    const response = await updateTeacher(data);
 
     if (response.error) {
       return alert(response.error);
@@ -76,7 +81,7 @@ const AdminSingleTeacherContainer = ({
       return alert("비밀번호가 일치하지 않습니다");
     }
 
-    const response = await updateStudentPassword(data);
+    const response = await updateTeacherPassword(data);
     if (response.error) {
       return alert(response.error);
     }
