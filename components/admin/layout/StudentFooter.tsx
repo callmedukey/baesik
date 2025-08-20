@@ -4,16 +4,16 @@ const StudentFooter = () => {
       <div className="py-2">
         <div>
           <span>예금주: </span>
-          <span>조성영</span>
+          <span>유정미</span>
         </div>
         <div>
           <span>계좌: </span>
-          <span>국민은행 452937-04-006720</span>
+          <span>국민은행 475401-04-247381</span>
         </div>
       </div>
       <div className="flex flex-col py-2">
         <span className="">평일 오전 8시에서 오후 5시까지 고객센터 운영</span>
-        <span>010-6215-2363</span>
+        <span>010-6799-0830</span>
       </div>
     </footer>
   );

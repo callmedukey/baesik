@@ -31,11 +31,11 @@ const page = async ({ searchParams }: { searchParams: { id: string } }) => {
         <CardContent>
           <div>
             <span>예금주: </span>
-            <span>조성영</span>
+            <span>유정미</span>
           </div>
           <div>
             <span>계좌: </span>
-            <span>국민은행 452937-04-006720</span>
+            <span>국민은행 475401-04-247381</span>
           </div>
           <div>
             <span>금액: </span>

@@ -12,7 +12,7 @@ const Contacts = ({ className }: { className?: string }) => {
       <span className="font-semibold">
         평일 오전 8시에서 오후 5시까지 고객센터 운영
       </span>
-      <span>010-6215-2363</span>
+      <span>010-6799-0830</span>
     </p>
   );
 };
